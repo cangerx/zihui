@@ -12,9 +12,6 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (DB::connection()->getDriverName() === 'sqlite') {
-            return;
-        }
         if (Schema::hasColumn('payment_orders', 'plan_id')) {
             DB::statement('ALTER TABLE payment_orders MODIFY plan_id BIGINT UNSIGNED NULL');
         }

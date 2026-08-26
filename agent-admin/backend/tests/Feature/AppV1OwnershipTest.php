@@ -15,6 +15,20 @@ class AppV1OwnershipTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function migrateUsing(): array
+    {
+        return [
+            '--path' => [
+                'database/migrations/2024_01_01_000001_create_users_table.php',
+                'database/migrations/2024_01_01_000003_create_cloud_providers_table.php',
+                'database/migrations/2024_01_01_000004_create_cloud_models_table.php',
+                'database/migrations/2026_04_30_223535_create_image_tasks_table.php',
+                'database/migrations/2026_08_26_000010_create_app_conversations_tables.php',
+            ],
+            '--seed' => false,
+        ];
+    }
+
     protected function setUp(): void
     {
         parent::setUp();

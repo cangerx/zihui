@@ -9,11 +9,6 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Video catalog migrations are MySQL-oriented and not required by App v1 tests.
-        if (DB::connection()->getDriverName() === 'sqlite') {
-            return;
-        }
-
         if (!Schema::hasTable('video_provider_accounts')) {
         Schema::create('video_provider_accounts', function (Blueprint $table) {
             $table->id();
@@ -385,11 +380,6 @@ return new class extends Migration
     {
         if (!Schema::hasTable($table)) return;
 
-        if (DB::connection()->getDriverName() === 'sqlite') {
-            $exists = collect(DB::select('PRAGMA index_list(' . DB::connection()->getPdo()->quote($table) . ')'))
-                ->contains(fn ($row) => ($row->name ?? null) === $index);
-            if ($exists) return;
-        } else {
         $exists = DB::table('information_schema.statistics')
             ->whereRaw('table_schema = DATABASE()')
             ->where('table_name', $table)
@@ -397,7 +387,6 @@ return new class extends Migration
             ->exists();
 
         if ($exists) return;
-        }
 
         Schema::table($table, function (Blueprint $table) use ($columns, $index) {
             $table->index($columns, $index);

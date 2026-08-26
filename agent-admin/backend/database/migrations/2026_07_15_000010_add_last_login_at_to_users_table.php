@@ -30,11 +30,6 @@ return new class extends Migration
 
     private function indexExists(string $table, string $name): bool
     {
-        if (\DB::connection()->getDriverName() === 'sqlite') {
-            return collect(\DB::select('PRAGMA index_list(' . \DB::connection()->getPdo()->quote($table) . ')'))
-                ->contains(fn ($row) => ($row->name ?? null) === $name);
-        }
-
         $database = config('database.connections.' . config('database.default') . '.database');
         $count = \DB::selectOne(
             'SELECT COUNT(1) AS c FROM information_schema.statistics WHERE table_schema = ? AND table_name = ? AND index_name = ?',
