@@ -51,6 +51,16 @@ export interface AppCategory {
   apps: AppListItem[]
 }
 
+/** 发现页与模板页渲染用的稳定类型，避免页面依赖 dev-only mock 模块。 */
+export interface TemplateItem {
+  id: string
+  cover: string
+  title: string
+  ratio: number
+  appUuid: string
+  status?: 'running' | 'done'
+}
+
 /** GetApp 返回的表单字段（后端原始结构） */
 export interface AppInputFormField {
   name: string

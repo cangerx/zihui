@@ -7,16 +7,20 @@
 import { computed, ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { getNavMetrics } from '@/utils/system'
-import {
-  makeTemplates,
-  templateFilters,
-  templateSorts,
-  templateTabs,
-  type TemplateItem,
-} from '@/api/mock/data'
+import { USE_MOCK } from '@/api/config'
+import { getTemplatePage, type DiscoveryTemplateItem } from '@/api/modules/discovery'
 
 const metrics = getNavMetrics()
 const headStyle = computed(() => `padding-top:${metrics.statusBarHeight + 8}px`)
+
+const templateTabs = ['全部', 'VIP', '爆款视频', '电商', '社交媒体', '教育培训', '餐饮美食']
+const templateFilters = [
+  { key: 'industry', name: '行业' },
+  { key: 'usage', name: '用途' },
+  { key: 'layout', name: '版式' },
+  { key: 'more', name: '更多' },
+]
+const templateSorts = ['综合排序', '最新', '最热']
 
 const keyword = ref('')
 const activeTab = ref(0)
@@ -24,34 +28,44 @@ const sortIndex = ref(0)
 /** 已选筛选项：key → 展示文案 */
 const filterValues = ref<Record<string, string>>({})
 
-const templates = ref<TemplateItem[]>([])
+const templates = ref<DiscoveryTemplateItem[]>([])
 const page = ref(1)
 const loading = ref(false)
 const hasMore = ref(true)
+const loadError = ref('')
 
 onLoad(() => {
   load(true)
 })
 
-function load(reset = false) {
+async function load(reset = false) {
   if (loading.value) return
   if (!reset && !hasMore.value) return
   loading.value = true
+  loadError.value = ''
   if (reset) {
     page.value = 1
     hasMore.value = true
   }
-  // TODO(api)：/template/GetTemplateList 待后端提供，mock 已按预期契约实现
-  const list = makeTemplates(page.value, 12, {
-    keyword: keyword.value,
-    tab: templateTabs[activeTab.value],
-    filters: filterValues.value,
-    sort: templateSorts[sortIndex.value],
-  })
-  templates.value = reset ? list : templates.value.concat(list)
-  hasMore.value = page.value < 5
-  page.value += 1
-  loading.value = false
+  try {
+    const result = await getTemplatePage({
+      page: page.value,
+      size: 12,
+      keyword: keyword.value,
+      tab: templateTabs[activeTab.value],
+      filters: filterValues.value,
+      sort: templateSorts[sortIndex.value],
+    })
+    templates.value = reset ? result.items : templates.value.concat(result.items)
+    hasMore.value = result.hasMore
+    page.value += 1
+  } catch {
+    templates.value = reset ? [] : templates.value
+    hasMore.value = false
+    loadError.value = '模板暂时无法加载，请稍后重试'
+  } finally {
+    loading.value = false
+  }
 }
 
 function onTabChange(index: number) {
@@ -82,7 +96,9 @@ function onCamera() {
   })
 }
 
-function onTemplateTap(item: TemplateItem) {
+function onTemplateTap(item: DiscoveryTemplateItem) {
+  // 生产模板接口尚未开放；防止残留/深链数据跳入未启用工具。
+  if (!USE_MOCK) return
   uni.navigateTo({ url: `/pages-sub/tool-run/tool-run?template=${item.id}` })
 }
 
@@ -144,6 +160,13 @@ function filterLabel(key: string, name: string) {
         :has-more="hasMore"
         @pick="onTemplateTap"
       />
+      <view v-if="!loading && !templates.length" class="tpl__empty">
+        <ui-icon name="image" :size="80" color="#c5c5d0" />
+        <text class="tpl__empty-title">模板功能尚未开放</text>
+        <text class="tpl__empty-text">
+          {{ loadError || (USE_MOCK ? '暂无符合条件的模板' : '模板接口接入后将在这里展示') }}
+        </text>
+      </view>
       <view class="tpl__safe" />
     </scroll-view>
   </view>
@@ -230,6 +253,27 @@ function filterLabel(key: string, name: string) {
   &__list {
     flex: 1;
     min-height: 0;
+  }
+
+  &__empty {
+    min-height: 520rpx;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__empty-title {
+    margin-top: 26rpx;
+    font-size: $fs-title;
+    font-weight: 600;
+    color: $ink;
+  }
+
+  &__empty-text {
+    margin-top: 12rpx;
+    font-size: $fs-aux;
+    color: $ink-3;
   }
 
   &__safe {

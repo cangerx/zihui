@@ -18,7 +18,11 @@
     "Connected the mobile production tool catalog to bootstrap image capability and authorized image models",
     "Connected mobile text-to-image submission and polling to App v1 image-tasks and tasks endpoints",
     "Added mobile password login fallback for mini-program builds while Wechat login remains feature-gated",
-    "Separated queued, processing, succeeded, failed and cancelled states in mobile task history"
+    "Separated queued, processing, succeeded, failed and cancelled states in mobile task history",
+    "Gated mobile home discovery to bootstrap-enabled image tools and removed production Mock entries",
+    "Made mobile production template pages fail closed with an explicit unavailable state",
+    "Connected mobile VIP plans and authenticated balances to App v1 while keeping payment disabled",
+    "Added static and built-artifact checks for mobile production entrypoints"
   ],
   "verification": {
     "typeCheckPackages": "passed",
@@ -32,13 +36,16 @@
     "ciBackendJob": "configured_not_run_locally",
     "phpunit": "AppV1ContractTest passed; fixture-aware Unit run passed 139 tests; full Unit has 10 pre-existing missing-fixture failures",
     "mobileRealApiContract": "passed",
+    "mobileProductionEntrypointCheck": "passed",
     "mobileH5MockBehavior": "passed 10/10",
     "browserVisualVerification": "not_run"
   },
   "knownGaps": [
     "Generic non-image task types, assets, agents and permissions endpoints remain unimplemented",
     "Web chat uses synchronous v1 messages; SSE streaming and interruption/resume are still pending",
-    "Mobile home, templates, VIP and ecommerce suite pages still contain prototype Mock data",
+    "Mobile ecommerce suite, tools, mine and task-history pages still contain prototype UI data until their API slices are migrated",
+    "Mobile production template listing remains unavailable because no template API exists",
+    "Mobile production VIP checkout remains unavailable because order and payment APIs and channel credentials are not enabled",
     "Mobile production image generation currently supports text prompts only because App v1 asset presign/complete endpoints are not implemented",
     "Wechat mini-program login exchange, phone binding and payment are reserved but disabled",
     "Dedicated feature tests for IDOR, quota charging, task ownership and cancellation are still pending",

@@ -50,7 +50,15 @@
     "src/manifest.json",
     "src/pages-sub/login/login.vue",
     "src/pages-sub/tool-run/tool-run.vue",
-    "src/pages-sub/task-history/task-history.vue"
+    "src/pages-sub/task-history/task-history.vue",
+    "src/api/modules/discovery.ts",
+    "src/api/modules/billing.ts",
+    "src/components/template-waterfall/template-waterfall.vue",
+    "src/components/asset-sheet/asset-sheet.vue",
+    "src/components/vip-promo/vip-promo.vue",
+    "src/pages-sub/vip/vip.vue",
+    "src/pages/home/home.vue",
+    "src/pages/template/template.vue"
   ],
   "removedFiles": [
     "src/api/sign.ts"

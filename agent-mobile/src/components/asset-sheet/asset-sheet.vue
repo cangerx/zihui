@@ -3,8 +3,8 @@
  * 资产库弹窗：最近保存 / 套图配方 / 模特库 + 空态
  * 对照 原型图/a0ffffe0b43d9bd618f1b1175b0a923d.jpg
  */
-import { computed, ref } from 'vue'
-import { assetLibrary, assetTabs } from '@/api/mock/data'
+import { computed, onMounted, ref } from 'vue'
+import { USE_MOCK } from '@/api/config'
 
 const props = withDefaults(
   defineProps<{
@@ -21,8 +21,17 @@ const emit = defineEmits<{
 }>()
 
 const activeTab = ref(0)
+const mockAssets = ref<Record<number, string[]>>({})
+const tabs = ref<string[]>(['最近保存', '套图配方', '模特库'])
 
-const list = computed(() => (props.assets || assetLibrary)[activeTab.value] || [])
+onMounted(async () => {
+  if (!USE_MOCK) return
+  const mock = await import('@/api/mock/data')
+  mockAssets.value = mock.assetLibrary
+  tabs.value = mock.assetTabs
+})
+
+const list = computed(() => (props.assets || mockAssets.value)[activeTab.value] || [])
 
 function pick(url: string) {
   emit('pick', url)
@@ -39,7 +48,7 @@ function pick(url: string) {
     @update:model-value="emit('update:modelValue', $event)"
   >
     <view class="as">
-      <tab-underline v-model="activeTab" :items="assetTabs" :scroll="false" />
+      <tab-underline v-model="activeTab" :items="tabs" :scroll="false" />
 
       <scroll-view v-if="list.length" class="as__body" scroll-y :show-scrollbar="false">
         <view class="as__grid">

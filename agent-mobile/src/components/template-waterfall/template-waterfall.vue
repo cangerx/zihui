@@ -10,7 +10,7 @@
  * 高度确为不等（col1 第二张 672px vs col2 820px），是真瀑布流而非等高网格。
  */
 import { computed } from 'vue'
-import type { TemplateItem } from '@/api/mock/data'
+import type { TemplateItem } from '@/api/types'
 
 const props = withDefaults(
   defineProps<{

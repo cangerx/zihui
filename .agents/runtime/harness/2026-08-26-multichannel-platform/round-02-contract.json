@@ -1,0 +1,65 @@
+{
+  "round": 2,
+  "goal": "移除移动端生产首页、模板和 VIP 页面对原型 Mock 数据的依赖，让所有可见入口与套餐/余额信息由 App v1 真实能力驱动。",
+  "ownedTasks": [
+    "task_mobile_home_gate_008",
+    "task_mobile_template_empty_009",
+    "task_mobile_billing_010",
+    "task_mobile_production_scan_011"
+  ],
+  "deliverables": [
+    "移动端 discovery facade：开发态保留源 UI Mock，生产态只根据 /bootstrap.features.image 返回 AI 生图入口。",
+    "生产模板页：后端没有模板 API 时显示明确不可用空态，不生成 Mock 模板，不允许模板直达未启用工具。",
+    "移动端 billing facade：生产套餐读取 /billing/plans，登录用户余额读取 /billing/balance；页面不再直接导入 vipTiers。",
+    "VIP 支付保持关闭且文案明确，不调用不存在的订单/支付接口。",
+    "生产入口静态检查与构建产物扫描：旧首页 Mock 工具、Mock 模板价格和旧支付文案不得进入生产页面模块。"
+  ],
+  "verificationPlan": [
+    {
+      "criterion": "生产首页只显示 bootstrap 明确启用的 AI 生图，不显示套图、抠图、修复、视频等未接能力。",
+      "howToCheck": "静态检查 home 页面通过 discovery facade 加载；使用生产构建并扫描首页产物，确认存在 app-ai-image 且不存在 app-ecommerce-suite、app-matting、app-hd、app-hot-video。",
+      "hardFail": true
+    },
+    {
+      "criterion": "生产模板页不使用 Mock 模板，在无模板 API 时展示明确空态且无可点击模板卡。",
+      "howToCheck": "静态检查模板页不直接导入 mock/data；生产构建扫描无 tpl-、makeTemplates 和 Mock 图片模板列表，并检查空态文案。",
+      "hardFail": true
+    },
+    {
+      "criterion": "VIP 生产数据来自 App v1 套餐和余额，未登录时不请求受保护余额接口。",
+      "howToCheck": "检查 facade 调用 appV1Client.plans 和 appV1Client.balance，并由 user.isLogin 控制余额请求；页面不直接导入 vipTiers。",
+      "hardFail": true
+    },
+    {
+      "criterion": "支付与微信资质能力保持关闭，不伪造成功或展示可执行支付方式。",
+      "howToCheck": "检查 VIP CTA 为不可支付状态并只显示尚未开放提示；生产产物不存在 uni.requestPayment、mock-pay 或支付宝切换控件。",
+      "hardFail": true
+    },
+    {
+      "criterion": "开发 Mock UI 基线继续可用，生产 H5 和 mp-weixin 都可构建。",
+      "howToCheck": "运行移动端 type-check、H5 Mock 行为验收、build:h5、build:mp-weixin、UI 来源检查、App v1 和移动端生产入口契约检查。",
+      "hardFail": true
+    }
+  ],
+  "nonGoals": [
+    "不新增后端模板、灵感、订单或支付接口。",
+    "不在没有 /assets/presign 时开放参考图上传。",
+    "不启用微信登录、手机号绑定或微信支付。",
+    "不在本轮重做首页、模板或 VIP 的视觉设计。",
+    "不处理仍属后续切片的商品套图、AI 帮写和画布页面。"
+  ],
+  "handoffPaths": [
+    "agent-mobile/src/api/modules/discovery.ts",
+    "agent-mobile/src/api/modules/billing.ts",
+    "agent-mobile/src/pages/home/home.vue",
+    "agent-mobile/src/pages/template/template.vue",
+    "agent-mobile/src/pages-sub/vip/vip.vue",
+    "scripts/check-mobile-production-entrypoints.mjs",
+    "docs/multichannel-development.md"
+  ],
+  "notes": [
+    "后端当前只有 /bootstrap、/billing/plans 和受认证保护的 /billing/balance，没有模板、订单和支付 App v1 接口。",
+    "开发态必须继续保留源 UI Mock 行为，生产态必须 fail closed。",
+    "入口页面不得直接从 @/api/mock/data 导入运行时数据；Mock 只能封装在 facade 的 USE_MOCK 分支中。"
+  ]
+}

@@ -3,11 +3,27 @@
  * 会员购买弹窗（1.1 元限时福利）
  * 对照 原型图/会员购买弹窗.jpg
  */
-import { vipPromo } from '@/api/mock/data'
+import { onMounted, ref } from 'vue'
+import { USE_MOCK } from '@/api/config'
 
 defineProps<{ modelValue: boolean }>()
 
 const emit = defineEmits<{ 'update:modelValue': [value: boolean] }>()
+
+interface VipPromoContent {
+  title: string
+  subtitle: string
+  benefits: string[]
+  cta: string
+}
+
+const promo = ref<VipPromoContent>({ title: '', subtitle: '', benefits: [], cta: '' })
+
+onMounted(async () => {
+  if (!USE_MOCK) return
+  const mock = await import('@/api/mock/data')
+  promo.value = mock.vipPromo
+})
 
 /** 权益 icon 与文案一一对应 */
 const ICONS = ['matting', 'erase', 'image', 'suite', 'gift']
@@ -38,13 +54,13 @@ function open() {
         <view class="vp__gift">
           <ui-icon name="gift" :size="88" color="#ffffff" />
         </view>
-        <text class="vp__title">{{ vipPromo.title }}</text>
-        <text class="vp__subtitle">{{ vipPromo.subtitle }}</text>
+        <text class="vp__title">{{ promo.title }}</text>
+        <text class="vp__subtitle">{{ promo.subtitle }}</text>
       </view>
 
       <view class="vp__body">
         <view class="vp__benefits">
-          <view v-for="(item, index) in vipPromo.benefits" :key="item" class="vp__benefit">
+          <view v-for="(item, index) in promo.benefits" :key="item" class="vp__benefit">
             <view class="vp__benefit-icon">
               <ui-icon :name="ICONS[index] || 'star'" :size="38" color="#f0d9c4" />
             </view>
@@ -53,7 +69,7 @@ function open() {
         </view>
 
         <view class="vp__cta" @tap="open">
-          <text class="vp__cta-text">{{ vipPromo.cta }}</text>
+          <text class="vp__cta-text">{{ promo.cta }}</text>
         </view>
       </view>
     </view>

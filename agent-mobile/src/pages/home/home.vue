@@ -8,16 +8,16 @@ import { computed, ref } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import { getNavMetrics } from '@/utils/system'
 import { useMemberStore } from '@/store/member'
+import { USE_MOCK } from '@/api/config'
+import { AI_IMAGE_APP_ID } from '@/api/catalog'
 import {
-  homeCategories,
-  homeEntries,
-  homeRecommendTabs,
-  homeShowcases,
-  makeTemplates,
-  type HomeEntry,
-  type HomeShowcase,
-  type TemplateItem,
-} from '@/api/mock/data'
+  getHomeDiscovery,
+  getTemplatePage,
+  type DiscoveryHomeCategory,
+  type DiscoveryHomeEntry,
+  type DiscoveryHomeShowcase,
+  type DiscoveryTemplateItem,
+} from '@/api/modules/discovery'
 
 const metrics = getNavMetrics()
 const member = useMemberStore()
@@ -33,27 +33,41 @@ const images = ref<string[]>([])
 const recommendTab = ref(0)
 const showAssets = ref(false)
 const showPromo = ref(false)
-const templates = ref<TemplateItem[]>([])
+const categories = ref<DiscoveryHomeCategory[]>([])
+const entries = ref<DiscoveryHomeEntry[]>([])
+const recommendTabs = ref<string[]>([])
+const showcasesByCategory = ref<Record<string, DiscoveryHomeShowcase[]>>({})
+const templates = ref<DiscoveryTemplateItem[]>([])
 const page = ref(1)
 const loading = ref(false)
 const hasMore = ref(true)
 
 /** 分类态（状态 B）：有选中分类且该类有案例图 → 展示 3D coverflow 轮播 */
-const showcases = computed<HomeShowcase[]>(() => homeShowcases[activeCategory.value] || [])
+const showcases = computed<DiscoveryHomeShowcase[]>(
+  () => showcasesByCategory.value[activeCategory.value] || [],
+)
 const isCategoryMode = computed(
   () => Boolean(activeCategory.value) && showcases.value.length > 0,
+)
+const imageEnabled = computed(() =>
+  entries.value.some((entry) => entry.appUuid === AI_IMAGE_APP_ID),
 )
 
 /** 头部内容整体下移：让出状态栏 */
 const headStyle = computed(() => `padding-top:${metrics.statusBarHeight + 8}px`)
 
-onLoad(() => {
-  loadTemplates(true)
+onLoad(async () => {
+  const discovery = await getHomeDiscovery()
+  categories.value = discovery.categories
+  entries.value = discovery.entries
+  recommendTabs.value = discovery.recommendTabs
+  showcasesByCategory.value = discovery.showcases
+  await loadTemplates(true)
 })
 
 // 1.1 元限时福利：非会员每次冷启动弹一次
 onShow(() => {
-  if (member.level === 'none' && !member.promoShown) {
+  if (USE_MOCK && member.level === 'none' && !member.promoShown) {
     setTimeout(() => {
       showPromo.value = true
       member.markPromoShown()
@@ -61,7 +75,7 @@ onShow(() => {
   }
 })
 
-function loadTemplates(reset = false) {
+async function loadTemplates(reset = false) {
   if (loading.value) return
   if (!reset && !hasMore.value) return
   loading.value = true
@@ -69,12 +83,17 @@ function loadTemplates(reset = false) {
     page.value = 1
     hasMore.value = true
   }
-  // TODO(api)：模板列表接口后端未提供，先用 mock 生成
-  const list = makeTemplates(page.value, 10)
-  templates.value = reset ? list : templates.value.concat(list)
-  hasMore.value = page.value < 5
-  page.value += 1
-  loading.value = false
+  try {
+    const result = await getTemplatePage({ page: page.value, size: 10 })
+    templates.value = reset ? result.items : templates.value.concat(result.items)
+    hasMore.value = result.hasMore
+    page.value += 1
+  } catch {
+    templates.value = reset ? [] : templates.value
+    hasMore.value = false
+  } finally {
+    loading.value = false
+  }
 }
 
 /** 选分类 → 状态 B：页面上出现 3D 案例卡轮播（对照 原型图/972f…jpg） */
@@ -88,6 +107,20 @@ function collapse() {
 
 function onSend() {
   if (!prompt.value.trim() && !images.value.length) return
+  if (!USE_MOCK) {
+    if (!imageEnabled.value) {
+      uni.showToast({ title: 'AI 生图功能暂未开放', icon: 'none' })
+      return
+    }
+    if (images.value.length) {
+      uni.showToast({ title: '参考图功能尚未开放，请先使用文字描述', icon: 'none' })
+      return
+    }
+    uni.navigateTo({
+      url: `/pages-sub/tool-run/tool-run?uuid=${AI_IMAGE_APP_ID}&prompt=${encodeURIComponent(prompt.value)}`,
+    })
+    return
+  }
   // 一句话生成：prompt 落到「商品信息」，已选图（含案例卡回填的参考图）一并带过去，
   // 否则 suite-run 会因无图被「请先上传商品图」拦住，回填就白做了
   const query = [`prompt=${encodeURIComponent(prompt.value)}`]
@@ -97,13 +130,17 @@ function onSend() {
   uni.navigateTo({ url: `/pages-sub/suite-run/suite-run?${query.join('&')}` })
 }
 
-function onEntryTap(item: HomeEntry) {
+function onEntryTap(item: DiscoveryHomeEntry) {
+  if (!USE_MOCK && item.appUuid !== AI_IMAGE_APP_ID) {
+    uni.showToast({ title: '该功能尚未开放', icon: 'none' })
+    return
+  }
   if (item.target === 'canvas') {
     uni.navigateTo({ url: '/pages-sub/canvas-create/canvas-create' })
     return
   }
   if (item.target === 'ai-image') {
-    uni.navigateTo({ url: '/pages-sub/ai-image/ai-image' })
+    uni.navigateTo({ url: `/pages-sub/tool-run/tool-run?uuid=${AI_IMAGE_APP_ID}` })
     return
   }
   if (item.target === 'suite') {
@@ -121,14 +158,15 @@ function onEntryTap(item: HomeEntry) {
  * 点案例卡 → 把该卡的配方回填进 AI 输入卡（对照 原型图/0d2c…jpg）：
  * 3 张参考图缩略图 + 一段完整生成描述，轮播随之收起。
  */
-function onShowcaseTap(item: HomeShowcase) {
+function onShowcaseTap(item: DiscoveryHomeShowcase) {
   images.value = (item.refs || [item.cover]).slice(0, 3)
   prompt.value = item.prompt || item.title
   // 回填后收起轮播，把注意力交给输入卡
   activeCategory.value = ''
 }
 
-function onTemplateTap(item: TemplateItem) {
+function onTemplateTap(item: DiscoveryTemplateItem) {
+  if (!USE_MOCK) return
   uni.navigateTo({ url: `/pages-sub/tool-run/tool-run?template=${item.id}` })
 }
 
@@ -143,6 +181,14 @@ function goTutorial() {
 /** 资产库选图后回填到输入卡 */
 function onAssetPick(url: string) {
   images.value = [...images.value, url]
+}
+
+function openAssets() {
+  if (!USE_MOCK) {
+    uni.showToast({ title: '素材库功能尚未开放', icon: 'none' })
+    return
+  }
+  showAssets.value = true
 }
 </script>
 
@@ -189,7 +235,8 @@ function onAssetPick(url: string) {
 
       <view class="home__chips">
         <category-chips
-          :items="homeCategories"
+          v-if="categories.length"
+          :items="categories"
           :model-value="activeCategory"
           show-grid
           @update:model-value="onCategoryChange"
@@ -197,7 +244,7 @@ function onAssetPick(url: string) {
         />
       </view>
 
-      <view class="home__input">
+      <view v-if="USE_MOCK || imageEnabled" class="home__input">
         <!--
           collapsible 关闭：docs §2.1 称状态 B「下方出现收起∧按钮」，
           但 972f 与 0d2c 两态的输入卡头部右侧均未测到该按钮（字形数为 0）。
@@ -207,20 +254,20 @@ function onAssetPick(url: string) {
           v-model:images="images"
           @send="onSend"
           @collapse="collapse"
-          @material="showAssets = true"
+          @material="openAssets"
           @template="goTemplate"
           @focus="typing = true"
           @blur="typing = false"
         />
       </view>
 
-      <view class="home__entries">
-        <entry-grid :items="homeEntries" @pick="onEntryTap" />
+      <view v-if="entries.length" class="home__entries">
+        <entry-grid :items="entries" @pick="onEntryTap" />
       </view>
 
-      <view class="home__banner" @tap="onEntryTap(homeEntries[0])">
+      <view v-if="USE_MOCK && entries.length" class="home__banner" @tap="onEntryTap(entries[0])">
         <view class="home__banner-text">
-          <text class="home__banner-title">跨境电商套图</text>
+          <text class="home__banner-title">{{ entries[0]?.name || 'AI 生图' }}</text>
           <text class="home__banner-sub">一句话生成全套主图 · 多平台规范适配</text>
         </view>
         <view class="home__banner-btn">
@@ -230,7 +277,7 @@ function onAssetPick(url: string) {
 
       <view class="home__recommend">
         <view class="home__rec-head">
-          <tab-underline v-model="recommendTab" :items="homeRecommendTabs" class="home__rec-tabs" />
+          <tab-underline v-if="recommendTabs.length" v-model="recommendTab" :items="recommendTabs" class="home__rec-tabs" />
           <view class="home__rec-more" @tap="goTemplate">
             <ui-icon name="arrow" :size="28" color="#999999" />
           </view>
@@ -241,13 +288,18 @@ function onAssetPick(url: string) {
           :has-more="hasMore"
           @pick="onTemplateTap"
         />
+        <view v-if="!loading && !templates.length" class="home__recommend-empty">
+          <text class="home__recommend-empty-text">
+            {{ USE_MOCK ? '暂无推荐内容' : '推荐内容尚未开放' }}
+          </text>
+        </view>
       </view>
 
       <view class="home__safe" />
     </scroll-view>
 
-    <asset-sheet v-model="showAssets" @pick="onAssetPick" />
-    <vip-promo v-model="showPromo" />
+    <asset-sheet v-if="USE_MOCK" v-model="showAssets" @pick="onAssetPick" />
+    <vip-promo v-if="USE_MOCK" v-model="showPromo" />
   </view>
 </template>
 
@@ -419,6 +471,18 @@ function onAssetPick(url: string) {
 
   &__recommend {
     margin-top: 32rpx;
+  }
+
+  &__recommend-empty {
+    min-height: 180rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__recommend-empty-text {
+    font-size: $fs-aux;
+    color: $ink-3;
   }
 
   &__rec-head {

@@ -6,19 +6,41 @@
  * 待产品确认降级方案（H5 支付 / 仅安卓）。见 docs/原型图分析.md §6.2
  */
 import { computed, ref } from 'vue'
+import { onLoad, onShow } from '@dcloudio/uni-app'
 import { getNavMetrics } from '@/utils/system'
+import { USE_MOCK } from '@/api/config'
+import { balanceTotal, getBillingSnapshot, type MobilePlan, type MobileVipTier } from '@/api/modules/billing'
 import { useUserStore } from '@/store/user'
-import { vipTiers } from '@/api/mock/data'
+import { useMemberStore } from '@/store/member'
+import type { AppBalance } from '@zihui/contracts'
 
 const metrics = getNavMetrics()
 const user = useUserStore()
+const member = useMemberStore()
 
 const tierIndex = ref(0)
 const planIndex = ref(1)
 const agreed = ref(false)
+const tiers = ref<MobileVipTier[]>([])
+const balances = ref<AppBalance[]>([])
+const loading = ref(true)
+const loadError = ref('')
+let loadedForLogin = false
 
-const tier = computed(() => vipTiers[tierIndex.value])
-const plan = computed(() => tier.value.plans[planIndex.value])
+const tier = computed<MobileVipTier>(() => tiers.value[tierIndex.value] || {
+  key: 'empty',
+  name: '会员套餐',
+  slogan: '',
+  benefits: [],
+  plans: [],
+  beanTip: '',
+  agreement: '',
+  cta: { title: '购买功能尚未开放', sub: '支付能力尚未开放' },
+})
+const plan = computed<MobilePlan | null>(() => tier.value.plans[planIndex.value] || null)
+const hasPlans = computed(() => tiers.value.length > 0 && tier.value.plans.length > 0)
+const creditBalance = computed(() => balanceTotal(balances.value, 'credit'))
+const tokenBalance = computed(() => balanceTotal(balances.value, 'token'))
 
 /**
  * CTA 文案：不能用 badge 是否存在来判断「试用/开通」——高级会员推荐档的
@@ -26,10 +48,12 @@ const plan = computed(() => tier.value.plans[planIndex.value])
  * tier.cta 描述的是推荐档；选了别的档就按档位价格生成。
  */
 const ctaText = computed(() => {
+  if (!USE_MOCK) return { title: '购买功能尚未开放', sub: '支付能力尚未开放' }
+  if (!plan.value) return tier.value.cta
   if (plan.value.recommend) return tier.value.cta
   return {
     title: `¥${plan.value.price}开通`,
-    sub: `${plan.value.name} ${plan.value.perDay}`,
+    sub: `${plan.value.name} ${plan.value.perDay || ''}`,
   }
 })
 
@@ -43,15 +67,46 @@ function close() {
 
 function pickTier(index: number) {
   tierIndex.value = index
-  planIndex.value = vipTiers[index].plans.findIndex((p) => p.recommend)
+  planIndex.value = tiers.value[index]?.plans.findIndex((p) => p.recommend) ?? -1
   if (planIndex.value < 0) planIndex.value = 0
 }
+
+async function loadBilling() {
+  if (!USE_MOCK && loadedForLogin === user.isLogin && !loading.value) return
+  loading.value = true
+  loadError.value = ''
+  try {
+    const snapshot = await getBillingSnapshot(user.isLogin)
+    tiers.value = snapshot.tiers
+    balances.value = snapshot.balances
+    member.beans = creditBalance.value
+    if (tierIndex.value >= tiers.value.length) tierIndex.value = 0
+    const recommended = tier.value.plans.findIndex((item) => item.recommend)
+    planIndex.value = recommended >= 0 ? recommended : 0
+    loadedForLogin = user.isLogin
+  } catch {
+    tiers.value = []
+    balances.value = []
+    loadError.value = '套餐信息加载失败，请稍后重试'
+  } finally {
+    loading.value = false
+  }
+}
+
+onLoad(loadBilling)
+onShow(() => {
+  if (!loading.value && loadedForLogin !== user.isLogin) loadBilling()
+})
 
 function goLogin() {
   uni.navigateTo({ url: '/pages-sub/login/login' })
 }
 
 function pay() {
+  if (!USE_MOCK) {
+    uni.showToast({ title: '支付功能尚未开放', icon: 'none' })
+    return
+  }
   if (!user.isLogin) {
     goLogin()
     return
@@ -60,8 +115,7 @@ function pay() {
     uni.showToast({ title: '请先勾选会员协议', icon: 'none' })
     return
   }
-  // TODO(api)：支付接口后端未提供；小程序虚拟支付政策待确认
-  uni.showToast({ title: '支付接口待接入', icon: 'none' })
+  uni.showToast({ title: '支付功能尚未开放', icon: 'none' })
 }
 
 function openLink(name: string) {
@@ -87,9 +141,9 @@ const agreementParts = computed(() =>
 
     <scroll-view class="vip__body" scroll-y :show-scrollbar="false">
       <!-- 会员等级 tab -->
-      <view class="vip__tiers">
+      <view v-if="hasPlans" class="vip__tiers">
         <view
-          v-for="(item, index) in vipTiers"
+          v-for="(item, index) in tiers"
           :key="item.key"
           class="vip__tier"
           :class="{ 'vip__tier--on': index === tierIndex }"
@@ -100,7 +154,7 @@ const agreementParts = computed(() =>
       </view>
 
       <!-- 权益卡 -->
-      <view class="vip__benefit">
+      <view v-if="hasPlans" class="vip__benefit">
         <view class="vip__benefit-left">
           <text class="vip__slogan">{{ tier.slogan }}</text>
           <view v-for="b in tier.benefits" :key="b" class="vip__brow">
@@ -119,11 +173,16 @@ const agreementParts = computed(() =>
         <text class="vip__login-btn">立即登录</text>
       </view>
 
+      <view v-else class="vip__balance">
+        <text class="vip__balance-item">积分 {{ creditBalance }}</text>
+        <text class="vip__balance-item">金币 {{ tokenBalance }}</text>
+      </view>
+
       <!-- 价格卡 -->
-      <view class="vip__plans">
+      <view v-if="hasPlans" class="vip__plans">
         <view
           v-for="(item, index) in tier.plans"
-          :key="item.key"
+          :key="item.code || item.id"
           class="vip__plan"
           :class="{ 'vip__plan--on': index === planIndex }"
           @tap="planIndex = index"
@@ -132,19 +191,20 @@ const agreementParts = computed(() =>
             <text class="vip__plan-badge-text">{{ item.badge }}</text>
           </view>
           <text class="vip__plan-name">{{ item.name }}</text>
-          <view class="vip__plan-price">
-            <text class="vip__plan-unit">¥</text>
+          <view v-if="item.price > 0" class="vip__plan-price">
+            <text class="vip__plan-unit">{{ item.currency === 'CNY' ? '¥' : item.currency }}</text>
             <text class="vip__plan-value">{{ item.price }}</text>
           </view>
-          <text class="vip__plan-origin">¥{{ item.originPrice }}</text>
-          <text class="vip__plan-per">{{ item.perDay }}</text>
+          <text v-else class="vip__plan-price-empty">按服务端计价</text>
+          <text v-if="item.originPrice" class="vip__plan-origin">¥{{ item.originPrice }}</text>
+          <text class="vip__plan-per">{{ item.perDay || `${item.durationDays}天 · 配额以服务端为准` }}</text>
         </view>
       </view>
 
-      <text class="vip__bean">{{ tier.beanTip }}</text>
+      <text v-if="hasPlans" class="vip__bean">{{ tier.beanTip }}</text>
 
       <!-- 协议：书名号片段为可点击高亮链接 -->
-      <view class="vip__agree">
+      <view v-if="hasPlans" class="vip__agree">
         <view
           class="vip__checkbox"
           :class="{ 'vip__checkbox--on': agreed }"
@@ -162,16 +222,16 @@ const agreementParts = computed(() =>
         </text>
       </view>
 
-      <!-- 支付方式 -->
-      <view class="vip__pay-row">
-        <view class="vip__pay-left">
-          <ui-icon name="bean" :size="34" color="#4a9df8" />
-          <text class="vip__pay-name">支付宝</text>
-        </view>
-        <view class="vip__pay-change" @tap="openLink('支付方式')">
-          <text class="vip__pay-change-text">更换</text>
-          <ui-icon name="arrow" :size="24" color="#8c7a63" />
-        </view>
+      <!-- 支付能力尚未接通，不展示可执行的支付方式选择器。 -->
+      <view class="vip__pay-row vip__pay-row--disabled">
+        <ui-icon name="question" :size="30" color="#8c7a63" />
+        <text class="vip__pay-name">支付功能暂未开放</text>
+      </view>
+
+      <view v-if="!loading && !hasPlans" class="vip__empty">
+        <ui-icon name="vip" :size="76" color="#b89a78" />
+        <text class="vip__empty-title">{{ loadError ? '套餐暂不可用' : '购买功能尚未开放' }}</text>
+        <text class="vip__empty-text">{{ loadError || '套餐与支付接口接入后将在这里展示' }}</text>
       </view>
 
       <view class="vip__safe" />
@@ -179,7 +239,7 @@ const agreementParts = computed(() =>
 
     <!-- 底部 CTA -->
     <view class="vip__foot">
-      <view class="vip__cta" @tap="pay">
+      <view class="vip__cta" :class="{ 'vip__cta--disabled': !USE_MOCK }" @tap="pay">
         <text class="vip__cta-title">{{ ctaText.title }}</text>
         <text class="vip__cta-sub">{{ ctaText.sub }}</text>
       </view>
@@ -322,6 +382,21 @@ const agreementParts = computed(() =>
     color: $vip-gold-from;
   }
 
+  &__balance {
+    display: flex;
+    align-items: center;
+    gap: 24rpx;
+    margin: 24rpx $gap-page 0;
+    padding: 18rpx $gap-card;
+    border-radius: 16rpx;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  &__balance-item {
+    font-size: $fs-aux;
+    color: rgba(243, 217, 183, 0.72);
+  }
+
   &__plans {
     display: flex;
     gap: 16rpx;
@@ -385,6 +460,12 @@ const agreementParts = computed(() =>
   &__plan-value {
     font-size: 46rpx;
     font-weight: 700;
+    color: $vip-text;
+  }
+
+  &__plan-price-empty {
+    margin-top: 10rpx;
+    font-size: $fs-aux;
     color: $vip-text;
   }
 
@@ -453,6 +534,12 @@ const agreementParts = computed(() =>
     display: flex;
     align-items: center;
     justify-content: space-between;
+
+    &--disabled {
+      justify-content: flex-start;
+      gap: 14rpx;
+      color: rgba(243, 217, 183, 0.58);
+    }
   }
 
   &__pay-left {
@@ -481,6 +568,29 @@ const agreementParts = computed(() =>
     height: 40rpx;
   }
 
+  &__empty {
+    min-height: 460rpx;
+    padding: 80rpx $gap-page;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__empty-title {
+    margin-top: 24rpx;
+    font-size: $fs-title;
+    font-weight: 600;
+    color: $vip-text;
+  }
+
+  &__empty-text {
+    margin-top: 12rpx;
+    font-size: $fs-aux;
+    text-align: center;
+    color: rgba(243, 217, 183, 0.62);
+  }
+
   &__foot {
     padding: 16rpx $gap-page calc(16rpx + env(safe-area-inset-bottom));
   }
@@ -494,6 +604,10 @@ const agreementParts = computed(() =>
     flex-direction: column;
     align-items: center;
     justify-content: center;
+
+    &--disabled {
+      opacity: 0.58;
+    }
   }
 
   &__cta-title {
