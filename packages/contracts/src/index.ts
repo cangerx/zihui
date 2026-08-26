@@ -109,6 +109,33 @@ export interface AppBalance {
   total: number;
 }
 
+export interface AppConversation {
+  id: number;
+  title: string;
+  model: string;
+  message_count: number;
+  pinned: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AppMessage {
+  id: number;
+  role: "user" | "assistant" | "system";
+  content: string;
+  model: string;
+  created_at: string;
+}
+
+export interface AppConversationDetail extends AppConversation {
+  messages: AppMessage[];
+}
+
+export interface AppMessageSendResult {
+  user_message: AppMessage;
+  assistant_message: AppMessage;
+}
+
 export interface TaskResource {
   id?: string | number;
   url: string;

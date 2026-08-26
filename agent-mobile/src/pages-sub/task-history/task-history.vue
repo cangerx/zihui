@@ -6,7 +6,9 @@
  */
 import { computed, ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-import { makeTemplates, type TemplateItem } from '@/api/mock/data'
+import { listTasks } from '@/api/modules/tasks'
+import type { AppTask } from '@zihui/contracts'
+import type { TemplateItem } from '@/api/mock/data'
 
 const tabs = ['全部', '生成中', '已完成']
 const activeTab = ref(0)
@@ -23,16 +25,31 @@ const filtered = computed(() => {
 onLoad((query) => {
   isFavorite.value = query?.type === 'favorite'
   uni.setNavigationBarTitle({ title: isFavorite.value ? '我的收藏' : '最近任务' })
-  if (isFavorite.value) {
-    items.value = makeTemplates(1, 8)
-  } else {
-    // TODO(api)：任务列表接口未提供，先给 mock 任务（交替生成中/已完成）演示 tab 筛选
-    items.value = makeTemplates(1, 6).map((it, i) => ({
-      ...it,
-      status: i % 2 === 0 ? 'done' : 'running',
-    }))
-  }
+  if (!isFavorite.value) loadTasks()
 })
+
+async function loadTasks() {
+  try {
+    const tasks = await listTasks({ limit: 50 })
+    items.value = tasks.map(toTemplateItem)
+  } catch {
+    items.value = []
+  }
+}
+
+function toTemplateItem(task: AppTask): TemplateItem {
+  const result = task.result as { data?: Array<{ url?: string; file_url?: string }>; url?: string; file_url?: string } | null
+  const first = result?.data?.[0]
+  const cover = first?.url || first?.file_url || result?.url || result?.file_url || '/static/logo.png'
+  return {
+    id: task.id,
+    cover,
+    title: (task.request as { prompt?: string })?.prompt || 'AI 图片任务',
+    ratio: 0.75,
+    appUuid: 'app-ai-image',
+    status: task.status === 'queued' || task.status === 'processing' ? 'running' : 'done',
+  }
+}
 
 function preview(item: TemplateItem) {
   uni.previewImage({ urls: [item.cover] })

@@ -75,13 +75,17 @@ class ProcessImageTaskJob implements ShouldQueue
             return;
         }
 
-        // 幂等保护：worker 重启 / retry 时可能再次进入，已 completed/failed 不重跑
-        if (in_array($task->status, ['completed', 'failed'], true)) {
-            Log::info("[ProcessImageTaskJob] task {$this->taskId} already {$task->status}, skip");
+        // 原子领取 pending 任务，避免取消接口与 worker 在“先读后写”窗口中竞态：
+        // 只有成功把 pending 改成 processing 的执行者才能调用上游。
+        $claimed = ImageTask::query()
+            ->whereKey($this->taskId)
+            ->where('status', 'pending')
+            ->update(['status' => 'processing', 'updated_at' => now()]);
+        if ($claimed !== 1) {
+            Log::info("[ProcessImageTaskJob] task {$this->taskId} is no longer pending, skip");
             return;
         }
-
-        $task->update(['status' => 'processing']);
+        $task->refresh();
 
         $cloudModel = CloudModel::with('provider')->find($task->cloud_model_id);
         if (!$cloudModel || !$cloudModel->provider) {

@@ -46,7 +46,8 @@
     "src/api/modules/auth.ts",
     "src/api/modules/upload.ts",
     "src/api/request.ts",
-    "src/manifest.json"
+    "src/manifest.json",
+    "src/pages-sub/task-history/task-history.vue"
   ],
   "removedFiles": [
     "src/api/sign.ts"

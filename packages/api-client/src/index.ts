@@ -2,6 +2,9 @@ import type {
   ApiEnvelope,
   AppBalance,
   AppChannel,
+  AppConversation,
+  AppConversationDetail,
+  AppMessageSendResult,
   AppModel,
   AppPlan,
   AppTask,
@@ -156,6 +159,49 @@ export class ApiClient {
 
   balance(): Promise<AppBalance[]> {
     return this.request<AppBalance[]>("/billing/balance");
+  }
+
+  conversations(): Promise<AppConversation[]> {
+    return this.request<AppConversation[]>("/conversations");
+  }
+
+  conversation(id: number): Promise<AppConversationDetail> {
+    return this.request<AppConversationDetail>(`/conversations/${id}`);
+  }
+
+  createConversation(payload: { title?: string; model?: string }): Promise<AppConversation> {
+    return this.request<AppConversation>("/conversations", { method: "POST", body: payload });
+  }
+
+  updateConversation(id: number, payload: { title?: string; pinned?: boolean }): Promise<AppConversation> {
+    return this.request<AppConversation>(`/conversations/${id}`, { method: "PATCH", body: payload });
+  }
+
+  deleteConversation(id: number): Promise<void> {
+    return this.request<void>(`/conversations/${id}`, { method: "DELETE" });
+  }
+
+  sendMessage(id: number, payload: { content: string; model?: string }): Promise<AppMessageSendResult> {
+    return this.request<AppMessageSendResult>(`/conversations/${id}/messages`, {
+      method: "POST",
+      body: payload,
+    });
+  }
+
+  createImageTask(payload: Record<string, unknown>): Promise<AppTask> {
+    return this.request<AppTask>("/image-tasks", { method: "POST", body: payload });
+  }
+
+  tasks(query?: { type?: string; status?: string; limit?: number }): Promise<AppTask[]> {
+    return this.request<AppTask[]>("/tasks", { query });
+  }
+
+  cancelTask(id: string): Promise<AppTask> {
+    return this.request<AppTask>(`/tasks/${encodeURIComponent(id)}/cancel`, { method: "POST" });
+  }
+
+  deleteTask(id: string): Promise<void> {
+    return this.request<void>(`/tasks/${encodeURIComponent(id)}`, { method: "DELETE" });
   }
 
   task<TRequest = Record<string, unknown>, TResult = unknown>(id: string): Promise<AppTask<TRequest, TResult>> {

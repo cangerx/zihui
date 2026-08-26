@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'max_context_messages' => (int) env('APP_V1_MAX_CONTEXT_MESSAGES', 50),
     'features' => [
         'chat' => (bool) env('APP_V1_ENABLE_CHAT', false),
         'image' => (bool) env('APP_V1_ENABLE_IMAGE', false),

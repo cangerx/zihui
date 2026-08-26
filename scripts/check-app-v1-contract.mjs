@@ -20,6 +20,11 @@ const requiredRoutes = [
   "Route::get('/models'",
   "Route::get('/billing/plans'",
   "Route::get('/billing/balance'",
+  "Route::get('/', [ConversationController::class, 'index'])",
+  "Route::post('/{id}/messages', [ConversationController::class, 'sendMessage'])",
+  "Route::post('/image-tasks'",
+  "Route::get('/tasks'",
+  "Route::post('/tasks/{id}/cancel'",
 ];
 
 const failures = requiredRoutes.filter((route) => !routeFile.includes(route));

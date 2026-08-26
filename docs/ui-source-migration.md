@@ -62,7 +62,7 @@ Web 源仓库顶层为 MIT License；小程序源仓库未发现独立许可证�
 
 | 页面/模块 | 处理 | 首轮要求 |
 | --- | --- | --- |
-| 根工作台 `/`、侧栏、主题、站点配置 | 适配复用 | 替换品牌和 `/app/*` 配置；接模型、对话、SSE；保留现有布局与交互 |
+| 根工作台 `/`、侧栏、主题、站点配置 | 适配复用 | 替换品牌和 `/app/*` 配置；已接模型与同步对话，SSE 作为下一切片；保留现有布局与交互 |
 | 登录弹窗、注册和 OAuth callback | 适配复用 | 改用 Zihui 认证；长期 refresh token 不存 `localStorage`；OAuth 未配置项隐藏 |
 | `/generate`、`/image` | 适配复用 | 接预签名上传和 `image-tasks` 状态机；保留生成参数、画布和结果交互 |
 | `/recent`、`/projects` | 适配复用 | 首轮映射任务记录；云端项目未实现前不得展示伪数据 |
@@ -107,9 +107,9 @@ Web 当前没有可直接视为“数字员工/专家库”的页面。该功能
 | `/auth/login`、`/auth/profile`、`/auth/refresh` | `/auth/password/login`、`/auth/me`、`/auth/refresh` | 改 HttpOnly Cookie 或短期 access token 策略 |
 | `/app/modules`、`/app/apps`、`/app/login-methods`、`/app/site-config` | `/bootstrap` | 返回渠道能力、品牌、登录方式和开关 |
 | `/models*` | `/models` | 用 `type/capabilities` 过滤，不暴露供应商密钥 |
-| `/conversations*` | `/conversations*` | 统一会话、消息和 SSE envelope |
+| `/conversations*` | `/conversations*` | 统一会话和消息 envelope；当前同步响应，SSE 待后续实现 |
 | `/image/generate` | `/image-tasks` | 同步生成响应改为异步 `task_id` |
-| `/generations*` | `/image-tasks*` | 映射状态、进度、结果资源和失败原因 |
+| `/generations*` | `/tasks*`（`type=image`） | 映射状态、进度、结果资源和失败原因 |
 | `/upload` | `/assets/presign` + 对象存储直传 + `/assets/{id}/complete` | 禁止大文件经 PHP 中转或 base64 入请求 |
 | `/user/credits`、`/packages` | `/billing/balance`、`/billing/plans` | 适配现有余额和套餐字段 |
 | `/orders*`、`/order-status/*` | `/billing/orders*` | `mock-pay` 仅测试环境可存在 |
@@ -124,7 +124,7 @@ Web 当前没有可直接视为“数字员工/专家库”的页面。该功能
 | `/auth/wechat/Login` | `/auth/wechat/mini/exchange` | code 只使用一次，服务端保存微信密钥 |
 | `/ai/app/GetAppListByCategory`、`/ai/app/GetApp` | `/bootstrap`、能力/模板详情接口 | 先定义 Zihui 工具 schema，再做字段映射 |
 | `/ai/app/worker/Run` | `/image-tasks` 或 `/tasks` | 携带 `Idempotency-Key`，返回标准任务 |
-| `/ai/app/worker/Query` | `/image-tasks/{id}` 或 `/tasks/{id}` | 统一五状态和轮询退避 |
+| `/ai/app/worker/Query` | `/tasks/{id}`（`type=image`） | 统一五状态和轮询退避 |
 | `/filesystem/file/PrepareUpload`、`CompleteUpload` | `/assets/presign`、`/assets/{id}/complete` | 支持小程序 `uni.uploadFile`/PUT adapter |
 | `x-request-token` 双 MD5 签名 | 删除客户端秘密 | 公开客户端无法保守固定密码；改 TLS、短 token、限流、nonce 和服务端审计 |
 
@@ -137,7 +137,7 @@ Web 当前没有可直接视为“数字员工/专家库”的页面。该功能
 3. `feat(api): add app v1 bootstrap and authentication`
    接登录、会话保持、能力开关和账号信息。
 4. `feat(web): connect chat and image task workflows`
-   打通 Web 对话、SSE、生图和任务历史。
+   打通 Web 同步对话、生图和任务历史；SSE 流式输出另行验收。
 5. `feat(mobile): connect tools image tasks and membership`
    打通移动端登录、工具、生图、任务和会员。
 6. `test: add multichannel smoke and visual baselines`

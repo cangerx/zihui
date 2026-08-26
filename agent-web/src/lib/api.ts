@@ -6,6 +6,9 @@ import { getTenantCode } from "@/lib/tenant";
 export const API_BASE_URL = (
   process.env.NEXT_PUBLIC_API_URL?.trim() || "/api/app/v1"
 ).replace(/\/+$/, "");
+const LEGACY_API_BASE_URL = (
+  process.env.NEXT_PUBLIC_LEGACY_API_URL?.trim() || "/api"
+).replace(/\/+$/, "");
 
 const appV1Client = createApiClient({
   baseUrl: API_BASE_URL,
@@ -22,8 +25,30 @@ function legacyResponse<T>(data: T): { data: T } {
   return { data };
 }
 
+function legacyTask(task: any) {
+  const result = task?.result;
+  const resultItems = Array.isArray(result?.data) ? result.data : Array.isArray(result) ? result : [];
+  const resultUrl = result?.result_url || result?.url || resultItems[0]?.url || resultItems[0]?.file_url;
+  const status = task?.status === "queued" ? "pending" : task?.status === "processing" ? "processing" : task?.status === "succeeded" ? "completed" : task?.status;
+  return {
+    ...task,
+    status,
+    result_url: resultUrl || "",
+    error_msg: task?.error?.message || "",
+    prompt: task?.request?.prompt || "",
+  };
+}
+
+async function resolveImageModel(model?: string): Promise<string> {
+  if (model) return model;
+  const models = await appV1Client.models("image");
+  const first = models[0];
+  if (!first) throw new Error("当前没有可用的图片模型");
+  return first.model_id || first.name;
+}
+
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: LEGACY_API_BASE_URL,
   timeout: 30000,
   headers: {
     "Content-Type": "application/json",
@@ -217,6 +242,7 @@ export const modelAPI = {
       ...model,
       display_name: model.name,
       provider: model.provider_name,
+      cloud_model_id: model.id,
       price_per_call: 0,
       icon: "",
       description: model.provider_name,
@@ -230,15 +256,12 @@ export const modelAPI = {
 
 // Chat API
 export const chatAPI = {
-  listConversations: () => api.get("/conversations"),
-  createConversation: (data: { title?: string; model: string }) =>
-    api.post("/conversations", data),
-  getConversation: (id: number) => api.get(`/conversations/${id}`),
-  updateConversation: (id: number, data: { title?: string; pinned?: boolean }) =>
-    api.put(`/conversations/${id}`, data),
-  deleteConversation: (id: number) => api.delete(`/conversations/${id}`),
-  sendMessage: (id: number, data: { content: string; model?: string }) =>
-    api.post(`/conversations/${id}/messages`, data),
+  listConversations: async () => legacyResponse({ data: await appV1Client.conversations() }),
+  createConversation: async (data: { title?: string; model: string }) => legacyResponse(await appV1Client.createConversation(data)),
+  getConversation: async (id: number) => legacyResponse(await appV1Client.conversation(id)),
+  updateConversation: async (id: number, data: { title?: string; pinned?: boolean }) => legacyResponse(await appV1Client.updateConversation(id, data)),
+  deleteConversation: async (id: number) => legacyResponse(await appV1Client.deleteConversation(id)),
+  sendMessage: async (id: number, data: { content: string; model?: string }) => legacyResponse(await appV1Client.sendMessage(id, data)),
 };
 
 // Upload API
@@ -271,8 +294,10 @@ export const imageAPI = {
   poster: (data: { prompt: string; category?: string; size?: string; model?: string; quality?: string; resolution?: string }) =>
     api.post("/image/poster", data, { timeout: 120000 }),
   // 图片生成（通用文生图）
-  generate: (data: { prompt: string; model?: string; size?: string; n?: number; quality?: string; resolution?: string; ratio?: string; image_urls?: string[]; apply_brand?: boolean }) =>
-    api.post("/image/generate", data, { timeout: 120000 }),
+  generate: async (data: { prompt: string; model?: string; size?: string; n?: number; quality?: string; resolution?: string; ratio?: string; image_urls?: string[]; apply_brand?: boolean }) => {
+    const task = await appV1Client.createImageTask({ ...data, model: await resolveImageModel(data.model) });
+    return legacyResponse({ data: legacyTask(task) });
+  },
   // 优化提示词
   optimizePrompt: (prompt: string) =>
     api.post<{ optimized_prompt: string }>("/image/optimize-prompt", { prompt }, { timeout: 30000 }),
@@ -280,10 +305,18 @@ export const imageAPI = {
 
 // Generation status API (polling)
 export const generationAPI = {
-  get: (id: number) => api.get(`/generations/${id}`),
-  list: (params?: { page?: number; page_size?: number; type?: string; status?: string }) =>
-    api.get("/generations", { params }),
-  delete: (id: number) => api.delete(`/generations/${id}`),
+  get: async (id: number | string) => legacyResponse({ data: legacyTask(await appV1Client.task(String(id))) }),
+  list: async (params?: { page?: number; page_size?: number; type?: string; status?: string }) => {
+    const items: any[] = (await appV1Client.tasks({
+      type: params?.type,
+      status: params?.status === "completed" ? "succeeded" : params?.status,
+      limit: params?.page_size,
+    })).map(legacyTask);
+    // Preserve both historical consumers: projects expects an array, while upscale expects data.list.
+    (items as any).list = items;
+    return legacyResponse<{ data: any; total: number }>({ data: items, total: items.length });
+  },
+  delete: async (id: number | string) => legacyResponse(await appV1Client.deleteTask(String(id))),
 };
 
 // Canvas projects API
