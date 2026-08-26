@@ -1,0 +1,22 @@
+{
+  "id": "neogen-title-with-full-width-chart",
+  "name": "标题配全宽图表",
+  "category": "neo-general",
+  "description": "居中粗体标题加强调线，下方全宽图表容器（占位）。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "chartTitle": { "type": "text", "label": "图表标题", "maxChars": 64 },
+    "chartImage": { "type": "image", "label": "图表配图" }
+  },
+  "defaultData": {
+    "title": "投入与回报仪表盘",
+    "chartTitle": "营收对比支出",
+    "chartImage": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 40 },
+    { "kind": "bar", "pos": { "x": 600, "y": 160, "w": 80, "h": 6 } },
+    { "kind": "kicker", "field": "chartTitle", "pos": { "x": 80, "y": 210, "w": 1120 }, "size": 16, "color": "muted" },
+    { "kind": "image", "field": "chartImage", "pos": { "x": 80, "y": 250, "w": 1120, "h": 390 } }
+  ]
+}

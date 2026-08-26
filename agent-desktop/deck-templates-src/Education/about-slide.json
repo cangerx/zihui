@@ -1,0 +1,31 @@
+{
+  "id": "about-slide",
+  "name": "关于介绍",
+  "category": "Education",
+  "description": "左侧标题、引言与正文，右侧配图与两段说明面板的介绍版式。",
+  "schema": {
+    "name": { "type": "text", "label": "标题", "required": true, "maxChars": 22 },
+    "intro": { "type": "multiline", "label": "引言", "required": true, "maxChars": 100 },
+    "body": { "type": "multiline", "label": "正文段落", "required": true, "maxChars": 280 },
+    "topPanelText": { "type": "multiline", "label": "上方面板说明", "maxChars": 70 },
+    "bottomPanelText": { "type": "multiline", "label": "下方面板说明", "maxChars": 70 },
+    "image": { "type": "image", "label": "配图" }
+  },
+  "defaultData": {
+    "name": "机构名称",
+    "intro": "用一句有力的引言概括我们的定位与价值主张，引导读者继续了解。",
+    "body": "在此补充一段更详细的介绍，说明我们的使命、专业能力与服务范围，以及为客户和学员带来的实际成果。可结合具体场景与案例，让内容更有说服力。",
+    "topPanelText": "在此填写关于机构的简要信息。",
+    "bottomPanelText": "在此填写机构使命与愿景陈述。",
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "name", "level": 2, "pos": { "x": 80, "y": 110, "w": 560 }, "size": 56 },
+    { "kind": "paragraph", "field": "intro", "pos": { "x": 80, "y": 240, "w": 560 }, "size": 20, "color": "fg" },
+    { "kind": "paragraph", "field": "body", "pos": { "x": 80, "y": 360, "w": 560 }, "size": 18, "merge": true },
+    { "kind": "image", "field": "image", "pos": { "x": 680, "y": 80, "w": 520, "h": 280 } },
+    { "kind": "paragraph", "field": "topPanelText", "pos": { "x": 680, "y": 388, "w": 520 }, "size": 18, "color": "fg" },
+    { "kind": "rule", "pos": { "x": 680, "y": 510, "w": 520 } },
+    { "kind": "paragraph", "field": "bottomPanelText", "pos": { "x": 680, "y": 532, "w": 520 }, "size": 18, "color": "fg" }
+  ]
+}

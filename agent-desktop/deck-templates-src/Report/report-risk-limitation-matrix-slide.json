@@ -1,0 +1,33 @@
+{
+  "id": "report-risk-limitation-matrix-slide",
+  "name": "风险与局限矩阵",
+  "category": "Report",
+  "description": "报告页：紧凑的风险矩阵，以及用于假设、注意事项或局限的侧栏。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 38 },
+    "subtitle": { "type": "multiline", "label": "副标题", "required": true, "maxChars": 140 },
+    "risks": { "type": "stat-list", "label": "风险(标签等级/影响与应对)", "required": true, "maxItems": 5, "statValueMaxChars": 28, "statLabelMaxChars": 110 },
+    "limitations": { "type": "list", "label": "局限/假设", "required": true, "maxItems": 4, "itemMaxChars": 90 }
+  },
+  "defaultData": {
+    "title": "风险与局限",
+    "subtitle": "对影响解读的主要风险、预期影响、应对措施与局限的简明梳理。",
+    "risks": [
+      { "value": "数据缺口 · 中", "label": "影响：记录不完整会降低趋势解读的可信度。应对：对照来源备注校验并补全缺失字段。" },
+      { "value": "时机偏移 · 高", "label": "影响：迟到的输入可能在报告发出后改变优先级。应对：在最终决策前增加复核节点。" },
+      { "value": "范围漂移 · 中", "label": "影响：范围扩张会分散焦点、拖慢行动。应对：将下一步行动锁定在既定的报告问题上。" }
+    ],
+    "limitations": [
+      "报告反映既定复核期内可获取的信息。",
+      "部分定性输入在行动前可能需要后续验证。",
+      "当有新来源数据时，应更新趋势解读。"
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 64, "w": 1120 }, "size": 52 },
+    { "kind": "paragraph", "field": "subtitle", "pos": { "x": 80, "y": 138, "w": 1000 }, "size": 20, "color": "muted" },
+    { "kind": "bar", "pos": { "x": 80, "y": 188, "w": 64, "h": 6 } },
+    { "kind": "bulletCards", "field": "risks", "pos": { "x": 80, "y": 232, "w": 720, "h": 400 }, "titleSize": 20, "descSize": 15, "cols": 1, "rowH": 124 },
+    { "kind": "numberedList", "field": "limitations", "pos": { "x": 840, "y": 232, "w": 360 }, "itemSize": 16, "color": "muted" }
+  ]
+}

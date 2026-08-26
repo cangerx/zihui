@@ -1,0 +1,23 @@
+{
+  "id": "report-title-workflow-with-title-description-slide",
+  "name": "横向流程步骤",
+  "category": "Report",
+  "description": "顶部标题加一条横向流程，每步含标题与下方描述，按顺序排列。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 50 },
+    "items": { "type": "stat-list", "label": "步骤(标题/描述)", "required": true, "maxItems": 5, "statValueMaxChars": 30, "statLabelMaxChars": 60 }
+  },
+  "defaultData": {
+    "title": "服务流程",
+    "items": [
+      { "value": "需求沟通", "label": "明确目标与范围，对齐预期与关键约束。" },
+      { "value": "方案设计", "label": "制定可执行方案，规划资源与时间安排。" },
+      { "value": "实施交付", "label": "按计划推进并持续跟踪，确保稳定交付。" },
+      { "value": "复盘优化", "label": "总结成效与不足，迭代改进后续流程。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 64, "w": 1120 }, "size": 72 },
+    { "kind": "bulletCards", "field": "items", "pos": { "x": 80, "y": 240, "w": 1120, "h": 320 }, "titleSize": 20, "descSize": 15, "cols": 4 }
+  ]
+}

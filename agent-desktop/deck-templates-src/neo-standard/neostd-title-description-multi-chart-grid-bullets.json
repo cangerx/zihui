@@ -1,0 +1,31 @@
+{
+  "id": "neostd-title-description-multi-chart-grid-bullets",
+  "name": "标题描述加多图表网格与要点",
+  "category": "neo-standard",
+  "description": "标题、描述、最多 6 条要点与多图表网格的仪表盘版式(图表区以配图承载)。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 50 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 200 },
+    "charts": { "type": "image", "label": "图表网格" },
+    "bullets": { "type": "list", "label": "要点", "required": true, "maxItems": 6, "itemMaxChars": 80 }
+  },
+  "defaultData": {
+    "title": "数据分析仪表盘",
+    "description": "围绕关键指标与绩效表现的多维度综合概览，帮助快速把握业务全貌与趋势变化。",
+    "charts": "",
+    "bullets": [
+      "管线覆盖率超过目标 3 倍。",
+      "获客成本回收周期低于 6 个月。",
+      "企业级转化率环比提升。",
+      "扩展性收入驱动持续增长。",
+      "各客户群留存率均高于 95%。",
+      "本季度预测准确率显著改善。"
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 60, "y": 50, "w": 1160 }, "size": 42 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 60, "y": 130, "w": 1160 }, "size": 16, "merge": true },
+    { "kind": "image", "field": "charts", "pos": { "x": 60, "y": 210, "w": 800, "h": 450 } },
+    { "kind": "list", "field": "bullets", "pos": { "x": 900, "y": 210, "w": 320 }, "itemSize": 14, "gap": 8 }
+  ]
+}

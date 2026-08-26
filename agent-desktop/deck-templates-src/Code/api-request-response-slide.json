@@ -1,0 +1,54 @@
+{
+  "id": "api-request-response-slide",
+  "name": "接口请求响应",
+  "category": "Code",
+  "description": "接口页：请求方法 + 端点 + 请求头 + 请求体与响应体（代码以逐行列表承载）。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 26 },
+    "method": { "type": "enum", "label": "请求方法", "enumValues": ["GET", "POST", "PATCH", "DELETE"] },
+    "endpoint": { "type": "text", "label": "端点路径", "required": true, "maxChars": 48 },
+    "headers": { "type": "list", "label": "请求头", "maxItems": 2, "itemMaxChars": 60 },
+    "requestTitle": { "type": "text", "label": "请求体文件名", "maxChars": 24 },
+    "request": { "type": "list", "label": "请求体(每行一项)", "required": true, "maxItems": 8, "itemMaxChars": 60 },
+    "responseTitle": { "type": "text", "label": "响应体文件名", "maxChars": 24 },
+    "response": { "type": "list", "label": "响应体(每行一项)", "required": true, "maxItems": 14, "itemMaxChars": 60 }
+  },
+  "defaultData": {
+    "title": "接口请求 / 响应",
+    "method": "POST",
+    "endpoint": "/api/v1/users/authenticate",
+    "headers": [
+      "Content-Type: application/json",
+      "Authorization: Bearer <token>"
+    ],
+    "requestTitle": "request.json",
+    "request": [
+      "{",
+      "  \"email\": \"user@example.com\",",
+      "  \"password\": \"securepassword123\"",
+      "}"
+    ],
+    "responseTitle": "response.json",
+    "response": [
+      "{",
+      "  \"success\": true,",
+      "  \"user\": {",
+      "    \"id\": \"usr_1234567890\",",
+      "    \"email\": \"user@example.com\",",
+      "    \"role\": \"admin\"",
+      "  },",
+      "  \"expiresIn\": 3600",
+      "}"
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 64, "w": 1120 }, "size": 48 },
+    { "kind": "kicker", "field": "method", "pos": { "x": 80, "y": 150, "w": 200 }, "size": 16, "color": "accent" },
+    { "kind": "paragraph", "field": "endpoint", "pos": { "x": 280, "y": 148, "w": 840 }, "size": 18, "color": "fg" },
+    { "kind": "list", "field": "headers", "pos": { "x": 80, "y": 186, "w": 540 }, "itemSize": 14, "gap": 6, "color": "muted" },
+    { "kind": "kicker", "field": "requestTitle", "pos": { "x": 80, "y": 280, "w": 540 }, "size": 13, "color": "accent" },
+    { "kind": "list", "field": "request", "pos": { "x": 80, "y": 308, "w": 540 }, "itemSize": 14, "gap": 3, "color": "fg" },
+    { "kind": "kicker", "field": "responseTitle", "pos": { "x": 660, "y": 186, "w": 540 }, "size": 13, "color": "accent" },
+    { "kind": "list", "field": "response", "pos": { "x": 660, "y": 214, "w": 540 }, "itemSize": 14, "gap": 3, "color": "fg" }
+  ]
+}

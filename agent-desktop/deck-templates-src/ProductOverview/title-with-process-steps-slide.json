@@ -1,0 +1,24 @@
+{
+  "id": "title-with-process-steps-slide",
+  "name": "标题配流程步骤",
+  "category": "ProductOverview",
+  "description": "标题 + 从左到右排列的流程步骤卡片(步骤名/说明)。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 14 },
+    "steps": { "type": "stat-list", "label": "步骤(名称/说明)", "required": true, "maxItems": 5, "statValueMaxChars": 16, "statLabelMaxChars": 32 }
+  },
+  "defaultData": {
+    "title": "实施流程",
+    "steps": [
+      { "value": "需求调研", "label": "深入了解业务目标与现状。" },
+      { "value": "方案设计", "label": "制定可落地的实施蓝图。" },
+      { "value": "系统搭建", "label": "完成部署与数据接入。" },
+      { "value": "试运行", "label": "小范围验证并持续优化。" },
+      { "value": "正式上线", "label": "全面推广与长期运维。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 56 },
+    { "kind": "bulletCards", "field": "steps", "pos": { "x": 80, "y": 240, "w": 1120, "h": 360 }, "titleSize": 20, "descSize": 16, "cols": 5 }
+  ]
+}

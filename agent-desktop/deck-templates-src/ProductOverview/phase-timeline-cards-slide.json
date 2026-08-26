@@ -1,0 +1,26 @@
+{
+  "id": "phase-timeline-cards-slide",
+  "name": "阶段时间线卡片",
+  "category": "ProductOverview",
+  "description": "标题副标题 + 横向阶段卡片(阶段标题/说明)的路线图版式。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 42 },
+    "subtitle": { "type": "multiline", "label": "副标题", "maxChars": 140 },
+    "phases": { "type": "stat-list", "label": "阶段(标题/说明)", "required": true, "maxItems": 5, "statValueMaxChars": 28, "statLabelMaxChars": 96 }
+  },
+  "defaultData": {
+    "title": "产品路线图",
+    "subtitle": "分阶段呈现工作如何随时间逐步推进，覆盖各个里程碑节点。",
+    "phases": [
+      { "value": "第一阶段·筑基", "label": "搭建核心工作台、账户体系与首批规划流程。" },
+      { "value": "第二阶段·深化", "label": "增加团队流程、审批、自动化与更细的上线追踪。" },
+      { "value": "第三阶段·洞察", "label": "接入客户信号与使用趋势，沉淀为报表视图。" },
+      { "value": "第四阶段·规模化", "label": "完善集成、治理与采用工具，提升企业级能力。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 52 },
+    { "kind": "paragraph", "field": "subtitle", "pos": { "x": 80, "y": 160, "w": 900 }, "size": 19 },
+    { "kind": "bulletCards", "field": "phases", "pos": { "x": 80, "y": 250, "w": 1120, "h": 390 }, "titleSize": 21, "descSize": 16, "cols": 4 }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "bullet-icons-only-slide",
+  "name": "要点卡片",
+  "category": "general",
+  "description": "标题 + 要点卡片(标题与描述) + 配图。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 40 },
+    "points": { "type": "stat-list", "label": "要点(标题/描述)", "required": true, "maxItems": 4, "statValueMaxChars": 80, "statLabelMaxChars": 150 },
+    "image": { "type": "image", "label": "配图" }
+  },
+  "defaultData": {
+    "title": "解决方案",
+    "points": [
+      { "value": "统一工作台", "label": "集中管理所有业务流程，减少工具切换成本。" },
+      { "value": "实时协作", "label": "团队成员同步查看与编辑，信息不再丢失。" },
+      { "value": "智能分析", "label": "自动汇总关键指标，辅助快速决策。" }
+    ],
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 96, "w": 1120 }, "size": 44 },
+    { "kind": "bar", "pos": { "x": 80, "y": 176, "w": 64, "h": 6 } },
+    { "kind": "bulletCards", "field": "points", "pos": { "x": 80, "y": 216, "w": 600, "h": 440 }, "titleSize": 22, "descSize": 16, "cols": 1 },
+    { "kind": "image", "field": "image", "pos": { "x": 740, "y": 216, "w": 460, "h": 440 } }
+  ]
+}

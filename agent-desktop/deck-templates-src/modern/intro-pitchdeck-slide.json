@@ -1,0 +1,28 @@
+{
+  "id": "intro-pitchdeck-slide",
+  "name": "路演开场",
+  "category": "modern",
+  "description": "大标题、简短描述与演讲者信息，右侧配图，作为路演首页设定整体基调。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 15 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 200 },
+    "presenter": { "type": "text", "label": "演讲者", "maxChars": 60 },
+    "date": { "type": "text", "label": "日期", "maxChars": 60 },
+    "image": { "type": "image", "label": "配图" }
+  },
+  "defaultData": {
+    "title": "路演演示",
+    "description": "在此处填写简短的副标题或描述，概括本次演示的核心主题与价值主张，让听众迅速把握重点。",
+    "presenter": "张三",
+    "date": "2025 年 12 月",
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 220, "w": 600 }, "size": 60 },
+    { "kind": "bar", "pos": { "x": 80, "y": 312, "w": 120, "h": 6 } },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 348, "w": 600 }, "size": 18, "merge": true },
+    { "kind": "paragraph", "field": "presenter", "pos": { "x": 80, "y": 500, "w": 600 }, "size": 18, "color": "fg" },
+    { "kind": "paragraph", "field": "date", "pos": { "x": 80, "y": 534, "w": 600 }, "size": 16, "color": "muted" },
+    { "kind": "image", "field": "image", "pos": { "x": 740, "y": 130, "w": 460, "h": 460 } }
+  ]
+}

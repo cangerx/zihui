@@ -1,0 +1,32 @@
+{
+  "id": "traction-metrics-slide",
+  "name": "增长数据",
+  "category": "pitch-deck",
+  "description": "标题 + 概述 + 增长指标卡片 + 里程碑条目。用于展示业务进展与势能。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 26 },
+    "summary": { "type": "multiline", "label": "概述", "required": true, "maxChars": 90 },
+    "metrics": { "type": "stat-list", "label": "增长指标(数值/标签)", "required": true, "maxItems": 4, "statValueMaxChars": 10, "statLabelMaxChars": 30 },
+    "milestones": { "type": "stat-list", "label": "里程碑(周期/结果)", "required": true, "maxItems": 5, "statValueMaxChars": 14, "statLabelMaxChars": 44 }
+  },
+  "defaultData": {
+    "title": "增长数据",
+    "summary": "早期信号显示需求可复制、留存更强，并有清晰的扩展路径。",
+    "metrics": [
+      { "value": "125%", "label": "净收入留存率" },
+      { "value": "38%", "label": "月度增长" },
+      { "value": "14", "label": "设计合作伙伴" }
+    ],
+    "milestones": [
+      { "value": "第一季度", "label": "试点客户群上线" },
+      { "value": "第二季度", "label": "付费转化启动" },
+      { "value": "第三季度", "label": "扩展模式验证" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 72, "w": 1120 }, "size": 54 },
+    { "kind": "paragraph", "field": "summary", "pos": { "x": 80, "y": 150, "w": 850 }, "size": 20, "color": "muted" },
+    { "kind": "statGrid", "field": "metrics", "pos": { "x": 80, "y": 230, "w": 1120, "h": 220 }, "valueSize": 50, "labelSize": 16, "cols": 3 },
+    { "kind": "bulletCards", "field": "milestones", "pos": { "x": 80, "y": 500, "w": 1120, "h": 130 }, "titleSize": 18, "descSize": 14, "cols": 3 }
+  ]
+}

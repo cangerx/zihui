@@ -1,0 +1,29 @@
+{
+  "id": "neogen-title-metrics-with-chart",
+  "name": "图表配侧边指标",
+  "category": "neo-general",
+  "description": "两栏布局：粗体标题，左侧大幅图表（占位），右侧最多 6 项纵向指标。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 21 },
+    "description": { "type": "multiline", "label": "描述正文", "maxChars": 100 },
+    "chartImage": { "type": "image", "label": "图表配图" },
+    "metrics": { "type": "stat-list", "label": "指标(数值/标签)", "required": true, "maxItems": 6, "statValueMaxChars": 7, "statLabelMaxChars": 13 }
+  },
+  "defaultData": {
+    "title": "投入与回报概览",
+    "description": "聚焦高潜力行业的重点企业，通过精准投放提升管线质量与投资回报。",
+    "chartImage": "",
+    "metrics": [
+      { "value": "¥180万", "label": "计划总额" },
+      { "value": "¥175万", "label": "实际总额" },
+      { "value": "4.8倍", "label": "投资回报" },
+      { "value": "28%", "label": "转化率" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 760 }, "size": 38 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 144, "w": 760 }, "size": 16 },
+    { "kind": "image", "field": "chartImage", "pos": { "x": 80, "y": 220, "w": 760, "h": 420 } },
+    { "kind": "statGrid", "field": "metrics", "pos": { "x": 880, "y": 130, "w": 320, "h": 110 }, "valueSize": 32, "labelSize": 13, "cols": 1 }
+  ]
+}

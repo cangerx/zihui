@@ -1,0 +1,22 @@
+{
+  "id": "header-title-card-slide",
+  "name": "居中标题强调卡",
+  "category": "standard",
+  "description": "居中大标题，下方为强调底色卡片内的小标题与正文段落。",
+  "background": "accent",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 56 },
+    "heading": { "type": "text", "label": "卡片标题", "required": true, "maxChars": 70 },
+    "body": { "type": "multiline", "label": "卡片正文", "required": true, "maxChars": 450 }
+  },
+  "defaultData": {
+    "title": "将创意转化为现实",
+    "heading": "创意构思与验证",
+    "body": "我们从洞察用户需求出发，快速生成并验证创意方案，通过小步迭代与数据反馈不断打磨，最终将每一个想法稳健地转化为可落地、可规模化的产品与服务。"
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 140, "y": 90, "w": 1000 }, "size": 48, "color": "on-accent" },
+    { "kind": "heading", "field": "heading", "level": 2, "pos": { "x": 200, "y": 260, "w": 880 }, "size": 30, "color": "on-accent" },
+    { "kind": "paragraph", "field": "body", "pos": { "x": 200, "y": 340, "w": 880 }, "size": 18, "color": "on-accent" }
+  ]
+}

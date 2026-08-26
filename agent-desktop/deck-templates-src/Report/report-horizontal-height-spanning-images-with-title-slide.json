@@ -1,0 +1,40 @@
+{
+  "id": "report-horizontal-height-spanning-images-with-title-slide",
+  "name": "并列全高图卡",
+  "category": "Report",
+  "description": "并排排列的人像卡片，每张使用满高图片，底部叠加一行小字与较大标题。",
+  "schema": {
+    "image1": { "type": "image", "label": "图一" },
+    "title1": { "type": "text", "label": "标题一", "required": true, "maxChars": 40 },
+    "subtext1": { "type": "text", "label": "小字一", "required": true, "maxChars": 40 },
+    "image2": { "type": "image", "label": "图二" },
+    "title2": { "type": "text", "label": "标题二", "required": true, "maxChars": 40 },
+    "subtext2": { "type": "text", "label": "小字二", "required": true, "maxChars": 40 },
+    "image3": { "type": "image", "label": "图三" },
+    "title3": { "type": "text", "label": "标题三", "required": true, "maxChars": 40 },
+    "subtext3": { "type": "text", "label": "小字三", "required": true, "maxChars": 40 },
+    "image4": { "type": "image", "label": "图四" },
+    "title4": { "type": "text", "label": "标题四", "required": true, "maxChars": 40 },
+    "subtext4": { "type": "text", "label": "小字四", "required": true, "maxChars": 40 }
+  },
+  "defaultData": {
+    "image1": "", "title1": "成员姓名", "subtext1": "职位",
+    "image2": "", "title2": "成员姓名", "subtext2": "职位",
+    "image3": "", "title3": "成员姓名", "subtext3": "职位",
+    "image4": "", "title4": "成员姓名", "subtext4": "职位"
+  },
+  "blocks": [
+    { "kind": "image", "field": "image1", "pos": { "x": 0, "y": 0, "w": 320, "h": 720 } },
+    { "kind": "image", "field": "image2", "pos": { "x": 320, "y": 0, "w": 320, "h": 720 } },
+    { "kind": "image", "field": "image3", "pos": { "x": 640, "y": 0, "w": 320, "h": 720 } },
+    { "kind": "image", "field": "image4", "pos": { "x": 960, "y": 0, "w": 320, "h": 720 } },
+    { "kind": "kicker", "field": "subtext1", "pos": { "x": 28, "y": 612, "w": 264 }, "size": 14, "color": "on-accent" },
+    { "kind": "heading", "field": "title1", "level": 2, "pos": { "x": 28, "y": 636, "w": 264 }, "size": 26, "color": "on-accent" },
+    { "kind": "kicker", "field": "subtext2", "pos": { "x": 348, "y": 612, "w": 264 }, "size": 14, "color": "on-accent" },
+    { "kind": "heading", "field": "title2", "level": 2, "pos": { "x": 348, "y": 636, "w": 264 }, "size": 26, "color": "on-accent" },
+    { "kind": "kicker", "field": "subtext3", "pos": { "x": 668, "y": 612, "w": 264 }, "size": 14, "color": "on-accent" },
+    { "kind": "heading", "field": "title3", "level": 2, "pos": { "x": 668, "y": 636, "w": 264 }, "size": 26, "color": "on-accent" },
+    { "kind": "kicker", "field": "subtext4", "pos": { "x": 988, "y": 612, "w": 264 }, "size": 14, "color": "on-accent" },
+    { "kind": "heading", "field": "title4", "level": 2, "pos": { "x": 988, "y": 636, "w": 264 }, "size": 26, "color": "on-accent" }
+  ]
+}

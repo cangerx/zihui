@@ -1,0 +1,67 @@
+# Azure Pipelines mirror of .github/workflows/build.yml
+# Provides a second free runner pool as fallback when GitHub macOS queue is slow.
+# Docs: https://learn.microsoft.com/azure/devops/pipelines/
+
+trigger: none
+pr: none
+
+parameters:
+  - name: version
+    type: string
+    default: ''
+    displayName: 'Version tag (e.g. 0.5.5)'
+
+jobs:
+  - job: Build
+    displayName: 'Build & Package'
+    timeoutInMinutes: 60
+    strategy:
+      matrix:
+        windows:
+          vmImage: 'windows-latest'
+          platformName: 'win'
+        mac:
+          vmImage: 'macOS-latest'
+          platformName: 'mac'
+    pool:
+      vmImage: $(vmImage)
+    steps:
+      - task: NodeTool@0
+        inputs:
+          versionSpec: '22.x'
+        displayName: 'Setup Node.js 22'
+
+      - script: npm ci
+        displayName: 'Install dependencies'
+
+      - script: npm run dist
+        displayName: 'Run electron-builder'
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+      - task: CopyFiles@2
+        condition: eq(variables.platformName, 'win')
+        inputs:
+          sourceFolder: 'dist'
+          contents: |
+            *.exe
+            latest.yml
+          targetFolder: '$(Build.ArtifactStagingDirectory)'
+        displayName: 'Collect Windows artifacts'
+
+      - task: CopyFiles@2
+        condition: eq(variables.platformName, 'mac')
+        inputs:
+          sourceFolder: 'dist'
+          contents: |
+            *.dmg
+            latest-mac.yml
+          targetFolder: '$(Build.ArtifactStagingDirectory)'
+        displayName: 'Collect macOS artifacts'
+
+      - task: PublishPipelineArtifact@1
+        inputs:
+          targetPath: '$(Build.ArtifactStagingDirectory)'
+          artifact: '$(platformName)-build'
+          publishLocation: 'pipeline'
+        displayName: 'Publish artifacts'

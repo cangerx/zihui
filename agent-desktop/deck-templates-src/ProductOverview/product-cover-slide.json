@@ -1,0 +1,79 @@
+{
+  "id": "product-cover-slide",
+  "name": "封面页",
+  "category": "ProductOverview",
+  "description": "顶部右上角日期标签 + 居中大标题 + 底部配图的封面版式。",
+  "schema": {
+    "label": {
+      "type": "text",
+      "label": "右上角日期/标签",
+      "maxChars": 16
+    },
+    "titleLine1": {
+      "type": "text",
+      "label": "标题第一行",
+      "required": true,
+      "maxChars": 18
+    },
+    "titleLine2": {
+      "type": "text",
+      "label": "标题第二行",
+      "required": true,
+      "maxChars": 20
+    },
+    "backgroundImage": {
+      "type": "image",
+      "label": "底部配图"
+    }
+  },
+  "defaultData": {
+    "label": "2026 年 3 月",
+    "titleLine1": "社交媒体",
+    "titleLine2": "营销分析报告",
+    "backgroundImage": ""
+  },
+  "blocks": [
+    {
+      "kind": "kicker",
+      "field": "label",
+      "pos": {
+        "x": 80,
+        "y": 80,
+        "w": 1120
+      },
+      "size": 16
+    },
+    {
+      "kind": "heading",
+      "field": "titleLine1",
+      "level": 1,
+      "pos": {
+        "x": 80,
+        "y": 196,
+        "w": 1120
+      },
+      "size": 88
+    },
+    {
+      "kind": "heading",
+      "field": "titleLine2",
+      "level": 1,
+      "pos": {
+        "x": 80,
+        "y": 296,
+        "w": 1120
+      },
+      "size": 88
+    },
+    {
+      "kind": "image",
+      "field": "backgroundImage",
+      "pos": {
+        "x": 0,
+        "y": 440,
+        "w": 1280,
+        "h": 280
+      }
+    }
+  ]
+}

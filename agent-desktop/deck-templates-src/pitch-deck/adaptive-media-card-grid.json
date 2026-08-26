@@ -1,0 +1,27 @@
+{
+  "id": "adaptive-media-card-grid",
+  "name": "自适应媒体卡片网格",
+  "category": "pitch-deck",
+  "description": "顶部标题 + 媒体卡片网格(标签、标题、简述与配图)。适合展示一组带图条目。",
+  "schema": {
+    "title": { "type": "text", "label": "顶部标题", "required": true, "maxChars": 16 },
+    "cards": { "type": "stat-list", "label": "卡片(标题/简述)", "required": true, "maxItems": 8, "statValueMaxChars": 18, "statLabelMaxChars": 40 },
+    "image": { "type": "image", "label": "媒体配图" }
+  },
+  "defaultData": {
+    "title": "亮点速览",
+    "cards": [
+      { "value": "条目标题", "label": "对该条目的简要补充说明文字。" },
+      { "value": "条目标题", "label": "对该条目的简要补充说明文字。" },
+      { "value": "条目标题", "label": "对该条目的简要补充说明文字。" },
+      { "value": "条目标题", "label": "对该条目的简要补充说明文字。" }
+    ],
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 72, "w": 1120 }, "size": 56 },
+    { "kind": "bar", "pos": { "x": 80, "y": 160, "w": 64, "h": 6 } },
+    { "kind": "image", "field": "image", "pos": { "x": 80, "y": 210, "w": 360, "h": 430 } },
+    { "kind": "bulletCards", "field": "cards", "pos": { "x": 480, "y": 210, "w": 720, "h": 430 }, "titleSize": 19, "descSize": 14, "cols": 2 }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "id": "table-of-contents-layout",
+  "name": "目录章节",
+  "category": "standard",
+  "description": "品牌标识 + 标题 + 可选描述 + 带编号的章节目录列表。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 68 },
+    "description": { "type": "multiline", "label": "引导说明", "maxChars": 200 },
+    "items": { "type": "list", "label": "章节列表", "required": true, "maxItems": 10, "itemMaxChars": 50 }
+  },
+  "defaultData": {
+    "title": "目录",
+    "description": "用本页快速了解演示文稿的整体结构与各章节内容。",
+    "items": [
+      "项目背景",
+      "问题陈述",
+      "解决方案",
+      "市场分析",
+      "商业模式",
+      "发展路线",
+      "团队介绍",
+      "市场策略",
+      "财务规划",
+      "融资计划"
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 48 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 156, "w": 1020 }, "size": 16 },
+    { "kind": "bar", "pos": { "x": 80, "y": 210, "w": 64, "h": 6 } },
+    { "kind": "numberedList", "field": "items", "pos": { "x": 80, "y": 240, "w": 1120 }, "itemSize": 18, "gap": 8 }
+  ]
+}

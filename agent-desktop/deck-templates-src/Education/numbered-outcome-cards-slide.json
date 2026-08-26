@@ -1,0 +1,25 @@
+{
+  "id": "numbered-outcome-cards-slide",
+  "name": "编号成果卡片",
+  "category": "Education",
+  "description": "标题与副标题，配合带编号的成果卡片(动词、标题与描述)。",
+  "schema": {
+    "title": { "type": "text", "label": "标题", "required": true, "maxChars": 32 },
+    "subtitle": { "type": "multiline", "label": "副标题", "maxChars": 130 },
+    "outcomes": { "type": "stat-list", "label": "成果(动词·标题/描述)", "required": true, "maxItems": 6, "statValueMaxChars": 44, "statLabelMaxChars": 110 }
+  },
+  "defaultData": {
+    "title": "核心学习成果",
+    "subtitle": "简要概述学员在完成本课程后应具备的能力、技能与关键收获。",
+    "outcomes": [
+      { "value": "分析 · 核心概念", "label": "拆解关键理念，并说明它们在真实学习情境中的应用方式。" },
+      { "value": "应用 · 实践技能", "label": "运用所学方法完成任务、解决问题并做出合理决策。" },
+      { "value": "评估 · 表现成效", "label": "依据清晰标准、证据与结构化反思来评估结果。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 52 },
+    { "kind": "paragraph", "field": "subtitle", "pos": { "x": 80, "y": 168, "w": 900 }, "size": 20 },
+    { "kind": "bulletCards", "field": "outcomes", "pos": { "x": 80, "y": 256, "w": 1120, "h": 380 }, "titleSize": 22, "descSize": 16, "cols": 2 }
+  ]
+}

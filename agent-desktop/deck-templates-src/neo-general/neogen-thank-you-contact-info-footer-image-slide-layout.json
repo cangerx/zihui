@@ -1,0 +1,34 @@
+{
+  "id": "neogen-thank-you-contact-info-footer-image-slide-layout",
+  "name": "致谢联系方式配底图",
+  "category": "neo-general",
+  "description": "结尾页：居中标题加强调条，左侧描述，右侧联系方式，底部全宽配图。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 10 },
+    "description": { "type": "multiline", "label": "描述正文", "maxChars": 120 },
+    "contactTitle": { "type": "text", "label": "联系标题", "maxChars": 15 },
+    "phone": { "type": "text", "label": "电话", "maxChars": 20 },
+    "email": { "type": "text", "label": "邮箱", "maxChars": 30 },
+    "website": { "type": "text", "label": "网址", "maxChars": 30 },
+    "footerImage": { "type": "image", "label": "底部配图" }
+  },
+  "defaultData": {
+    "title": "谢谢",
+    "description": "感谢您对我们的支持！为表谢意，下单时使用优惠码 CODE20 即可享受次单 8 折优惠。",
+    "contactTitle": "联系我们",
+    "phone": "+86 138-0000-0000",
+    "email": "hello@example.com",
+    "website": "www.example.com",
+    "footerImage": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 72, "w": 1120 }, "size": 42 },
+    { "kind": "bar", "pos": { "x": 600, "y": 152, "w": 80, "h": 6 } },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 230, "w": 520 }, "size": 20 },
+    { "kind": "kicker", "field": "contactTitle", "pos": { "x": 700, "y": 200, "w": 500 }, "size": 20, "color": "accent" },
+    { "kind": "paragraph", "field": "phone", "pos": { "x": 700, "y": 244, "w": 500 }, "size": 18, "color": "fg" },
+    { "kind": "paragraph", "field": "email", "pos": { "x": 700, "y": 280, "w": 500 }, "size": 18, "color": "fg" },
+    { "kind": "paragraph", "field": "website", "pos": { "x": 700, "y": 316, "w": 500 }, "size": 18, "color": "fg" },
+    { "kind": "image", "field": "footerImage", "pos": { "x": 80, "y": 400, "w": 1120, "h": 250 } }
+  ]
+}

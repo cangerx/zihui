@@ -1,0 +1,25 @@
+{
+  "id": "title-with-kpi-cards-slide",
+  "name": "标题配 KPI 卡片",
+  "category": "ProductOverview",
+  "description": "标题 + 3x2 KPI 数值卡片网格，用于集中展示关键指标。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 10 },
+    "items": { "type": "stat-list", "label": "指标(数值/说明)", "required": true, "maxItems": 6, "statValueMaxChars": 5, "statLabelMaxChars": 16 }
+  },
+  "defaultData": {
+    "title": "关键指标",
+    "items": [
+      { "value": "3.2x", "label": "营收同比增长" },
+      { "value": "98%", "label": "客户留存率" },
+      { "value": "50万", "label": "活跃用户数" },
+      { "value": "24h", "label": "平均响应时长" },
+      { "value": "120+", "label": "合作伙伴数" },
+      { "value": "4.9", "label": "用户满意度" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 56 },
+    { "kind": "statGrid", "field": "items", "pos": { "x": 80, "y": 210, "w": 1120, "h": 190 }, "valueSize": 42, "labelSize": 16, "cols": 3 }
+  ]
+}

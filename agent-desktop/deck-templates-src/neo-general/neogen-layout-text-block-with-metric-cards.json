@@ -1,0 +1,29 @@
+{
+  "id": "neogen-layout-text-block-with-metric-cards",
+  "name": "文本块配进度指标卡",
+  "category": "neo-general",
+  "description": "左侧标题、子标题与描述，右侧 3-5 张指标卡片，每张含名称、数值与目标对比。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "objectiveTitle": { "type": "text", "label": "子标题", "maxChars": 80 },
+    "description": { "type": "multiline", "label": "描述正文", "maxChars": 300 },
+    "kpis": { "type": "stat-list", "label": "指标卡片(数值/名称)", "required": true, "maxItems": 5, "statValueMaxChars": 10, "statLabelMaxChars": 30 }
+  },
+  "defaultData": {
+    "title": "业务目标与 KPI",
+    "objectiveTitle": "加速在欧洲、中东、北非及北美的企业客户获取",
+    "description": "聚焦金融服务、医疗健康与科技行业中员工规模 500 人以上的企业。通过基于账户的营销与内容驱动策略，目标实现 350 万元新增管线，并将获客成本控制在 150 元以内。",
+    "kpis": [
+      { "value": "¥420万", "label": "新增管线 · 目标 ¥350万" },
+      { "value": "8,420", "label": "营销合格线索 · 目标 6,250" },
+      { "value": "4.8倍", "label": "广告投资回报 · 目标 4.0 倍" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 96, "w": 540 }, "size": 40 },
+    { "kind": "bar", "pos": { "x": 80, "y": 168, "w": 116, "h": 6 } },
+    { "kind": "heading", "field": "objectiveTitle", "level": 2, "pos": { "x": 80, "y": 220, "w": 540 }, "size": 22 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 330, "w": 540 }, "size": 16 },
+    { "kind": "bulletCards", "field": "kpis", "pos": { "x": 700, "y": 96, "w": 500, "h": 528 }, "titleSize": 26, "descSize": 15, "cols": 1 }
+  ]
+}

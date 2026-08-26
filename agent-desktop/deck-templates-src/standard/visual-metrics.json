@@ -1,0 +1,26 @@
+{
+  "id": "visual-metrics",
+  "name": "可视化指标",
+  "category": "standard",
+  "description": "标题与描述，下方为带数值与说明文字的指标卡片网格。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 68 },
+    "description": { "type": "multiline", "label": "引导说明", "maxChars": 200 },
+    "cards": { "type": "stat-list", "label": "指标卡(数值/说明)", "required": true, "maxItems": 4, "statValueMaxChars": 6, "statLabelMaxChars": 50 }
+  },
+  "defaultData": {
+    "title": "我们的愿景与卓越战略",
+    "description": "围绕长期愿景与清晰的战略方向，我们在研发、运营与效率等关键维度持续投入，推动业务稳健增长。",
+    "cards": [
+      { "value": "67K", "label": "研发投入，持续推动技术创新。" },
+      { "value": "80%", "label": "开发效率，工程交付稳步提升。" },
+      { "value": "67%", "label": "运营效率，流程优化成效显著。" },
+      { "value": "42M", "label": "业务规模，市场覆盖持续扩大。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 44 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 156, "w": 1020 }, "size": 16 },
+    { "kind": "statGrid", "field": "cards", "pos": { "x": 80, "y": 250, "w": 1120, "h": 340 }, "valueSize": 48, "labelSize": 15, "cols": 4 }
+  ]
+}

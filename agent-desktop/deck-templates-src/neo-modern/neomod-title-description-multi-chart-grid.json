@@ -1,0 +1,22 @@
+{
+  "id": "neomod-title-description-multi-chart-grid",
+  "name": "标题描述多图表网格",
+  "category": "neo-modern",
+  "description": "新现代风看板：标题、描述与 1 至 6 个自动排布的图表(以配图占位呈现图表区)。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 50 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 200 },
+    "image": { "type": "image", "label": "图表区配图" }
+  },
+  "defaultData": {
+    "title": "数据分析看板",
+    "description": "全面概览多个数据维度下的关键指标与绩效表现，帮助快速洞察业务全貌并支撑决策。",
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 40 },
+    { "kind": "bar", "pos": { "x": 80, "y": 154, "w": 64, "h": 6 } },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 188, "w": 1120 }, "size": 16, "merge": true },
+    { "kind": "image", "field": "image", "pos": { "x": 80, "y": 260, "w": 1120, "h": 380 } }
+  ]
+}

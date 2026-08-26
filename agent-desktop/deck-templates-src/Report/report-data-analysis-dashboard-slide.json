@@ -1,0 +1,35 @@
+{
+  "id": "report-data-analysis-dashboard-slide",
+  "name": "数据分析看板",
+  "category": "Report",
+  "description": "看板式版式：标题、概要指标卡，以及一组图表面板（以图表占位呈现）。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 12 },
+    "summaryCards": { "type": "stat-list", "label": "概要卡(数值/标签)", "required": true, "maxItems": 4, "statValueMaxChars": 8, "statLabelMaxChars": 20 },
+    "chart1": { "type": "image", "label": "图表面板一" },
+    "chart2": { "type": "image", "label": "图表面板二" },
+    "chart3": { "type": "image", "label": "图表面板三" },
+    "chart4": { "type": "image", "label": "图表面板四" }
+  },
+  "defaultData": {
+    "title": "数据分析",
+    "summaryCards": [
+      { "value": "5", "label": "活跃项目" },
+      { "value": "52", "label": "关键指标" },
+      { "value": "4", "label": "重点领域" },
+      { "value": "80%", "label": "完成度" }
+    ],
+    "chart1": "",
+    "chart2": "",
+    "chart3": "",
+    "chart4": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 56, "w": 1120 }, "size": 60 },
+    { "kind": "statGrid", "field": "summaryCards", "pos": { "x": 80, "y": 180, "w": 1120, "h": 110 }, "valueSize": 30, "labelSize": 15, "cols": 4 },
+    { "kind": "image", "field": "chart1", "pos": { "x": 80, "y": 318, "w": 544, "h": 150 } },
+    { "kind": "image", "field": "chart2", "pos": { "x": 656, "y": 318, "w": 544, "h": 150 } },
+    { "kind": "image", "field": "chart3", "pos": { "x": 80, "y": 488, "w": 544, "h": 150 } },
+    { "kind": "image", "field": "chart4", "pos": { "x": 656, "y": 488, "w": 544, "h": 150 } }
+  ]
+}

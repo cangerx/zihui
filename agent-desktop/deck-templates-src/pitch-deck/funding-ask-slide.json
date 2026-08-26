@@ -1,0 +1,38 @@
+{
+  "id": "funding-ask-slide",
+  "name": "融资需求",
+  "category": "pitch-deck",
+  "description": "融资金额与说明 + 资金用途卡片 + 里程碑条目。用于融资诉求页。",
+  "schema": {
+    "title": { "type": "text", "label": "小标题", "required": true, "maxChars": 28 },
+    "askAmount": { "type": "text", "label": "融资金额", "required": true, "maxChars": 16 },
+    "askContext": { "type": "multiline", "label": "融资说明", "required": true, "maxChars": 90 },
+    "runway": { "type": "text", "label": "现金跑道", "maxChars": 28 },
+    "allocations": { "type": "stat-list", "label": "资金用途(占比标题/说明)", "required": true, "maxItems": 4, "statValueMaxChars": 24, "statLabelMaxChars": 56 },
+    "milestones": { "type": "stat-list", "label": "里程碑(标签/说明)", "required": true, "maxItems": 4, "statValueMaxChars": 24, "statLabelMaxChars": 50 }
+  },
+  "defaultData": {
+    "title": "融资需求",
+    "askAmount": "250 万",
+    "askContext": "种子轮资金用于加速产品研发、聚焦获客与客户扩展。",
+    "runway": "可支撑 24 个月运营",
+    "allocations": [
+      { "value": "产品 45%", "label": "核心路线图、自动化与系统集成。" },
+      { "value": "增长 35%", "label": "销售、市场与客户扩展。" },
+      { "value": "运营 20%", "label": "客户成功、支持与基础设施。" }
+    ],
+    "milestones": [
+      { "value": "产品", "label": "上线面向企业的工作流管控能力。" },
+      { "value": "营收", "label": "形成可复制的销售与扩展模式。" },
+      { "value": "团队", "label": "补齐关键产品与市场岗位。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "kicker", "field": "title", "pos": { "x": 80, "y": 96, "w": 420 }, "size": 18 },
+    { "kind": "heading", "field": "askAmount", "level": 1, "pos": { "x": 80, "y": 180, "w": 420 }, "size": 80 },
+    { "kind": "paragraph", "field": "askContext", "pos": { "x": 80, "y": 300, "w": 420 }, "size": 20, "color": "muted" },
+    { "kind": "paragraph", "field": "runway", "pos": { "x": 80, "y": 440, "w": 420 }, "size": 22, "color": "accent" },
+    { "kind": "bulletCards", "field": "allocations", "pos": { "x": 560, "y": 100, "w": 640, "h": 280 }, "titleSize": 22, "descSize": 15, "cols": 3 },
+    { "kind": "bulletCards", "field": "milestones", "pos": { "x": 560, "y": 420, "w": 640, "h": 200 }, "titleSize": 18, "descSize": 14, "cols": 1, "rowH": 60 }
+  ]
+}

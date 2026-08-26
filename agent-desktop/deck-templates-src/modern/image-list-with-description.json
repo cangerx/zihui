@@ -1,0 +1,24 @@
+{
+  "id": "image-list-with-description",
+  "name": "产品列表",
+  "category": "modern",
+  "description": "顶部主标题，下方多列产品卡片（名称与描述），适合产品矩阵展示。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 40 },
+    "products": { "type": "stat-list", "label": "产品(名称/描述)", "required": true, "maxItems": 4, "statValueMaxChars": 50, "statLabelMaxChars": 100 }
+  },
+  "defaultData": {
+    "title": "产品概览",
+    "products": [
+      { "value": "物联网", "label": "逐项说明每款产品，随着产品扩展，对社区与市场问题的洞察也随之加深。" },
+      { "value": "数据看板", "label": "提供可选的产品类别，各产品协同运作，共同解决社会与经济问题。" },
+      { "value": "移动应用套件", "label": "提供可选的产品类别，各产品协同运作，共同解决社会与经济问题。" },
+      { "value": "智能家居平台", "label": "提供可选的产品类别，各产品协同运作，共同解决社会与经济问题。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 96, "w": 1120 }, "size": 44 },
+    { "kind": "bar", "pos": { "x": 80, "y": 176, "w": 64, "h": 6 } },
+    { "kind": "bulletCards", "field": "products", "pos": { "x": 80, "y": 232, "w": 1120, "h": 380 }, "titleSize": 20, "descSize": 14, "cols": 4 }
+  ]
+}

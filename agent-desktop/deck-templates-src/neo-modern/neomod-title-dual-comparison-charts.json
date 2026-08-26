@@ -1,0 +1,28 @@
+{
+  "id": "neomod-title-dual-comparison-charts",
+  "name": "标题双图表对比",
+  "category": "neo-modern",
+  "description": "标题下方为两张并排的对比卡片，每张含小标题、图表区(以配图占位)与底部脚注。适合两组数据的并列对比。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 50 },
+    "cards": { "type": "stat-list", "label": "对比卡片(小标题/脚注)", "required": true, "maxItems": 2, "statValueMaxChars": 20, "statLabelMaxChars": 25 },
+    "imageLeft": { "type": "image", "label": "左侧图表配图" },
+    "imageRight": { "type": "image", "label": "右侧图表配图" }
+  },
+  "defaultData": {
+    "title": "竞争力对比",
+    "cards": [
+      { "value": "我方方案", "label": "整体满意度评分对比" },
+      { "value": "竞品方案", "label": "整体满意度评分对比" }
+    ],
+    "imageLeft": "",
+    "imageRight": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 40 },
+    { "kind": "bar", "pos": { "x": 80, "y": 154, "w": 64, "h": 6 } },
+    { "kind": "bulletCards", "field": "cards", "pos": { "x": 80, "y": 196, "w": 1120, "h": 84 }, "titleSize": 22, "descSize": 15, "cols": 2 },
+    { "kind": "image", "field": "imageLeft", "pos": { "x": 80, "y": 300, "w": 540, "h": 340 } },
+    { "kind": "image", "field": "imageRight", "pos": { "x": 660, "y": 300, "w": 540, "h": 340 } }
+  ]
+}

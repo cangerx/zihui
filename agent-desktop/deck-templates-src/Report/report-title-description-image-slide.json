@@ -1,0 +1,29 @@
+{
+  "id": "report-title-description-image-slide",
+  "name": "标题描述配图",
+  "category": "Report",
+  "description": "左上为标题，下方为段落与可选要点列表，右侧锚定一张大尺寸配图。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 12 },
+    "body": { "type": "multiline", "label": "正文段落", "maxChars": 250 },
+    "bullets": { "type": "list", "label": "要点列表", "maxItems": 4, "itemMaxChars": 100 },
+    "image": { "type": "image", "label": "配图" }
+  },
+  "defaultData": {
+    "title": "引言",
+    "body": "本节介绍报告的背景与核心议题，帮助读者建立整体认知，并为后续的分析与结论提供必要的铺垫。",
+    "bullets": [
+      "明确分析的目标与边界",
+      "梳理关键背景与前提",
+      "提示需要重点关注的方面",
+      "为后续章节建立连贯脉络"
+    ],
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 76, "w": 540 }, "size": 72 },
+    { "kind": "paragraph", "field": "body", "pos": { "x": 80, "y": 208, "w": 520 }, "size": 20, "merge": true },
+    { "kind": "list", "field": "bullets", "pos": { "x": 80, "y": 360, "w": 520 }, "itemSize": 18 },
+    { "kind": "image", "field": "image", "pos": { "x": 660, "y": 180, "w": 540, "h": 400 } }
+  ]
+}

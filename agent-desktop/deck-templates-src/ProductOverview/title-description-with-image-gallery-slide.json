@@ -1,0 +1,33 @@
+{
+  "id": "title-description-with-image-gallery-slide",
+  "name": "标题描述配图集",
+  "category": "ProductOverview",
+  "description": "左上标题与描述 + 右上两图 + 底部一宽图加两小图的图集版式。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 12 },
+    "description": { "type": "multiline", "label": "描述正文", "maxChars": 120 },
+    "topCenterImage": { "type": "image", "label": "右上图一" },
+    "topRightImage": { "type": "image", "label": "右上图二" },
+    "bottomWideImage": { "type": "image", "label": "底部宽图" },
+    "bottomCenterImage": { "type": "image", "label": "底部图二" },
+    "bottomRightImage": { "type": "image", "label": "底部图三" }
+  },
+  "defaultData": {
+    "title": "图集展示",
+    "description": "通过一组实景照片直观呈现产品的应用场景与团队协作氛围。",
+    "topCenterImage": "",
+    "topRightImage": "",
+    "bottomWideImage": "",
+    "bottomCenterImage": "",
+    "bottomRightImage": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 80, "w": 540 }, "size": 56 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 180, "w": 540 }, "size": 20 },
+    { "kind": "image", "field": "topCenterImage", "pos": { "x": 660, "y": 80, "w": 256, "h": 274 } },
+    { "kind": "image", "field": "topRightImage", "pos": { "x": 936, "y": 80, "w": 264, "h": 274 } },
+    { "kind": "image", "field": "bottomWideImage", "pos": { "x": 80, "y": 376, "w": 560, "h": 264 } },
+    { "kind": "image", "field": "bottomCenterImage", "pos": { "x": 660, "y": 376, "w": 256, "h": 264 } },
+    { "kind": "image", "field": "bottomRightImage", "pos": { "x": 936, "y": 376, "w": 264, "h": 264 } }
+  ]
+}

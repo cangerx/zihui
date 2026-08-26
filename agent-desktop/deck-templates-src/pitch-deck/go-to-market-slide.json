@@ -1,0 +1,28 @@
+{
+  "id": "go-to-market-slide",
+  "name": "市场进入策略",
+  "category": "pitch-deck",
+  "description": "标题 + 策略概述 + 渠道条目 + 漏斗阶段。用于讲述获客与扩张路径。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 28 },
+    "strategy": { "type": "multiline", "label": "策略概述", "required": true, "maxChars": 95 },
+    "channels": { "type": "stat-list", "label": "渠道(名称/受众与打法)", "required": true, "maxItems": 4, "statValueMaxChars": 24, "statLabelMaxChars": 56 },
+    "funnel": { "type": "list", "label": "漏斗阶段", "required": true, "maxItems": 5, "itemMaxChars": 18 }
+  },
+  "defaultData": {
+    "title": "市场进入策略",
+    "strategy": "先以聚焦的外呼与伙伴渠道切入，再通过用量增长与客户转介绍实现扩张。",
+    "channels": [
+      { "value": "外呼", "label": "面向高契合度运营者，瞄准有紧迫工作流可见性需求的客户。" },
+      { "value": "伙伴", "label": "通过已在指导运营变革的顾问生态进行联合销售。" },
+      { "value": "扩展", "label": "从一个团队扩展到相邻工作流与业务单元。" }
+    ],
+    "funnel": ["锁定目标", "价值沟通", "试点转化", "扩展覆盖"]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 72, "w": 1120 }, "size": 46 },
+    { "kind": "paragraph", "field": "strategy", "pos": { "x": 80, "y": 146, "w": 1120 }, "size": 19, "color": "muted" },
+    { "kind": "bulletCards", "field": "channels", "pos": { "x": 80, "y": 236, "w": 620, "h": 440 }, "titleSize": 20, "descSize": 14, "cols": 1, "rowH": 84 },
+    { "kind": "numberedList", "field": "funnel", "pos": { "x": 740, "y": 248, "w": 460 }, "itemSize": 18, "gap": 12 }
+  ]
+}

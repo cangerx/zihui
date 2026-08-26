@@ -1,0 +1,28 @@
+{
+  "id": "title-description-with-table-slide",
+  "name": "标题描述配对照表",
+  "category": "ProductOverview",
+  "description": "标题 + 副标题 + 按维度展示文字对照内容的表格(以卡片承载)。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 42 },
+    "subtitle": { "type": "multiline", "label": "副标题", "maxChars": 120 },
+    "rows": { "type": "stat-list", "label": "对照维度(名称/内容)", "required": true, "maxItems": 6, "statValueMaxChars": 20, "statLabelMaxChars": 40 }
+  },
+  "defaultData": {
+    "title": "方案对照表",
+    "subtitle": "围绕关键评估维度，逐项列出各方案的具体表现以便横向比较。",
+    "rows": [
+      { "value": "部署方式", "label": "云端 SaaS，开箱即用。" },
+      { "value": "计费模式", "label": "按用量灵活计费。" },
+      { "value": "上手周期", "label": "一周内完成上线。" },
+      { "value": "技术支持", "label": "7x24 小时响应。" },
+      { "value": "安全合规", "label": "通过等保三级认证。" },
+      { "value": "开放接口", "label": "提供完整 API 文档。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 54 },
+    { "kind": "paragraph", "field": "subtitle", "pos": { "x": 80, "y": 168, "w": 900 }, "size": 20 },
+    { "kind": "bulletCards", "field": "rows", "pos": { "x": 80, "y": 256, "w": 1120, "h": 384 }, "titleSize": 19, "descSize": 16, "cols": 3 }
+  ]
+}

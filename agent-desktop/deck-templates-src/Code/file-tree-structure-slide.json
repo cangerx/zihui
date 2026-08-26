@@ -1,0 +1,38 @@
+{
+  "id": "file-tree-structure-slide",
+  "name": "文件树结构",
+  "category": "Code",
+  "description": "标题 + 描述 + 左侧文件树（逐行列表）+ 右侧重点注释卡片。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 44 },
+    "description": { "type": "multiline", "label": "描述", "required": true, "maxChars": 220 },
+    "rootLabel": { "type": "text", "label": "根目录标签", "maxChars": 36 },
+    "tree": { "type": "list", "label": "文件树(每行一项)", "required": true, "maxItems": 12, "itemMaxChars": 48 },
+    "highlights": { "type": "stat-list", "label": "重点注释(名称/说明)", "required": true, "maxItems": 5, "statValueMaxChars": 26, "statLabelMaxChars": 120 }
+  },
+  "defaultData": {
+    "title": "模板目录结构",
+    "description": "该结构展示了布局、Schema、配置与共享工具是如何组织的。",
+    "rootLabel": "servers/nextjs/app",
+    "tree": [
+      "presentation-templates/",
+      "|-- Code/",
+      "|   |-- settings.json",
+      "|   |-- CoverSlide.tsx",
+      "|   |-- CodeExplanationSlide.tsx",
+      "|   `-- codeBlockFitting.ts"
+    ],
+    "highlights": [
+      { "value": "settings.json", "label": "定义模板元数据与可用布局。" },
+      { "value": "Schema", "label": "约束 AI 生成的数据结构形态。" },
+      { "value": "TSX 布局", "label": "把校验后的内容渲染为幻灯片。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 60, "w": 1120 }, "size": 44 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 134, "w": 1050 }, "size": 17, "color": "muted" },
+    { "kind": "kicker", "field": "rootLabel", "pos": { "x": 80, "y": 192, "w": 660 }, "size": 13, "color": "accent" },
+    { "kind": "list", "field": "tree", "pos": { "x": 80, "y": 222, "w": 660 }, "itemSize": 16, "gap": 5, "color": "fg" },
+    { "kind": "bulletCards", "field": "highlights", "pos": { "x": 780, "y": 192, "w": 420, "h": 460 }, "titleSize": 16, "descSize": 13, "cols": 1 }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "neostd-title-dual-comparison-cards",
+  "name": "标题加双栏对比卡片",
+  "category": "neo-standard",
+  "description": "居中标题与左右并排的两张卡片(带小标题与说明)，适合问题/方案、前/后对比。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "comparisonSections": { "type": "stat-list", "label": "对比项(小标题/说明)", "required": true, "maxItems": 2, "statValueMaxChars": 15, "statLabelMaxChars": 200 }
+  },
+  "defaultData": {
+    "title": "对比分析",
+    "comparisonSections": [
+      { "value": "问题", "label": "演示文稿是一种沟通工具，可用于演示、讲座、汇报等场景，通常面向现场观众呈现，但缺乏统一标准会拉低表达效率。" },
+      { "value": "方案", "label": "通过结构化模板与受控版式，统一视觉语言并自动规避溢出，让团队在任何场景都能高效产出专业演示文稿。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "bar", "pos": { "x": 582, "y": 60, "w": 116, "h": 3 } },
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 90, "w": 1120 }, "size": 42 },
+    { "kind": "bulletCards", "field": "comparisonSections", "pos": { "x": 107, "y": 196, "w": 1066, "h": 441 }, "titleSize": 28, "descSize": 19, "cols": 2 }
+  ]
+}

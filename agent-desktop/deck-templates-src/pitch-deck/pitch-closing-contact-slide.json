@@ -1,0 +1,126 @@
+{
+  "id": "pitch-closing-contact-slide",
+  "name": "结尾联系页",
+  "category": "pitch-deck",
+  "description": "大字结束语 + 联系人信息与跟进方式。用于路演收尾页。",
+  "schema": {
+    "title": {
+      "type": "text",
+      "label": "结尾标题",
+      "required": true,
+      "maxChars": 32
+    },
+    "statement": {
+      "type": "multiline",
+      "label": "结束语",
+      "required": true,
+      "maxChars": 105
+    },
+    "contactName": {
+      "type": "text",
+      "label": "联系人姓名",
+      "maxChars": 42
+    },
+    "contactRole": {
+      "type": "text",
+      "label": "联系人职务",
+      "maxChars": 36
+    },
+    "contactItems": {
+      "type": "stat-list",
+      "label": "联系方式(标签/内容)",
+      "required": true,
+      "maxItems": 4,
+      "statValueMaxChars": 16,
+      "statLabelMaxChars": 50
+    }
+  },
+  "defaultData": {
+    "title": "感谢聆听",
+    "statement": "我们正在打造帮助团队更快、更清晰做出决策的运营底座。",
+    "contactName": "创始人姓名",
+    "contactRole": "创始人兼首席执行官",
+    "contactItems": [
+      {
+        "value": "邮箱",
+        "label": "founder@example.com"
+      },
+      {
+        "value": "网站",
+        "label": "www.example.com"
+      },
+      {
+        "value": "跟进",
+        "label": "投资人资料室开放查阅"
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "kind": "heading",
+      "field": "title",
+      "level": 1,
+      "pos": {
+        "x": 80,
+        "y": 80,
+        "w": 1120
+      },
+      "size": 72
+    },
+    {
+      "kind": "paragraph",
+      "field": "statement",
+      "pos": {
+        "x": 80,
+        "y": 200,
+        "w": 940
+      },
+      "size": 36,
+      "color": "fg"
+    },
+    {
+      "kind": "rule",
+      "pos": {
+        "x": 80,
+        "y": 440,
+        "w": 1120,
+        "h": 1
+      }
+    },
+    {
+      "kind": "paragraph",
+      "field": "contactName",
+      "pos": {
+        "x": 80,
+        "y": 470,
+        "w": 360
+      },
+      "size": 24,
+      "color": "fg"
+    },
+    {
+      "kind": "paragraph",
+      "field": "contactRole",
+      "pos": {
+        "x": 80,
+        "y": 510,
+        "w": 360
+      },
+      "size": 18,
+      "color": "muted"
+    },
+    {
+      "kind": "bulletCards",
+      "field": "contactItems",
+      "pos": {
+        "x": 480,
+        "y": 470,
+        "w": 720,
+        "h": 150
+      },
+      "titleSize": 16,
+      "descSize": 16,
+      "cols": 2
+    }
+  ]
+}

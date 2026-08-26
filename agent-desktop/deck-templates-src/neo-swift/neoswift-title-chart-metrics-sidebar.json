@@ -1,0 +1,26 @@
+{
+  "id": "neoswift-title-chart-metrics-sidebar",
+  "name": "图表加指标侧栏",
+  "category": "neo-swift",
+  "description": "左侧大图表占位，右侧竖排指标卡片，适合展示业绩指标、财务趋势或 KPI 对比。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 15 },
+    "chart": { "type": "image", "label": "图表/数据图" },
+    "metrics": { "type": "stat-list", "label": "指标卡片(数值/说明)", "required": true, "maxItems": 4, "statValueMaxChars": 10, "statLabelMaxChars": 35 }
+  },
+  "defaultData": {
+    "title": "支出与回报",
+    "chart": "",
+    "metrics": [
+      { "value": "8,450", "label": "调研投入：客户响应延迟" },
+      { "value": "92%", "label": "核心环节按时交付率" },
+      { "value": "3.2x", "label": "投入产出同比提升" },
+      { "value": "150+", "label": "覆盖的活跃合作客户" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 700 }, "size": 42 },
+    { "kind": "image", "field": "chart", "pos": { "x": 80, "y": 168, "w": 660, "h": 472 } },
+    { "kind": "bulletCards", "field": "metrics", "pos": { "x": 780, "y": 168, "w": 420, "h": 472 }, "titleSize": 28, "descSize": 14, "cols": 1 }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "header-bullets-title-description-image-slide",
+  "name": "左要点卡右标题",
+  "category": "standard",
+  "description": "左侧带标题与描述的要点卡片，右侧为大标题与支撑说明。",
+  "schema": {
+    "rightTitle": { "type": "text", "label": "主标题", "required": true, "maxChars": 72 },
+    "rightDescription": { "type": "multiline", "label": "支撑说明", "maxChars": 240 },
+    "cards": { "type": "stat-list", "label": "要点卡(标题/描述)", "required": true, "maxItems": 4, "statValueMaxChars": 38, "statLabelMaxChars": 100 }
+  },
+  "defaultData": {
+    "rightTitle": "颠覆行业格局",
+    "rightDescription": "凭借创新的产品理念与对客户需求的深刻理解，我们正在重新定义行业标准，为市场注入全新活力。",
+    "cards": [
+      { "value": "远见卓识的领导力", "label": "以清晰愿景引领团队，把握行业发展方向。" },
+      { "value": "以创新为核心", "label": "持续投入研发，推动产品与技术不断突破。" },
+      { "value": "以客户为中心", "label": "深入理解客户痛点，提供超出预期的体验。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "bulletCards", "field": "cards", "pos": { "x": 80, "y": 110, "w": 560, "h": 500 }, "titleSize": 20, "descSize": 15, "cols": 1 },
+    { "kind": "heading", "field": "rightTitle", "level": 1, "pos": { "x": 700, "y": 140, "w": 500 }, "size": 48 },
+    { "kind": "bar", "pos": { "x": 700, "y": 300, "w": 64, "h": 6 } },
+    { "kind": "paragraph", "field": "rightDescription", "pos": { "x": 700, "y": 340, "w": 500 }, "size": 17 }
+  ]
+}

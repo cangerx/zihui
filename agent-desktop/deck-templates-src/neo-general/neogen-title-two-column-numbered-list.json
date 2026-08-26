@@ -1,0 +1,26 @@
+{
+  "id": "neogen-title-two-column-numbered-list",
+  "name": "标题配双栏编号目录",
+  "category": "neo-general",
+  "description": "左侧大标题，右侧双栏编号目录，每项含编号圆标与标签。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "items": { "type": "list", "label": "目录条目", "required": true, "maxItems": 10, "itemMaxChars": 40 }
+  },
+  "defaultData": {
+    "title": "目录",
+    "items": [
+      "引言",
+      "关键发现",
+      "数据分析",
+      "结论建议",
+      "总结",
+      "致谢"
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 260, "w": 420 }, "size": 42 },
+    { "kind": "bar", "pos": { "x": 80, "y": 350, "w": 116, "h": 6 } },
+    { "kind": "numberedList", "field": "items", "pos": { "x": 560, "y": 120, "w": 640 }, "itemSize": 20 }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "id": "code-table-of-content-slide",
+  "name": "目录页",
+  "category": "Code",
+  "description": "标题 + 双列编号目录条目（条目名 + 简短描述）。",
+  "schema": {
+    "title": {
+      "type": "text",
+      "label": "主标题",
+      "required": true,
+      "maxChars": 24
+    },
+    "items": {
+      "type": "stat-list",
+      "label": "目录条目(名称/描述)",
+      "required": true,
+      "maxItems": 12,
+      "statValueMaxChars": 30,
+      "statLabelMaxChars": 100
+    }
+  },
+  "defaultData": {
+    "title": "目录",
+    "items": [
+      {
+        "value": "项目背景",
+        "label": "介绍项目的起源与目标。"
+      },
+      {
+        "value": "核心功能",
+        "label": "概述系统提供的关键能力。"
+      },
+      {
+        "value": "技术架构",
+        "label": "说明整体技术选型与分层。"
+      },
+      {
+        "value": "实现细节",
+        "label": "深入讲解关键模块的实现。"
+      },
+      {
+        "value": "接口设计",
+        "label": "对外暴露的接口与契约。"
+      },
+      {
+        "value": "数据模型",
+        "label": "核心数据结构与存储方案。"
+      },
+      {
+        "value": "测试策略",
+        "label": "保证质量的测试方法。"
+      },
+      {
+        "value": "部署流程",
+        "label": "上线与持续交付方案。"
+      },
+      {
+        "value": "性能指标",
+        "label": "关键性能与可用性数据。"
+      },
+      {
+        "value": "安全设计",
+        "label": "鉴权与防护相关机制。"
+      },
+      {
+        "value": "未来规划",
+        "label": "后续迭代的方向与计划。"
+      },
+      {
+        "value": "总结回顾",
+        "label": "全文要点的归纳总结。"
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "kind": "heading",
+      "field": "title",
+      "level": 1,
+      "pos": {
+        "x": 80,
+        "y": 72,
+        "w": 1120
+      },
+      "size": 52
+    },
+    {
+      "kind": "bar",
+      "pos": {
+        "x": 80,
+        "y": 152,
+        "w": 64,
+        "h": 6
+      }
+    },
+    {
+      "kind": "bulletCards",
+      "field": "items",
+      "pos": {
+        "x": 80,
+        "y": 190,
+        "w": 1120,
+        "h": 466
+      },
+      "titleSize": 18,
+      "descSize": 13,
+      "cols": 2
+    }
+  ]
+}

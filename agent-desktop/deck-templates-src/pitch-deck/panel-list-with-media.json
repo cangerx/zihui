@@ -1,0 +1,28 @@
+{
+  "id": "panel-list-with-media",
+  "name": "列表加媒体面板",
+  "category": "pitch-deck",
+  "description": "左侧标题与编号列表 + 右侧媒体面板的版式。适合目录或条目清单配图。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 14 },
+    "items": { "type": "list", "label": "列表项", "required": true, "maxItems": 10, "itemMaxChars": 18 },
+    "image": { "type": "image", "label": "右侧媒体面板" }
+  },
+  "defaultData": {
+    "title": "目录",
+    "items": [
+      "章节标题",
+      "清晰表达",
+      "设计原则",
+      "视觉结构",
+      "字体排版",
+      "色彩与留白"
+    ],
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 700 }, "size": 60 },
+    { "kind": "numberedList", "field": "items", "pos": { "x": 80, "y": 220, "w": 700 }, "itemSize": 22 },
+    { "kind": "image", "field": "image", "pos": { "x": 872, "y": 0, "w": 408, "h": 720 } }
+  ]
+}

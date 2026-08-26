@@ -1,0 +1,31 @@
+{
+  "id": "report-appendix-notes-slide",
+  "name": "附录说明",
+  "category": "Report",
+  "description": "报告页：附录说明、支撑细节，以及紧凑的脚注或参考声明。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 34 },
+    "subtitle": { "type": "multiline", "label": "副标题", "required": true, "maxChars": 140 },
+    "notes": { "type": "stat-list", "label": "说明(标签/细节)", "required": true, "maxItems": 6, "statValueMaxChars": 28, "statLabelMaxChars": 120 },
+    "footnotes": { "type": "list", "label": "脚注/参考", "required": true, "maxItems": 3, "itemMaxChars": 100 }
+  },
+  "defaultData": {
+    "title": "附录说明",
+    "subtitle": "支撑报告主体叙述的补充背景、定义、参考资料或注意事项。",
+    "notes": [
+      { "value": "来源范围", "label": "来源材料包含报告期内可获取的记录与备注。" },
+      { "value": "术语定义", "label": "术语与标签已统一，以保持各章节比较的一致性。" },
+      { "value": "复核说明", "label": "当定性输入与来源记录存在差异时，可能需要后续验证。" }
+    ],
+    "footnotes": [
+      "图表与示例应对照最新批准的来源数据进行复核。"
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 64, "w": 1120 }, "size": 54 },
+    { "kind": "paragraph", "field": "subtitle", "pos": { "x": 80, "y": 142, "w": 1000 }, "size": 20, "color": "muted" },
+    { "kind": "bar", "pos": { "x": 80, "y": 192, "w": 64, "h": 6 } },
+    { "kind": "bulletCards", "field": "notes", "pos": { "x": 80, "y": 232, "w": 1120, "h": 300 }, "titleSize": 22, "descSize": 15, "cols": 3 },
+    { "kind": "numberedList", "field": "footnotes", "pos": { "x": 80, "y": 564, "w": 1120 }, "itemSize": 16, "color": "muted" }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "title-cards-list-with-text-slide",
+  "name": "标题配定价卡片",
+  "category": "ProductOverview",
+  "description": "标题 + 三张定价卡片(价格/简述)，用于套餐展示。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 18 },
+    "plans": { "type": "stat-list", "label": "套餐(价格/简述)", "required": true, "maxItems": 3, "statValueMaxChars": 12, "statLabelMaxChars": 18 }
+  },
+  "defaultData": {
+    "title": "定价方案",
+    "plans": [
+      { "value": "￥80/月", "label": "适合个人与小团队起步。" },
+      { "value": "￥280/月", "label": "适合成长型团队进阶。" },
+      { "value": "定制报价", "label": "面向企业的专属方案。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 56 },
+    { "kind": "bulletCards", "field": "plans", "pos": { "x": 80, "y": 240, "w": 1120, "h": 360 }, "titleSize": 30, "descSize": 18, "cols": 3 }
+  ]
+}

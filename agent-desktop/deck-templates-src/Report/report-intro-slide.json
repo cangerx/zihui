@@ -1,0 +1,25 @@
+{
+  "id": "report-intro-slide",
+  "name": "封面页",
+  "category": "Report",
+  "description": "封面/扉页：上下两行大标题，标题下方一条分隔线，分隔线下方为署名与角色或机构信息块。",
+  "schema": {
+    "titleFirstLine": { "type": "text", "label": "标题第一行", "required": true, "maxChars": 12 },
+    "titleSecondLine": { "type": "text", "label": "标题第二行", "required": true, "maxChars": 12 },
+    "name": { "type": "text", "label": "署名(个人/团队/机构)", "maxChars": 10 },
+    "position": { "type": "text", "label": "角色或机构地址", "maxChars": 20 }
+  },
+  "defaultData": {
+    "titleFirstLine": "公司",
+    "titleSecondLine": "年度报告",
+    "name": "张三",
+    "position": "公司名称 | 战略、内容、增长"
+  },
+  "blocks": [
+    { "kind": "heading", "field": "titleFirstLine", "level": 1, "pos": { "x": 160, "y": 188, "w": 960 }, "size": 110, "color": "fg" },
+    { "kind": "heading", "field": "titleSecondLine", "level": 2, "pos": { "x": 160, "y": 312, "w": 960 }, "size": 76, "color": "fg" },
+    { "kind": "bar", "pos": { "x": 160, "y": 430, "w": 67, "h": 4 }, "color": "accent" },
+    { "kind": "heading", "field": "name", "level": 2, "pos": { "x": 160, "y": 472, "w": 960 }, "size": 36, "color": "fg" },
+    { "kind": "paragraph", "field": "position", "pos": { "x": 160, "y": 528, "w": 960 }, "size": 19, "color": "muted" }
+  ]
+}

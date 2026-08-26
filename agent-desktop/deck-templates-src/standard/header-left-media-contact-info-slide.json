@@ -1,0 +1,25 @@
+{
+  "id": "header-left-media-contact-info-slide",
+  "name": "联系方式",
+  "category": "standard",
+  "description": "左侧配图、右侧标题与联系信息分组，仅用于展示联系方式。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 40 },
+    "sections": { "type": "stat-list", "label": "联系信息(标签/内容)", "required": true, "maxItems": 3, "statValueMaxChars": 10, "statLabelMaxChars": 50 },
+    "image": { "type": "image", "label": "左侧配图" }
+  },
+  "defaultData": {
+    "title": "欢迎与我们联系",
+    "sections": [
+      { "value": "地址", "label": "上海市浦东新区世纪大道 233 号" },
+      { "value": "电话", "label": "+86 21 1234 5678" },
+      { "value": "邮箱", "label": "contact@company.com" }
+    ],
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "image", "field": "image", "pos": { "x": 80, "y": 80, "w": 560, "h": 560 } },
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 700, "y": 100, "w": 500 }, "size": 44 },
+    { "kind": "bulletCards", "field": "sections", "pos": { "x": 700, "y": 220, "w": 500, "h": 400 }, "titleSize": 20, "descSize": 16, "cols": 1 }
+  ]
+}

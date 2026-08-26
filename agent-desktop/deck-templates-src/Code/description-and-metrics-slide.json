@@ -1,0 +1,29 @@
+{
+  "id": "description-and-metrics-slide",
+  "name": "说明与指标",
+  "category": "Code",
+  "description": "左侧说明文字 + 右侧指标卡片网格的分栏版式。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 18 },
+    "explanationTitle": { "type": "text", "label": "说明标题", "maxChars": 16 },
+    "explanation": { "type": "multiline", "label": "说明正文", "maxChars": 320 },
+    "metrics": { "type": "stat-list", "label": "指标(数值/说明)", "maxItems": 4, "statValueMaxChars": 6, "statLabelMaxChars": 30 }
+  },
+  "defaultData": {
+    "title": "关键指标",
+    "explanationTitle": "说明",
+    "explanation": "这些指标反映了产品在过去一年中的整体运行状况：活跃用户持续增长，服务稳定性保持在高水平，核心业务流程的转化效率稳步提升。",
+    "metrics": [
+      { "value": "5万+", "label": "近一年活跃用户" },
+      { "value": "99.9%", "label": "服务可用性" },
+      { "value": "3.2x", "label": "营收同比增长" },
+      { "value": "98%", "label": "客户留存率" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 64, "w": 1120 }, "size": 56 },
+    { "kind": "heading", "field": "explanationTitle", "level": 2, "pos": { "x": 80, "y": 172, "w": 520 }, "size": 24 },
+    { "kind": "paragraph", "field": "explanation", "pos": { "x": 80, "y": 220, "w": 520 }, "size": 20, "color": "muted" },
+    { "kind": "statGrid", "field": "metrics", "pos": { "x": 660, "y": 172, "w": 540, "h": 210 }, "valueSize": 48, "labelSize": 16, "cols": 2 }
+  ]
+}

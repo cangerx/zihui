@@ -1,0 +1,29 @@
+{
+  "id": "neostd-title-description-radial-cards",
+  "name": "标题描述加进度卡片",
+  "category": "neo-standard",
+  "description": "顶部居中标题与描述，下方最多 8 个带百分比进度的指标卡片网格。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 40 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 200 },
+    "cards": { "type": "stat-list", "label": "卡片(百分比/说明)", "required": true, "maxItems": 8, "statValueMaxChars": 6, "statLabelMaxChars": 50 }
+  },
+  "defaultData": {
+    "title": "执行摘要",
+    "description": "聚焦员工规模 500 人以上、处于金融服务、医疗健康与科技行业的企业，通过精准营销与内容驱动策略推进增长。",
+    "cards": [
+      { "value": "10%", "label": "调研：客户交付延迟" },
+      { "value": "40%", "label": "调研：客户交付延迟" },
+      { "value": "60%", "label": "调研：客户交付延迟" },
+      { "value": "80%", "label": "调研：客户交付延迟" },
+      { "value": "30%", "label": "调研：客户交付延迟" },
+      { "value": "99%", "label": "调研：客户交付延迟" }
+    ]
+  },
+  "blocks": [
+    { "kind": "bar", "pos": { "x": 582, "y": 80, "w": 116, "h": 4 } },
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 108, "w": 1120 }, "size": 40 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 230, "y": 184, "w": 820 }, "size": 16, "merge": true },
+    { "kind": "statGrid", "field": "cards", "pos": { "x": 80, "y": 280, "w": 1120, "h": 175 }, "valueSize": 38, "labelSize": 15, "cols": 3 }
+  ]
+}

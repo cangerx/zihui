@@ -1,0 +1,15 @@
+[Unit]
+Description=Haohuoban cloud-build GitHub mirror worker
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/agent-mirror-worker
+EnvironmentFile=/opt/agent-mirror-worker/.env
+ExecStart=/usr/bin/python3 /opt/agent-mirror-worker/src/worker.py poll
+Restart=always
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target

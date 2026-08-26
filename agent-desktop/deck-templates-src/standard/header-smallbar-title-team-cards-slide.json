@@ -1,0 +1,23 @@
+{
+  "id": "header-smallbar-title-team-cards-slide",
+  "name": "团队成员卡",
+  "category": "standard",
+  "description": "居中标题，下方为团队成员卡片网格(姓名与职责描述)。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 50 },
+    "cards": { "type": "stat-list", "label": "成员(姓名/职责)", "required": true, "maxItems": 4, "statValueMaxChars": 30, "statLabelMaxChars": 50 }
+  },
+  "defaultData": {
+    "title": "我们的专业团队",
+    "cards": [
+      { "value": "张三", "label": "市场营销专家，擅长品牌建设与业务增长。" },
+      { "value": "李四", "label": "资深产品经理，专注用户体验与产品规划。" },
+      { "value": "王五", "label": "技术负责人，主导架构设计与工程实践。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 90, "w": 1120 }, "size": 46 },
+    { "kind": "bar", "pos": { "x": 80, "y": 190, "w": 64, "h": 6 } },
+    { "kind": "bulletCards", "field": "cards", "pos": { "x": 80, "y": 240, "w": 1120, "h": 360 }, "titleSize": 22, "descSize": 14, "cols": 3 }
+  ]
+}

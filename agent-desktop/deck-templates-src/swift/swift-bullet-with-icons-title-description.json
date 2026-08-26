@@ -1,0 +1,33 @@
+{
+  "id": "swift-bullet-with-icons-title-description",
+  "name": "信息图要点",
+  "category": "swift",
+  "description": "大标题 + 右侧导语段落 + 一行要点卡片(标题与描述)。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 60 },
+    "sideHeading": { "type": "text", "label": "导语标题", "maxChars": 60 },
+    "sideParagraph": { "type": "multiline", "label": "导语正文", "maxChars": 300 },
+    "items": { "type": "stat-list", "label": "要点(标题/描述)", "required": true, "maxItems": 4, "statValueMaxChars": 40, "statLabelMaxChars": 160 },
+    "website": { "type": "text", "label": "网址", "maxChars": 60 }
+  },
+  "defaultData": {
+    "title": "我们的信息图",
+    "sideHeading": "概览说明",
+    "sideParagraph": "用简洁的语言交代背景与上下文，让读者在一两行内快速理解整页的重点与逻辑。",
+    "items": [
+      { "value": "专业团队", "label": "经验丰富的成员协同推进，保障项目稳步落地。" },
+      { "value": "以人为本", "label": "围绕用户与客户的真实诉求设计每一个环节。" },
+      { "value": "清晰节奏", "label": "明确的时间安排让交付过程可预期、可追踪。" },
+      { "value": "持续优化", "label": "基于反馈不断迭代，让结果越来越好。" }
+    ],
+    "website": "www.yourwebsite.com"
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 96, "w": 640 }, "size": 52 },
+    { "kind": "heading", "field": "sideHeading", "level": 2, "pos": { "x": 760, "y": 100, "w": 440 }, "size": 18, "font": "body" },
+    { "kind": "paragraph", "field": "sideParagraph", "pos": { "x": 760, "y": 134, "w": 440 }, "size": 14 },
+    { "kind": "bulletCards", "field": "items", "pos": { "x": 80, "y": 290, "w": 1120, "h": 310 }, "titleSize": 18, "descSize": 14, "cols": 4 },
+    { "kind": "rule", "pos": { "x": 80, "y": 650, "w": 1120, "h": 2 } },
+    { "kind": "paragraph", "field": "website", "pos": { "x": 80, "y": 628, "w": 600 }, "size": 14, "color": "muted" }
+  ]
+}

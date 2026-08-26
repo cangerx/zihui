@@ -1,0 +1,74 @@
+{
+  "id": "code-cover-slide",
+  "name": "封面页",
+  "category": "Code",
+  "description": "开场封面页：机构/演讲者名 + 标题 + 副标题，居中排版。",
+  "schema": {
+    "companyName": {
+      "type": "text",
+      "label": "机构/演讲者",
+      "maxChars": 18
+    },
+    "title": {
+      "type": "text",
+      "label": "主标题",
+      "required": true,
+      "maxChars": 28
+    },
+    "subtitle": {
+      "type": "text",
+      "label": "副标题",
+      "required": true,
+      "maxChars": 40
+    }
+  },
+  "defaultData": {
+    "companyName": "公司名称",
+    "title": "开发路线图",
+    "subtitle": "用系统化的开发流程把创意打磨为可上线的产品。"
+  },
+  "blocks": [
+    {
+      "kind": "kicker",
+      "field": "companyName",
+      "pos": {
+        "x": 200,
+        "y": 230,
+        "w": 880
+      },
+      "size": 18,
+      "color": "accent"
+    },
+    {
+      "kind": "heading",
+      "field": "title",
+      "level": 1,
+      "pos": {
+        "x": 200,
+        "y": 280,
+        "w": 880
+      },
+      "size": 64
+    },
+    {
+      "kind": "bar",
+      "pos": {
+        "x": 200,
+        "y": 392,
+        "w": 80,
+        "h": 6
+      }
+    },
+    {
+      "kind": "paragraph",
+      "field": "subtitle",
+      "pos": {
+        "x": 200,
+        "y": 424,
+        "w": 880
+      },
+      "size": 24,
+      "color": "muted"
+    }
+  ]
+}

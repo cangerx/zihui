@@ -1,0 +1,26 @@
+{
+  "id": "numbered-bullets-slide",
+  "name": "编号要点",
+  "category": "general",
+  "description": "大标题 + 配图 + 带描述的编号要点卡片。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 40 },
+    "points": { "type": "stat-list", "label": "要点(标题/描述)", "required": true, "maxItems": 4, "statValueMaxChars": 80, "statLabelMaxChars": 150 },
+    "image": { "type": "image", "label": "配图" }
+  },
+  "defaultData": {
+    "title": "市场验证",
+    "points": [
+      { "value": "早期客户认可", "label": "首批客户复购率高，口碑稳步建立。" },
+      { "value": "付费意愿明确", "label": "核心功能被验证为刚需，转化顺畅。" },
+      { "value": "渠道可复制", "label": "获客路径清晰，具备规模化条件。" }
+    ],
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 96, "w": 600 }, "size": 44 },
+    { "kind": "bar", "pos": { "x": 80, "y": 176, "w": 64, "h": 6 } },
+    { "kind": "bulletCards", "field": "points", "pos": { "x": 80, "y": 216, "w": 600, "h": 440 }, "titleSize": 21, "descSize": 15, "cols": 1 },
+    { "kind": "image", "field": "image", "pos": { "x": 740, "y": 140, "w": 460, "h": 440 } }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "table-of-contents-slide",
+  "name": "目录",
+  "category": "general",
+  "description": "带编号的章节目录，建议紧跟开篇页之后使用。",
+  "schema": {
+    "title": { "type": "text", "label": "标题", "required": true, "maxChars": 40 },
+    "sections": { "type": "list", "label": "章节", "required": true, "maxItems": 6, "itemMaxChars": 80 }
+  },
+  "defaultData": {
+    "title": "目录",
+    "sections": [
+      "市场背景与机会",
+      "产品与解决方案",
+      "商业模式",
+      "团队介绍",
+      "发展规划"
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 96, "w": 1120 }, "size": 44 },
+    { "kind": "bar", "pos": { "x": 80, "y": 176, "w": 64, "h": 6 } },
+    { "kind": "numberedList", "field": "sections", "pos": { "x": 80, "y": 224, "w": 1120 }, "itemSize": 24, "gap": 14 }
+  ]
+}

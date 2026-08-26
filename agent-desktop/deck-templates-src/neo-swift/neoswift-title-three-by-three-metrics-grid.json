@@ -1,0 +1,29 @@
+{
+  "id": "neoswift-title-three-by-three-metrics-grid",
+  "name": "标题九宫格指标对比",
+  "category": "neo-swift",
+  "description": "居中主标题，下方为最多 9 个指标卡片的三列网格，每卡含标签、数值与说明。适合对比多项 KPI 或基准数据。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 40 },
+    "items": { "type": "stat-list", "label": "指标卡片(数值/说明)", "required": true, "maxItems": 9, "statValueMaxChars": 10, "statLabelMaxChars": 25 }
+  },
+  "defaultData": {
+    "title": "对比快照",
+    "items": [
+      { "value": "8,450", "label": "调研：客户响应延迟" },
+      { "value": "92%", "label": "核心环节按时交付率" },
+      { "value": "3.2x", "label": "投入产出同比提升" },
+      { "value": "150+", "label": "活跃合作客户数" },
+      { "value": "98%", "label": "核心客户群留存率" },
+      { "value": "6 月", "label": "获客成本回收周期" },
+      { "value": "35%", "label": "企业客户转化率提升" },
+      { "value": "4.8", "label": "客户满意度评分" },
+      { "value": "12%", "label": "市场份额占比" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 64, "w": 1120 }, "size": 42 },
+    { "kind": "bar", "pos": { "x": 80, "y": 150, "w": 64, "h": 6 } },
+    { "kind": "statGrid", "field": "items", "pos": { "x": 80, "y": 200, "w": 1120, "h": 130 }, "valueSize": 30, "labelSize": 13, "cols": 3 }
+  ]
+}

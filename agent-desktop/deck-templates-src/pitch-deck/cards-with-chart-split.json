@@ -1,0 +1,26 @@
+{
+  "id": "cards-with-chart-split",
+  "name": "卡片加图表分栏",
+  "category": "pitch-deck",
+  "description": "标题 + 左侧数值卡片 + 右侧图表占位的分栏版式。图表区可放数据图。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 16 },
+    "items": { "type": "stat-list", "label": "数值卡片(数值/标签)", "required": true, "maxItems": 4, "statValueMaxChars": 6, "statLabelMaxChars": 28 },
+    "chart": { "type": "image", "label": "图表/数据图" }
+  },
+  "defaultData": {
+    "title": "亮点速览",
+    "items": [
+      { "value": "5x", "label": "效率提升倍数" },
+      { "value": "98%", "label": "客户满意度" },
+      { "value": "200+", "label": "服务客户数量" },
+      { "value": "24h", "label": "全天候技术支持" }
+    ],
+    "chart": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 72, "w": 1120 }, "size": 56 },
+    { "kind": "statGrid", "field": "items", "pos": { "x": 80, "y": 210, "w": 500, "h": 200 }, "valueSize": 44, "labelSize": 16, "cols": 2 },
+    { "kind": "image", "field": "chart", "pos": { "x": 640, "y": 210, "w": 560, "h": 430 } }
+  ]
+}

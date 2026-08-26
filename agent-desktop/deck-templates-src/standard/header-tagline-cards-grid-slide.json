@@ -1,0 +1,26 @@
+{
+  "id": "header-tagline-cards-grid-slide",
+  "name": "标题标语指标网格",
+  "category": "standard",
+  "description": "标题与标语，下方为带数值与说明的指标卡片网格。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 70 },
+    "tagline": { "type": "multiline", "label": "标语说明", "maxChars": 120 },
+    "cards": { "type": "stat-list", "label": "指标卡(数值/说明)", "required": true, "maxItems": 6, "statValueMaxChars": 8, "statLabelMaxChars": 100 }
+  },
+  "defaultData": {
+    "title": "携手攀登新高度",
+    "tagline": "以稳健的增长与持续的创新，与客户和伙伴共同迈向更广阔的未来。",
+    "cards": [
+      { "value": "87%", "label": "客户满意度，用户对产品与服务体验给予高度认可。" },
+      { "value": "250万", "label": "月活跃用户，平台用户规模在多地区持续增长。" },
+      { "value": "99%", "label": "系统可用性，保持行业领先的稳定性与性能表现。" },
+      { "value": "142+", "label": "全球合作伙伴，战略合作推动创新与市场拓展。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 44 },
+    { "kind": "paragraph", "field": "tagline", "pos": { "x": 80, "y": 156, "w": 1020 }, "size": 16 },
+    { "kind": "statGrid", "field": "cards", "pos": { "x": 80, "y": 230, "w": 1120, "h": 130 }, "valueSize": 32, "labelSize": 13, "cols": 2 }
+  ]
+}

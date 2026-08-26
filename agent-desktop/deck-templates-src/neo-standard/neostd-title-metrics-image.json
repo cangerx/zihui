@@ -1,0 +1,30 @@
+{
+  "id": "neostd-title-metrics-image",
+  "name": "标题指标加配图",
+  "category": "neo-standard",
+  "description": "左侧标题、描述与 2x2 指标卡片网格，右侧一张大幅配图。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 40 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 150 },
+    "metrics": { "type": "stat-list", "label": "指标(数值/说明)", "required": true, "maxItems": 4, "statValueMaxChars": 5, "statLabelMaxChars": 40 },
+    "mainImage": { "type": "image", "label": "配图" }
+  },
+  "defaultData": {
+    "title": "图文与指标",
+    "description": "聚焦员工规模 500 人以上、处于金融服务、医疗健康与科技行业的企业，争取 350 万新增管线。",
+    "metrics": [
+      { "value": "85%", "label": "主要挑战：客户交付延迟" },
+      { "value": "92%", "label": "核心流程自动化覆盖" },
+      { "value": "3.2x", "label": "投资回报提升幅度" },
+      { "value": "24/7", "label": "全天候技术支持" }
+    ],
+    "mainImage": ""
+  },
+  "blocks": [
+    { "kind": "bar", "pos": { "x": 40, "y": 110, "w": 116, "h": 4 } },
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 40, "y": 138, "w": 620 }, "size": 42 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 40, "y": 222, "w": 620 }, "size": 16, "merge": true },
+    { "kind": "statGrid", "field": "metrics", "pos": { "x": 40, "y": 348, "w": 620, "h": 150 }, "valueSize": 38, "labelSize": 15, "cols": 2 },
+    { "kind": "image", "field": "mainImage", "pos": { "x": 700, "y": 40, "w": 540, "h": 640 } }
+  ]
+}

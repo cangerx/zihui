@@ -1,0 +1,23 @@
+{
+  "id": "neogen-left-align-quote",
+  "name": "左对齐金句",
+  "category": "neo-general",
+  "description": "强调底色上左对齐的标题加强调条、大字引用与署名。",
+  "background": "accent",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 20 },
+    "quote": { "type": "multiline", "label": "引用金句", "required": true, "maxChars": 200 },
+    "author": { "type": "text", "label": "署名", "maxChars": 30 }
+  },
+  "defaultData": {
+    "title": "智慧之言",
+    "quote": "成功不是终点，失败也并非末日，重要的是继续前行的勇气。未来属于那些坚信梦想之美的人。",
+    "author": "— 温斯顿·丘吉尔"
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 130, "w": 1120 }, "size": 42, "color": "on-accent" },
+    { "kind": "bar", "pos": { "x": 80, "y": 210, "w": 116, "h": 6 }, "color": "on-accent" },
+    { "kind": "quote", "field": "quote", "pos": { "x": 80, "y": 290, "w": 1080 }, "size": 30, "color": "on-accent" },
+    { "kind": "paragraph", "field": "author", "pos": { "x": 80, "y": 540, "w": 1080 }, "size": 22, "color": "on-accent" }
+  ]
+}

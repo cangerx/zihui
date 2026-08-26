@@ -1,0 +1,29 @@
+{
+  "id": "neogen-title-metricvalue-metriclabel-funnelstages",
+  "name": "关键指标配漏斗阶段",
+  "category": "neo-general",
+  "description": "标题加强调条，左侧关键指标与说明，右侧横向漏斗阶段，每阶段含标签、数值与转化率。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "metricValue": { "type": "text", "label": "关键指标数值", "required": true, "maxChars": 10 },
+    "metricLabel": { "type": "multiline", "label": "指标说明", "maxChars": 100 },
+    "funnelStages": { "type": "stat-list", "label": "漏斗阶段(标签/数值)", "required": true, "maxItems": 5, "statValueMaxChars": 30, "statLabelMaxChars": 25 }
+  },
+  "defaultData": {
+    "title": "漏斗表现",
+    "metricValue": "0.24%",
+    "metricLabel": "整体\n访问 → 成交",
+    "funnelStages": [
+      { "value": "访客", "label": "124,500 · 转化 10%" },
+      { "value": "线索", "label": "12,450 · 转化 10%" },
+      { "value": "营销合格线索", "label": "4,356 · 转化 35%" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 40 },
+    { "kind": "bar", "pos": { "x": 80, "y": 150, "w": 116, "h": 6 } },
+    { "kind": "heading", "field": "metricValue", "level": 1, "pos": { "x": 80, "y": 250, "w": 360 }, "size": 64, "color": "accent" },
+    { "kind": "paragraph", "field": "metricLabel", "pos": { "x": 80, "y": 350, "w": 360 }, "size": 18 },
+    { "kind": "bulletCards", "field": "funnelStages", "pos": { "x": 500, "y": 240, "w": 700, "h": 380 }, "titleSize": 22, "descSize": 16, "cols": 1 }
+  ]
+}

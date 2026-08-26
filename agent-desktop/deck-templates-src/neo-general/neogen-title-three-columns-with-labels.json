@@ -1,0 +1,23 @@
+{
+  "id": "neogen-title-three-columns-with-labels",
+  "name": "三栏带编号标签",
+  "category": "neo-general",
+  "description": "粗体标题加强调条，下方三栏，每栏含大号序号、小标题与两组带标签的内容。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "columns": { "type": "stat-list", "label": "栏目(小标题/内容)", "required": true, "maxItems": 3, "statValueMaxChars": 20, "statLabelMaxChars": 110 }
+  },
+  "defaultData": {
+    "title": "目标受众拆解",
+    "columns": [
+      { "value": "高管层", "label": "核心需求：战略增长与竞争优势 · 主要渠道：领英、高管活动" },
+      { "value": "运营副总裁", "label": "核心需求：效率与成本优化 · 主要渠道：行业刊物、线上研讨会" },
+      { "value": "技术负责人", "label": "核心需求：集成能力与安全性 · 主要渠道：技术内容、产品演示" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 40 },
+    { "kind": "bar", "pos": { "x": 80, "y": 150, "w": 116, "h": 6 } },
+    { "kind": "bulletCards", "field": "columns", "pos": { "x": 80, "y": 240, "w": 1120, "h": 380 }, "titleSize": 24, "descSize": 16, "cols": 3 }
+  ]
+}

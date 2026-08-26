@@ -1,0 +1,28 @@
+{
+  "id": "neomod-title-description-icon-timeline",
+  "name": "标题描述图标时间线",
+  "category": "neo-modern",
+  "description": "左侧标题与描述，右侧为纵向条目列表，每条含小标题与说明。适合流程、阶段或时间线展示。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 40 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 300 },
+    "items": { "type": "stat-list", "label": "条目(小标题/说明)", "required": true, "maxItems": 5, "statValueMaxChars": 10, "statLabelMaxChars": 100 }
+  },
+  "defaultData": {
+    "title": "流程与节奏",
+    "description": "聚焦金融服务、医疗健康与科技行业中员工规模 500 人以上的企业，通过基于客户的营销与内容驱动策略，目标实现 350 万元新增管道，并将获客成本控制在 150 元以内。",
+    "items": [
+      { "value": "2021", "label": "简要说明本阶段需要重点讨论的内容与目标。" },
+      { "value": "2020", "label": "简要说明本阶段需要重点讨论的内容与目标。" },
+      { "value": "2019", "label": "简要说明本阶段需要重点讨论的内容与目标。" },
+      { "value": "2018", "label": "简要说明本阶段需要重点讨论的内容与目标。" },
+      { "value": "2017", "label": "简要说明本阶段需要重点讨论的内容与目标。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 170, "w": 480 }, "size": 42 },
+    { "kind": "bar", "pos": { "x": 80, "y": 256, "w": 64, "h": 6 } },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 292, "w": 480 }, "size": 16, "merge": true },
+    { "kind": "bulletCards", "field": "items", "pos": { "x": 640, "y": 80, "w": 560, "h": 560 }, "titleSize": 18, "descSize": 15, "cols": 1 }
+  ]
+}

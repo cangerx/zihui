@@ -1,0 +1,33 @@
+{
+  "id": "swift-metrics-numbers",
+  "name": "数据指标",
+  "category": "swift",
+  "description": "左侧标题与导语 + 右侧大数字指标卡片，用于成果与数据展示。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 60 },
+    "leftTitle": { "type": "text", "label": "导语标题", "maxChars": 40 },
+    "leftBody": { "type": "multiline", "label": "导语正文", "required": true, "maxChars": 220 },
+    "metrics": { "type": "stat-list", "label": "指标(数值/说明)", "required": true, "maxItems": 3, "statValueMaxChars": 8, "statLabelMaxChars": 140 },
+    "website": { "type": "text", "label": "网址", "maxChars": 60 }
+  },
+  "defaultData": {
+    "title": "用数据衡量影响",
+    "leftTitle": "以数据驱动成果",
+    "leftBody": "我们用可量化的指标记录每一步进展，让成果有据可依，让增长清晰可见。",
+    "metrics": [
+      { "value": "10K+", "label": "活跃用户 · 覆盖多个行业的真实使用场景" },
+      { "value": "150%", "label": "营收增长 · 同比保持高速增长态势" },
+      { "value": "95%", "label": "客户满意 · 留存稳定，平均评分 4.8/5" }
+    ],
+    "website": "www.yourwebsite.com"
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 110, "w": 440 }, "size": 44 },
+    { "kind": "bar", "pos": { "x": 80, "y": 210, "w": 64, "h": 6 } },
+    { "kind": "heading", "field": "leftTitle", "level": 2, "pos": { "x": 80, "y": 248, "w": 440 }, "size": 22, "font": "body" },
+    { "kind": "paragraph", "field": "leftBody", "pos": { "x": 80, "y": 300, "w": 440 }, "size": 16 },
+    { "kind": "statGrid", "field": "metrics", "pos": { "x": 600, "y": 110, "w": 600, "h": 150 }, "valueSize": 40, "labelSize": 14, "cols": 1 },
+    { "kind": "rule", "pos": { "x": 80, "y": 650, "w": 1120, "h": 2 } },
+    { "kind": "paragraph", "field": "website", "pos": { "x": 80, "y": 628, "w": 600 }, "size": 14, "color": "muted" }
+  ]
+}

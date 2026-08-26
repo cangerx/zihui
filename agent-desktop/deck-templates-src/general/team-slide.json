@@ -1,0 +1,26 @@
+{
+  "id": "team-slide",
+  "name": "团队介绍",
+  "category": "general",
+  "description": "标题 + 团队简介 + 成员卡片(姓名职位与简介)。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 40 },
+    "body": { "type": "multiline", "label": "团队简介", "maxChars": 150 },
+    "members": { "type": "stat-list", "label": "成员(姓名职位/简介)", "required": true, "maxItems": 4, "statValueMaxChars": 60, "statLabelMaxChars": 150 }
+  },
+  "defaultData": {
+    "title": "我们的团队",
+    "body": "一支兼具战略视野与技术深度的团队，致力于以前沿技术与务实落地帮助客户达成目标。",
+    "members": [
+      { "value": "张三 · CEO", "label": "拥有 15 年数字化转型与业务增长经验的战略领导者。" },
+      { "value": "李四 · CTO", "label": "专注可扩展架构与创新软件工程的技术专家。" },
+      { "value": "王五 · COO", "label": "擅长流程优化与规模化运营的运营负责人。" },
+      { "value": "赵六 · CMO", "label": "深耕品牌与增长营销的市场负责人。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 40 },
+    { "kind": "paragraph", "field": "body", "pos": { "x": 80, "y": 150, "w": 1120 }, "size": 17 },
+    { "kind": "bulletCards", "field": "members", "pos": { "x": 80, "y": 244, "w": 1120, "h": 360 }, "titleSize": 20, "descSize": 15, "cols": 2 }
+  ]
+}

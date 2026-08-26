@@ -1,0 +1,26 @@
+{
+  "id": "neogen-performance-grid-snapshot-slide",
+  "name": "指标卡片网格",
+  "category": "neo-general",
+  "description": "居中标题加强调条，下方 3-8 张指标卡片网格，每张含数值、标签与副文。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "cards": { "type": "stat-list", "label": "指标卡片(数值/标签)", "required": true, "maxItems": 8, "statValueMaxChars": 20, "statLabelMaxChars": 30 }
+  },
+  "defaultData": {
+    "title": "营销活动表现快照",
+    "cards": [
+      { "value": "342 条 SQL", "label": "企业 ABM 启动 · 转化率 28%" },
+      { "value": "¥180万 管线", "label": "产品功能发布 · ROAS 4.7 倍" },
+      { "value": "156 笔成交", "label": "行业峰会赞助 · 会议率 42%" },
+      { "value": "156 笔成交", "label": "行业峰会赞助 · 会议率 42%" },
+      { "value": "342 条 SQL", "label": "企业 ABM 启动 · 转化率 28%" },
+      { "value": "¥180万 管线", "label": "产品功能发布 · ROAS 4.7 倍" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 40 },
+    { "kind": "bar", "pos": { "x": 80, "y": 150, "w": 116, "h": 6 } },
+    { "kind": "statGrid", "field": "cards", "pos": { "x": 80, "y": 230, "w": 1120, "h": 180 }, "valueSize": 30, "labelSize": 14, "cols": 4 }
+  ]
+}

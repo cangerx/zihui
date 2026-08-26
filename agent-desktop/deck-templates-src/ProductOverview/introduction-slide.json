@@ -1,0 +1,24 @@
+{
+  "id": "introduction-slide",
+  "name": "图文介绍页",
+  "category": "ProductOverview",
+  "description": "左侧大幅竖图 + 右侧标题与两段带小标题的介绍文字。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 15 },
+    "portraitImage": { "type": "image", "label": "左侧人物图" },
+    "blocks": { "type": "stat-list", "label": "介绍段落(小标题/正文)", "required": true, "maxItems": 2, "statValueMaxChars": 12, "statLabelMaxChars": 180 }
+  },
+  "defaultData": {
+    "title": "公司介绍",
+    "portraitImage": "",
+    "blocks": [
+      { "value": "我们是谁", "label": "一支专注于产品创新的团队，致力于用技术为客户创造持续增长的商业价值。" },
+      { "value": "我们的使命", "label": "通过简洁高效的解决方案，帮助企业打通数据孤岛，提升整体运营效率。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "image", "field": "portraitImage", "pos": { "x": 80, "y": 80, "w": 520, "h": 560 } },
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 660, "y": 96, "w": 540 }, "size": 60 },
+    { "kind": "bulletCards", "field": "blocks", "pos": { "x": 660, "y": 220, "w": 540, "h": 420 }, "titleSize": 20, "descSize": 18, "cols": 1 }
+  ]
+}

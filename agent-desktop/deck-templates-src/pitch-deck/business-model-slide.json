@@ -1,0 +1,32 @@
+{
+  "id": "business-model-slide",
+  "name": "商业模式",
+  "category": "pitch-deck",
+  "description": "标题 + 概述 + 收入来源条目 + 单位经济指标。用于讲述盈利模式。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 28 },
+    "summary": { "type": "multiline", "label": "模式概述", "required": true, "maxChars": 95 },
+    "revenueStreams": { "type": "stat-list", "label": "收入来源(名称/说明)", "required": true, "maxItems": 4, "statValueMaxChars": 28, "statLabelMaxChars": 64 },
+    "unitMetrics": { "type": "stat-list", "label": "单位经济指标(数值/标签)", "required": true, "maxItems": 4, "statValueMaxChars": 10, "statLabelMaxChars": 28 }
+  },
+  "defaultData": {
+    "title": "商业模式",
+    "summary": "营收通过订阅续费、用量扩展与更高价值的客户分层持续增长。",
+    "revenueStreams": [
+      { "value": "订阅服务", "label": "按席位或工作空间规模收取的核心经常性收入。" },
+      { "value": "用量计费", "label": "随工作流量与自动化用量增长的扩展收入。" },
+      { "value": "增值服务", "label": "面向大型客户的实施与成功包，加速落地。" }
+    ],
+    "unitMetrics": [
+      { "value": "1.8万", "label": "目标年客单价" },
+      { "value": "82%", "label": "毛利率" },
+      { "value": "4个月", "label": "回本周期目标" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 72, "w": 1120 }, "size": 52 },
+    { "kind": "paragraph", "field": "summary", "pos": { "x": 80, "y": 150, "w": 900 }, "size": 20, "color": "muted" },
+    { "kind": "bulletCards", "field": "revenueStreams", "pos": { "x": 80, "y": 250, "w": 720, "h": 380 }, "titleSize": 22, "descSize": 15, "cols": 1 },
+    { "kind": "statGrid", "field": "unitMetrics", "pos": { "x": 840, "y": 250, "w": 360, "h": 120 }, "valueSize": 34, "labelSize": 14, "cols": 1 }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "bullet-with-icons",
+  "name": "问题要点",
+  "category": "modern",
+  "description": "左侧主标题与描述，右侧带标题和说明的问题要点卡片。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 20 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 200 },
+    "problemCategories": { "type": "stat-list", "label": "要点(标题/描述)", "required": true, "maxItems": 3, "statValueMaxChars": 30, "statLabelMaxChars": 100 }
+  },
+  "defaultData": {
+    "title": "面临的问题",
+    "description": "在产品、服务与决策的初期阶段，问题需要被充分讨论并清晰界定。缺乏明确的问题定义，往往导致工作失焦、难以管理且偏离实际需求。",
+    "problemCategories": [
+      { "value": "效率低下", "label": "难以找到契合需求的数字化工具，运营效率受限。" },
+      { "value": "成本高企", "label": "陈旧系统推高开支，中小企业拓展市场愈发吃力。" },
+      { "value": "数据割裂", "label": "系统彼此孤立，信息无法打通，协同成本上升。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 200, "w": 520 }, "size": 46 },
+    { "kind": "bar", "pos": { "x": 80, "y": 288, "w": 64, "h": 6 } },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 324, "w": 520 }, "size": 18, "merge": true },
+    { "kind": "bulletCards", "field": "problemCategories", "pos": { "x": 660, "y": 130, "w": 540, "h": 460 }, "titleSize": 20, "descSize": 14, "cols": 1 }
+  ]
+}

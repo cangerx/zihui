@@ -1,0 +1,51 @@
+{
+  "id": "code-diff-comparison-slide",
+  "name": "代码对比",
+  "category": "Code",
+  "description": "标题 + 概述 + 左右两栏标注代码面板（重构前/后）+ 底部说明。代码以逐行列表承载。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 44 },
+    "summary": { "type": "multiline", "label": "概述", "required": true, "maxChars": 180 },
+    "beforeLabel": { "type": "text", "label": "左栏标签", "maxChars": 18 },
+    "before": { "type": "list", "label": "重构前代码(每行一项)", "required": true, "maxItems": 12, "itemMaxChars": 56 },
+    "afterLabel": { "type": "text", "label": "右栏标签", "maxChars": 18 },
+    "after": { "type": "list", "label": "重构后代码(每行一项)", "required": true, "maxItems": 12, "itemMaxChars": 56 },
+    "impact": { "type": "multiline", "label": "底部说明", "required": true, "maxChars": 160 }
+  },
+  "defaultData": {
+    "title": "重构前后对比",
+    "summary": "本页对比旧实现与改进后的版本，突出关键改动。",
+    "beforeLabel": "重构前",
+    "before": [
+      "export function RechartsChart({ data }) {",
+      "  return (",
+      "    <LineChart data={data}>",
+      "      <XAxis dataKey=\"label\" />",
+      "      <Line dataKey=\"value\" />",
+      "    </LineChart>",
+      "  );",
+      "}"
+    ],
+    "afterLabel": "重构后",
+    "after": [
+      "export function ChartRenderer({ config }) {",
+      "  return (",
+      "    <div className=\"chart-frame\">",
+      "      <Line data={config.data} />",
+      "    </div>",
+      "  );",
+      "}"
+    ],
+    "impact": "新实现提升了复用性、可测试性与模板兼容性。"
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 60, "w": 1120 }, "size": 44 },
+    { "kind": "paragraph", "field": "summary", "pos": { "x": 80, "y": 134, "w": 1060 }, "size": 17, "color": "muted" },
+    { "kind": "kicker", "field": "beforeLabel", "pos": { "x": 80, "y": 190, "w": 540 }, "size": 14, "color": "accent" },
+    { "kind": "list", "field": "before", "pos": { "x": 80, "y": 220, "w": 540 }, "itemSize": 14, "gap": 3, "color": "fg" },
+    { "kind": "kicker", "field": "afterLabel", "pos": { "x": 660, "y": 190, "w": 540 }, "size": 14, "color": "accent" },
+    { "kind": "list", "field": "after", "pos": { "x": 660, "y": 220, "w": 540 }, "itemSize": 14, "gap": 3, "color": "fg" },
+    { "kind": "rule", "pos": { "x": 80, "y": 600, "w": 1120, "h": 1 } },
+    { "kind": "paragraph", "field": "impact", "pos": { "x": 80, "y": 616, "w": 1120 }, "size": 17, "color": "accent" }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "two-panel-contrast-metrics-slide",
+  "name": "双栏对比配指标",
+  "category": "ProductOverview",
+  "description": "标题副标题 + 问题/解决方案双栏对比卡片 + 底部一排指标。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 42 },
+    "subtitle": { "type": "multiline", "label": "副标题", "maxChars": 140 },
+    "panels": { "type": "stat-list", "label": "对比栏(标题/描述)", "required": true, "maxItems": 2, "statValueMaxChars": 36, "statLabelMaxChars": 150 },
+    "metrics": { "type": "stat-list", "label": "指标(数值/说明)", "required": true, "maxItems": 3, "statValueMaxChars": 12, "statLabelMaxChars": 42 }
+  },
+  "defaultData": {
+    "title": "问题与解决方案",
+    "subtitle": "直观呈现客户面临的核心痛点，以及产品如何构建更清晰的运营模式。",
+    "panels": [
+      { "value": "团队被割裂的流程拖慢", "label": "当客户数据、规划与执行分散在彼此孤立的工具中，关键产品工作就会被延误。" },
+      { "value": "统一的产品执行工作台", "label": "把规划、客户信号、优先级与上线追踪整合进同一个聚焦的运营层。" }
+    ],
+    "metrics": [
+      { "value": "40%", "label": "报表工作量下降" },
+      { "value": "2.5x", "label": "优先级评审提速" },
+      { "value": "18 小时", "label": "每个上线周期节省" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 64, "w": 1120 }, "size": 52 },
+    { "kind": "paragraph", "field": "subtitle", "pos": { "x": 80, "y": 144, "w": 900 }, "size": 19 },
+    { "kind": "bulletCards", "field": "panels", "pos": { "x": 80, "y": 220, "w": 1120, "h": 260 }, "titleSize": 24, "descSize": 17, "cols": 2 },
+    { "kind": "statGrid", "field": "metrics", "pos": { "x": 80, "y": 510, "w": 1120, "h": 130 }, "valueSize": 32, "labelSize": 16, "cols": 3 }
+  ]
+}

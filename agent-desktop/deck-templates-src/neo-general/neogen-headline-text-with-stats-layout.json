@@ -1,0 +1,30 @@
+{
+  "id": "neogen-headline-text-with-stats-layout",
+  "name": "编号列表配侧边指标",
+  "category": "neo-general",
+  "description": "左侧粗体标题、强调条与编号要点列表，右侧 3 项大号纵向指标。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "bulletPoints": { "type": "list", "label": "要点列表", "required": true, "maxItems": 6, "itemMaxChars": 160 },
+    "metrics": { "type": "stat-list", "label": "指标(数值/标签)", "required": true, "maxItems": 3, "statValueMaxChars": 8, "statLabelMaxChars": 10 }
+  },
+  "defaultData": {
+    "title": "执行摘要",
+    "bulletPoints": [
+      "营收超额完成目标 12%（240 万元对比 210 万元目标），得益于付费搜索与邮件营销的强劲表现",
+      "营销影响的管线价值占比达 68%，较上季度的 52% 提升明显",
+      "付费搜索 ROI 提升至 5.8 倍（此前为 4.1 倍），成为最高效的渠道"
+    ],
+    "metrics": [
+      { "value": "8,450", "label": "线索" },
+      { "value": "2,680", "label": "MQL" },
+      { "value": "¥240万", "label": "营收" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 720 }, "size": 40 },
+    { "kind": "bar", "pos": { "x": 80, "y": 150, "w": 116, "h": 6 } },
+    { "kind": "numberedList", "field": "bulletPoints", "pos": { "x": 80, "y": 210, "w": 720 }, "itemSize": 16 },
+    { "kind": "statGrid", "field": "metrics", "pos": { "x": 860, "y": 130, "w": 340, "h": 150 }, "valueSize": 44, "labelSize": 14, "cols": 1 }
+  ]
+}

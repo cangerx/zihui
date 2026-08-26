@@ -1,0 +1,22 @@
+{
+  "id": "chart-or-table-with-description",
+  "name": "图表配说明",
+  "category": "modern",
+  "description": "左侧标题与说明，右侧图表或数据表占位（由配图承载）。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 60 },
+    "description": { "type": "multiline", "label": "说明正文", "required": true, "maxChars": 200 },
+    "chart": { "type": "image", "label": "图表/数据表" }
+  },
+  "defaultData": {
+    "title": "数据表与图表",
+    "description": "以灵活的表格呈现结构化信息，或用图表进行可视化表达，让关键数据一目了然。",
+    "chart": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 220, "w": 500 }, "size": 44 },
+    { "kind": "bar", "pos": { "x": 80, "y": 308, "w": 64, "h": 6 } },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 344, "w": 500 }, "size": 17, "merge": true },
+    { "kind": "image", "field": "chart", "pos": { "x": 640, "y": 150, "w": 560, "h": 420 } }
+  ]
+}

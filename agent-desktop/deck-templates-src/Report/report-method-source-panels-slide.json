@@ -1,0 +1,40 @@
+{
+  "id": "report-method-source-panels-slide",
+  "name": "方法与来源面板",
+  "category": "Report",
+  "description": "报告页：方法步骤、来源面板，以及紧凑的假设或范围参数。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 38 },
+    "subtitle": { "type": "multiline", "label": "副标题", "required": true, "maxChars": 140 },
+    "steps": { "type": "stat-list", "label": "方法步骤(标题/说明)", "required": true, "maxItems": 5, "statValueMaxChars": 30, "statLabelMaxChars": 100 },
+    "sources": { "type": "stat-list", "label": "来源(名称/细节)", "required": true, "maxItems": 5, "statValueMaxChars": 34, "statLabelMaxChars": 90 },
+    "parameters": { "type": "stat-list", "label": "参数(标签/值)", "required": true, "maxItems": 4, "statValueMaxChars": 24, "statLabelMaxChars": 60 }
+  },
+  "defaultData": {
+    "title": "研究方法",
+    "subtitle": "本页说明用于构建报告分析的输入、来源分组与方法。",
+    "steps": [
+      { "value": "采集输入", "label": "收集相关记录、来源材料、观察与支撑背景。" },
+      { "value": "比对信号", "label": "审视各来源间的模式，识别一致或冲突的证据。" },
+      { "value": "归纳综合", "label": "将最有力的证据转化为发现、风险与行动建议。" }
+    ],
+    "sources": [
+      { "value": "运营记录", "label": "用于理解近期表现与活动水平的主要记录。" },
+      { "value": "干系人备注", "label": "用于澄清背景、约束与决策需求的定性输入。" },
+      { "value": "参考数据", "label": "用于比较变化、验证假设的外部或历史数据。" }
+    ],
+    "parameters": [
+      { "value": "范围", "label": "当前报告周期" },
+      { "value": "置信度", "label": "取决于可获来源质量" },
+      { "value": "复核", "label": "对照来源备注验证" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 64, "w": 1120 }, "size": 54 },
+    { "kind": "paragraph", "field": "subtitle", "pos": { "x": 80, "y": 142, "w": 1000 }, "size": 20, "color": "muted" },
+    { "kind": "bar", "pos": { "x": 80, "y": 192, "w": 64, "h": 6 } },
+    { "kind": "bulletCards", "field": "steps", "pos": { "x": 80, "y": 236, "w": 560, "h": 280 }, "titleSize": 22, "descSize": 15, "cols": 1, "rowH": 86 },
+    { "kind": "bulletCards", "field": "sources", "pos": { "x": 680, "y": 236, "w": 520, "h": 260 }, "titleSize": 20, "descSize": 14, "cols": 1, "rowH": 80 },
+    { "kind": "statGrid", "field": "parameters", "pos": { "x": 680, "y": 524, "w": 520, "h": 96 }, "valueSize": 22, "labelSize": 14, "cols": 3 }
+  ]
+}

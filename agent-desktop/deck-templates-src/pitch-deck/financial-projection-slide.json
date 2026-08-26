@@ -1,0 +1,33 @@
+{
+  "id": "financial-projection-slide",
+  "name": "财务预测",
+  "category": "pitch-deck",
+  "description": "标题 + 副标题 + 预测指标条目 + 关键假设卡片。表格转为条目卡片呈现。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "subtitle": { "type": "multiline", "label": "副标题", "required": true, "maxChars": 90 },
+    "rows": { "type": "stat-list", "label": "预测项(指标/各期数值)", "required": true, "maxItems": 5, "statValueMaxChars": 24, "statLabelMaxChars": 48 },
+    "assumptions": { "type": "stat-list", "label": "关键假设(标签/说明)", "required": true, "maxItems": 4, "statValueMaxChars": 24, "statLabelMaxChars": 52 }
+  },
+  "defaultData": {
+    "title": "财务规划",
+    "subtitle": "对营收增长、利润率变化与经营假设的简明预测视图。",
+    "rows": [
+      { "value": "营业收入", "label": "第一年 120 万 · 第二年 480 万 · 第三年 1250 万" },
+      { "value": "毛利率", "label": "第一年 72% · 第二年 78% · 第三年 82%" },
+      { "value": "客户数量", "label": "第一年 42 · 第二年 160 · 第三年 410" },
+      { "value": "现金跑道", "label": "第一年 18 个月 · 第二年 24 个月 · 第三年 已盈利" }
+    ],
+    "assumptions": [
+      { "value": "客单价", "label": "随工作流深度提升而扩展。" },
+      { "value": "利润率", "label": "自动化与自助上手改善利润率。" },
+      { "value": "销售", "label": "增长基于聚焦的客户选择。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 72, "w": 1120 }, "size": 52 },
+    { "kind": "paragraph", "field": "subtitle", "pos": { "x": 80, "y": 150, "w": 840 }, "size": 20, "color": "muted" },
+    { "kind": "bulletCards", "field": "rows", "pos": { "x": 80, "y": 230, "w": 720, "h": 400 }, "titleSize": 20, "descSize": 15, "cols": 1, "rowH": 86 },
+    { "kind": "bulletCards", "field": "assumptions", "pos": { "x": 840, "y": 230, "w": 360, "h": 400 }, "titleSize": 18, "descSize": 14, "cols": 1, "rowH": 110 }
+  ]
+}

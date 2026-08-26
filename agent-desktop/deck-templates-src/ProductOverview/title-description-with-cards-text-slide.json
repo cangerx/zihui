@@ -1,0 +1,31 @@
+{
+  "id": "title-description-with-cards-text-slide",
+  "name": "标题描述配卡片文字",
+  "category": "ProductOverview",
+  "description": "左上标题 + 左下小标题段落 + 右上配图 + 底部三张文字卡片。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 16 },
+    "taglineLabel": { "type": "text", "label": "段落小标题", "maxChars": 16 },
+    "taglineBody": { "type": "multiline", "label": "左侧段落正文", "maxChars": 100 },
+    "heroImage": { "type": "image", "label": "右上配图" },
+    "cards": { "type": "stat-list", "label": "卡片(标题/正文)", "required": true, "maxItems": 3, "statValueMaxChars": 16, "statLabelMaxChars": 45 }
+  },
+  "defaultData": {
+    "title": "面临的挑战",
+    "taglineLabel": "核心议题",
+    "taglineBody": "在快速变化的市场环境中，企业需要正面回应三类关键挑战。",
+    "heroImage": "",
+    "cards": [
+      { "value": "效率瓶颈", "label": "重复性人工流程拖慢交付节奏。" },
+      { "value": "数据孤岛", "label": "系统割裂导致信息无法打通。" },
+      { "value": "成本攀升", "label": "维护与扩展成本逐年增加。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 80, "w": 420 }, "size": 54 },
+    { "kind": "kicker", "field": "taglineLabel", "pos": { "x": 80, "y": 210, "w": 420 }, "size": 16 },
+    { "kind": "paragraph", "field": "taglineBody", "pos": { "x": 80, "y": 244, "w": 420 }, "size": 18 },
+    { "kind": "image", "field": "heroImage", "pos": { "x": 540, "y": 80, "w": 660, "h": 300 } },
+    { "kind": "bulletCards", "field": "cards", "pos": { "x": 80, "y": 430, "w": 1120, "h": 210 }, "titleSize": 18, "descSize": 17, "cols": 3 }
+  ]
+}

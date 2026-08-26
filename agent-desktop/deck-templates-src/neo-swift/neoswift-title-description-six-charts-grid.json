@@ -1,0 +1,24 @@
+{
+  "id": "neoswift-title-description-six-charts-grid",
+  "name": "标题描述六图表网格",
+  "category": "neo-swift",
+  "description": "标题、描述，以及最多 6 张图表的网格占位（柱状、折线、面积、饼图、环形、散点等）。适合看板与数据概览。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 50 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 200 },
+    "charts": { "type": "image", "label": "图表网格/数据图" },
+    "footerWebsite": { "type": "text", "label": "页脚网址", "maxChars": 30 }
+  },
+  "defaultData": {
+    "title": "数据分析看板",
+    "description": "跨多个数据维度，对关键指标与绩效表现进行全面概览，辅助决策与复盘。",
+    "charts": "",
+    "footerWebsite": "www.hello.com"
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 64, "w": 1120 }, "size": 40 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 130, "w": 1120 }, "size": 16 },
+    { "kind": "image", "field": "charts", "pos": { "x": 80, "y": 208, "w": 1120, "h": 420 } },
+    { "kind": "paragraph", "field": "footerWebsite", "pos": { "x": 80, "y": 660, "w": 460 }, "size": 14, "color": "muted" }
+  ]
+}

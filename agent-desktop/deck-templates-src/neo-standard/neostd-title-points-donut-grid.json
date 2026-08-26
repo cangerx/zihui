@@ -1,0 +1,33 @@
+{
+  "id": "neostd-title-points-donut-grid",
+  "name": "标题要点加进度网格",
+  "category": "neo-standard",
+  "description": "左侧标题与编号要点，右侧 2x3 带百分比进度的分析卡片网格。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 40 },
+    "points": { "type": "list", "label": "要点", "required": true, "maxItems": 3, "itemMaxChars": 200 },
+    "cards": { "type": "stat-list", "label": "卡片(百分比/说明)", "required": true, "maxItems": 6, "statValueMaxChars": 6, "statLabelMaxChars": 30 }
+  },
+  "defaultData": {
+    "title": "执行摘要",
+    "points": [
+      "营收超额完成目标 12%（240 万对 210 万目标），主要由付费搜索与邮件营销的强劲表现驱动。",
+      "营销影响的管线价值占比达 68%，较上季度的 52% 显著提升。",
+      "付费搜索投资回报提升至 5.8 倍（此前 4.1 倍），成为效率最高的渠道。"
+    ],
+    "cards": [
+      { "value": "99%", "label": "调研：客户交付延迟" },
+      { "value": "85%", "label": "调研：客户交付延迟" },
+      { "value": "72%", "label": "调研：客户交付延迟" },
+      { "value": "60%", "label": "调研：客户交付延迟" },
+      { "value": "48%", "label": "调研：客户交付延迟" },
+      { "value": "30%", "label": "调研：客户交付延迟" }
+    ]
+  },
+  "blocks": [
+    { "kind": "bar", "pos": { "x": 90, "y": 110, "w": 116, "h": 3 } },
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 90, "y": 138, "w": 480 }, "size": 40 },
+    { "kind": "numberedList", "field": "points", "pos": { "x": 90, "y": 230, "w": 480 }, "itemSize": 15, "gap": 12 },
+    { "kind": "statGrid", "field": "cards", "pos": { "x": 620, "y": 110, "w": 580, "h": 220 }, "valueSize": 36, "labelSize": 14, "cols": 3 }
+  ]
+}

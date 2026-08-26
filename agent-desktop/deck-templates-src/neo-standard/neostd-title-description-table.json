@@ -1,0 +1,26 @@
+{
+  "id": "neostd-title-description-table",
+  "name": "标题描述加表格",
+  "category": "neo-standard",
+  "description": "顶部标题与描述，下方结构化对比条目(每条含主体与说明)，适合对比、矩阵或结构化数据。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 10 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 250 },
+    "rows": { "type": "stat-list", "label": "条目(主体/说明)", "required": true, "maxItems": 4, "statValueMaxChars": 15, "statLabelMaxChars": 80 }
+  },
+  "defaultData": {
+    "title": "对比表",
+    "description": "聚焦员工规模 500 人以上、处于金融服务、医疗健康与科技行业的企业，通过精准营销与内容驱动策略推进增长。",
+    "rows": [
+      { "value": "自我驱动", "label": "参考：书籍与励志视频，持续保持内在动力。" },
+      { "value": "团队协作", "label": "参考：协作工具与定期复盘，打通信息壁垒。" },
+      { "value": "数据洞察", "label": "参考：报表与看板，用数据支撑决策。" },
+      { "value": "持续优化", "label": "参考：迭代机制，逐步提升交付质量。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 72, "y": 72, "w": 360 }, "size": 42 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 680, "y": 80, "w": 528 }, "size": 16, "merge": true },
+    { "kind": "bulletCards", "field": "rows", "pos": { "x": 72, "y": 230, "w": 1136, "h": 420 }, "titleSize": 21, "descSize": 16, "cols": 1 }
+  ]
+}

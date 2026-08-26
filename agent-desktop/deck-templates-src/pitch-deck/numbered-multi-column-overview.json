@@ -1,0 +1,22 @@
+{
+  "id": "numbered-multi-column-overview",
+  "name": "编号多栏概览",
+  "category": "pitch-deck",
+  "description": "顶部标题 + 多栏编号要点(短标题与描述)。适合分点概览或步骤说明。",
+  "schema": {
+    "title": { "type": "text", "label": "顶部标题", "required": true, "maxChars": 16 },
+    "items": { "type": "stat-list", "label": "栏目(标题/描述)", "required": true, "maxItems": 4, "statValueMaxChars": 14, "statLabelMaxChars": 118 }
+  },
+  "defaultData": {
+    "title": "概览",
+    "items": [
+      { "value": "要点一", "label": "对该要点的简要说明，阐明其核心内容与价值，帮助受众快速把握重点。" },
+      { "value": "要点二", "label": "对该要点的简要说明，阐明其核心内容与价值，帮助受众快速把握重点。" },
+      { "value": "要点三", "label": "对该要点的简要说明，阐明其核心内容与价值，帮助受众快速把握重点。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 64 },
+    { "kind": "bulletCards", "field": "items", "pos": { "x": 80, "y": 230, "w": 1120, "h": 380 }, "titleSize": 26, "descSize": 17, "cols": 3 }
+  ]
+}

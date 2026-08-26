@@ -1,0 +1,28 @@
+{
+  "id": "general-intro-slide",
+  "name": "开篇介绍",
+  "category": "general",
+  "description": "标题 + 描述 + 演讲者信息 + 配图的开场版式。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 40 },
+    "body": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 150 },
+    "presenter": { "type": "text", "label": "演讲者", "maxChars": 50 },
+    "date": { "type": "text", "label": "日期", "maxChars": 50 },
+    "image": { "type": "image", "label": "配图" }
+  },
+  "defaultData": {
+    "title": "产品概览",
+    "body": "我们的产品提供可定制的实时报表与数据驱动决策能力，可与第三方工具集成，并随业务增长平滑扩展。",
+    "presenter": "张三",
+    "date": "2025 年 12 月",
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "image", "field": "image", "pos": { "x": 80, "y": 120, "w": 460, "h": 480 } },
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 600, "y": 150, "w": 600 }, "size": 50 },
+    { "kind": "bar", "pos": { "x": 600, "y": 244, "w": 64, "h": 6 } },
+    { "kind": "paragraph", "field": "body", "pos": { "x": 600, "y": 280, "w": 600 }, "size": 19 },
+    { "kind": "paragraph", "field": "presenter", "pos": { "x": 600, "y": 480, "w": 600 }, "size": 18, "color": "fg" },
+    { "kind": "paragraph", "field": "date", "pos": { "x": 600, "y": 514, "w": 600 }, "size": 16, "color": "muted" }
+  ]
+}

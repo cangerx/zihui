@@ -1,0 +1,33 @@
+{
+  "id": "terminal-command-slide",
+  "name": "终端命令",
+  "category": "Code",
+  "description": "标题 + 描述 + 终端命令块（逐行列表）+ 底部提示。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 42 },
+    "description": { "type": "multiline", "label": "描述", "required": true, "maxChars": 220 },
+    "terminalLabel": { "type": "text", "label": "终端标签", "maxChars": 24 },
+    "commands": { "type": "list", "label": "命令(每行一项)", "required": true, "maxItems": 10, "itemMaxChars": 80 },
+    "note": { "type": "multiline", "label": "底部提示", "required": true, "maxChars": 180 }
+  },
+  "defaultData": {
+    "title": "本地开发环境搭建",
+    "description": "运行以下命令，在本地启动应用。",
+    "terminalLabel": "终端",
+    "commands": [
+      "$ pnpm install",
+      "$ pnpm dev",
+      "",
+      "  本地服务已启动 http://localhost:3000"
+    ],
+    "note": "容器启动完成后，应用即可在浏览器中访问。"
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 64, "w": 1120 }, "size": 48 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 142, "w": 1120 }, "size": 18, "color": "muted" },
+    { "kind": "kicker", "field": "terminalLabel", "pos": { "x": 80, "y": 198, "w": 1120 }, "size": 13, "color": "accent" },
+    { "kind": "list", "field": "commands", "pos": { "x": 80, "y": 228, "w": 1120 }, "itemSize": 18, "gap": 6, "color": "fg" },
+    { "kind": "rule", "pos": { "x": 80, "y": 596, "w": 1120, "h": 1 } },
+    { "kind": "paragraph", "field": "note", "pos": { "x": 80, "y": 614, "w": 1120 }, "size": 17, "color": "accent" }
+  ]
+}

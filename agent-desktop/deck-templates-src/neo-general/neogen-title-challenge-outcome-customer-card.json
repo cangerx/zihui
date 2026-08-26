@@ -1,0 +1,44 @@
+{
+  "id": "neogen-title-challenge-outcome-customer-card",
+  "name": "双段文字加高亮卡片",
+  "category": "neo-general",
+  "description": "标题加强调条，左侧挑战描述与编号成果列表，右侧客户高亮卡片含名称、副标题与突出指标。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "challengeSectionTitle": { "type": "text", "label": "第一段小标题", "maxChars": 12 },
+    "challengeContent": { "type": "multiline", "label": "第一段描述", "maxChars": 140 },
+    "outcomeSectionTitle": { "type": "text", "label": "第二段小标题", "maxChars": 12 },
+    "outcomePoints": { "type": "list", "label": "成果要点", "required": true, "maxItems": 5, "itemMaxChars": 40 },
+    "customerName": { "type": "text", "label": "客户名称", "maxChars": 15 },
+    "customerSubTitle": { "type": "text", "label": "客户副标题", "maxChars": 26 },
+    "metricValue": { "type": "text", "label": "指标数值", "maxChars": 6 },
+    "metricLabel": { "type": "text", "label": "指标说明", "maxChars": 26 }
+  },
+  "defaultData": {
+    "title": "客户案例快照",
+    "challengeSectionTitle": "挑战",
+    "challengeContent": "营销运营在 12 个地区彼此割裂，导致预算分配低效、信息不一致，获客成本同比上升 43%。",
+    "outcomeSectionTitle": "成果",
+    "outcomePoints": [
+      "六个月内获客成本下降 34%",
+      "实现各地区运营统一",
+      "新增 420 万元销售管线"
+    ],
+    "customerName": "环球科技",
+    "customerSubTitle": "世界 500 强科技企业",
+    "metricValue": "¥420万",
+    "metricLabel": "第四季度新增管线"
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 40 },
+    { "kind": "bar", "pos": { "x": 80, "y": 150, "w": 116, "h": 6 } },
+    { "kind": "kicker", "field": "challengeSectionTitle", "pos": { "x": 80, "y": 210, "w": 540 }, "size": 16, "color": "muted" },
+    { "kind": "paragraph", "field": "challengeContent", "pos": { "x": 80, "y": 244, "w": 540 }, "size": 18, "color": "fg" },
+    { "kind": "kicker", "field": "outcomeSectionTitle", "pos": { "x": 80, "y": 376, "w": 540 }, "size": 16, "color": "muted" },
+    { "kind": "numberedList", "field": "outcomePoints", "pos": { "x": 80, "y": 412, "w": 540 }, "itemSize": 18 },
+    { "kind": "heading", "field": "customerName", "level": 2, "pos": { "x": 700, "y": 230, "w": 500 }, "size": 30 },
+    { "kind": "paragraph", "field": "customerSubTitle", "pos": { "x": 700, "y": 280, "w": 500 }, "size": 16 },
+    { "kind": "heading", "field": "metricValue", "level": 1, "pos": { "x": 700, "y": 400, "w": 500 }, "size": 64, "color": "accent" },
+    { "kind": "paragraph", "field": "metricLabel", "pos": { "x": 700, "y": 490, "w": 500 }, "size": 18 }
+  ]
+}

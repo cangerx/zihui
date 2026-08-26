@@ -1,0 +1,28 @@
+{
+  "id": "bullet-list-slide",
+  "name": "双列编号列表",
+  "category": "Code",
+  "description": "标题 + 双列编号要点列表（每项一条用例）。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 25 },
+    "items": { "type": "list", "label": "要点列表", "required": true, "maxItems": 8, "itemMaxChars": 100 }
+  },
+  "defaultData": {
+    "title": "适用场景",
+    "items": [
+      "使用预制组件库保证 UI 一致性",
+      "结合 TypeScript 调用 REST 接口确保类型安全",
+      "通过 WebSocket 实现实时更新",
+      "借助自动化 CI/CD 流水线部署到生产环境",
+      "为受保护操作启用基于角色的权限控制",
+      "依据路由契约自动生成接口文档",
+      "用遥测看板追踪发布健康度",
+      "为高风险部署准备回滚策略"
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 72, "w": 1120 }, "size": 52 },
+    { "kind": "bar", "pos": { "x": 80, "y": 154, "w": 64, "h": 6 } },
+    { "kind": "numberedList", "field": "items", "pos": { "x": 80, "y": 196, "w": 1120 }, "itemSize": 18, "gap": 12, "color": "fg" }
+  ]
+}

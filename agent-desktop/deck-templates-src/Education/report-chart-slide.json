@@ -1,0 +1,30 @@
+{
+  "id": "report-chart-slide",
+  "name": "报告图表",
+  "category": "Education",
+  "description": "左侧报告标题、正文与脚注，右侧图表区(图表标题、日期范围与图表占位)。",
+  "schema": {
+    "title": { "type": "text", "label": "标题", "required": true, "maxChars": 24 },
+    "body": { "type": "multiline", "label": "正文段落", "required": true, "maxChars": 260 },
+    "footnote": { "type": "multiline", "label": "脚注", "maxChars": 150 },
+    "chartTitle": { "type": "text", "label": "图表标题", "maxChars": 42 },
+    "dateRange": { "type": "text", "label": "日期范围", "maxChars": 22 },
+    "chart": { "type": "image", "label": "图表" }
+  },
+  "defaultData": {
+    "title": "数据报告",
+    "body": "在此填写报告的主体说明，概述本次数据的背景、关键发现与趋势。可结合具体指标的变化，帮助读者快速把握整体结论与含义。",
+    "footnote": "（注：数据来源与统计口径说明，可在此补充必要的限定条件。）",
+    "chartTitle": "各年级学生人数分布",
+    "dateRange": "4 月 10 日 - 4 月 17 日",
+    "chart": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 140, "w": 560 }, "size": 52 },
+    { "kind": "paragraph", "field": "body", "pos": { "x": 80, "y": 250, "w": 560 }, "size": 20, "merge": true },
+    { "kind": "paragraph", "field": "footnote", "pos": { "x": 80, "y": 540, "w": 560 }, "size": 16, "color": "muted" },
+    { "kind": "heading", "field": "chartTitle", "level": 2, "pos": { "x": 720, "y": 110, "w": 480 }, "size": 24 },
+    { "kind": "paragraph", "field": "dateRange", "pos": { "x": 720, "y": 152, "w": 480 }, "size": 16, "color": "muted" },
+    { "kind": "image", "field": "chart", "pos": { "x": 720, "y": 200, "w": 480, "h": 420 } }
+  ]
+}

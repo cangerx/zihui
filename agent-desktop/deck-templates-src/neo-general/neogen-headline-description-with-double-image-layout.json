@@ -1,0 +1,25 @@
+{
+  "id": "neogen-headline-description-with-double-image-layout",
+  "name": "标题描述配双图",
+  "category": "neo-general",
+  "description": "左侧粗体标题、强调条与描述段落，右侧两张圆角配图。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "description": { "type": "multiline", "label": "描述正文", "maxChars": 400 },
+    "firstImage": { "type": "image", "label": "配图一" },
+    "secondImage": { "type": "image", "label": "配图二" }
+  },
+  "defaultData": {
+    "title": "执行摘要",
+    "description": "聚焦金融服务、医疗健康与科技行业中员工规模 500 人以上的企业。通过基于账户的营销与内容驱动策略，目标实现 350 万元新增管线，并将获客成本控制在 150 元以内。",
+    "firstImage": "",
+    "secondImage": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 130, "w": 520 }, "size": 42 },
+    { "kind": "bar", "pos": { "x": 80, "y": 210, "w": 116, "h": 6 } },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 260, "w": 520 }, "size": 16 },
+    { "kind": "image", "field": "firstImage", "pos": { "x": 660, "y": 110, "w": 380, "h": 340 } },
+    { "kind": "image", "field": "secondImage", "pos": { "x": 820, "y": 270, "w": 380, "h": 340 } }
+  ]
+}

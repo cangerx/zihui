@@ -1,0 +1,28 @@
+{
+  "id": "competitive-positioning-slide",
+  "name": "竞争定位",
+  "category": "pitch-deck",
+  "description": "标题 + 定位概述 + 竞品对比条目(优势与差距)。用于竞争格局分析。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "summary": { "type": "multiline", "label": "定位概述", "required": true, "maxChars": 90 },
+    "positionLabel": { "type": "text", "label": "目标定位标签", "maxChars": 26 },
+    "competitors": { "type": "stat-list", "label": "竞品对比(名称/优势与差距)", "required": true, "maxItems": 4, "statValueMaxChars": 24, "statLabelMaxChars": 90 }
+  },
+  "defaultData": {
+    "title": "竞争定位",
+    "summary": "机会在于将工作流深度与更简单的团队运营底座相结合。",
+    "positionLabel": "聚焦的运营底座",
+    "competitors": [
+      { "value": "电子表格", "label": "灵活且易上手；但规模化后难以治理。" },
+      { "value": "项目工具", "label": "任务可见性好；但决策上下文薄弱。" },
+      { "value": "定制系统", "label": "内部契合度深；但维护慢且成本高。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 72, "w": 1120 }, "size": 52 },
+    { "kind": "paragraph", "field": "summary", "pos": { "x": 80, "y": 150, "w": 820 }, "size": 20, "color": "muted" },
+    { "kind": "kicker", "field": "positionLabel", "pos": { "x": 80, "y": 230, "w": 1120 }, "size": 16 },
+    { "kind": "bulletCards", "field": "competitors", "pos": { "x": 80, "y": 280, "w": 1120, "h": 350 }, "titleSize": 22, "descSize": 16, "cols": 1, "rowH": 90 }
+  ]
+}

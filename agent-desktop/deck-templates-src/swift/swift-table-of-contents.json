@@ -1,0 +1,30 @@
+{
+  "id": "swift-table-of-contents",
+  "name": "目录",
+  "category": "swift",
+  "description": "标题 + 最多 10 项章节卡片（标题与简介），双列编号目录。",
+  "schema": {
+    "title": { "type": "text", "label": "标题", "required": true, "maxChars": 60 },
+    "items": { "type": "stat-list", "label": "章节(标题/简介)", "required": true, "maxItems": 10, "statValueMaxChars": 40, "statLabelMaxChars": 60 },
+    "website": { "type": "text", "label": "网址", "maxChars": 60 }
+  },
+  "defaultData": {
+    "title": "目录",
+    "items": [
+      { "value": "引言", "label": "公司与目标的简要概述。" },
+      { "value": "团队介绍", "label": "核心成员与领导团队。" },
+      { "value": "发展历程", "label": "整体执行计划与里程碑。" },
+      { "value": "核心建议", "label": "基于需求提出的关键建议。" },
+      { "value": "解决方案", "label": "我们的方案与可行性说明。" },
+      { "value": "市场分析", "label": "受众、细分与机会规模。" }
+    ],
+    "website": "www.yourwebsite.com"
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 96, "w": 1120 }, "size": 46 },
+    { "kind": "bar", "pos": { "x": 80, "y": 176, "w": 64, "h": 6 } },
+    { "kind": "bulletCards", "field": "items", "pos": { "x": 80, "y": 216, "w": 1120, "h": 396 }, "titleSize": 21, "descSize": 14, "cols": 2, "rowH": 120 },
+    { "kind": "rule", "pos": { "x": 80, "y": 650, "w": 1120, "h": 2 } },
+    { "kind": "paragraph", "field": "website", "pos": { "x": 80, "y": 628, "w": 600 }, "size": 14, "color": "muted" }
+  ]
+}

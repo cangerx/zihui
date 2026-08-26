@@ -1,0 +1,25 @@
+{
+  "id": "edu-table-of-contents-slide",
+  "name": "目录页",
+  "category": "Education",
+  "description": "左侧标题面板，右侧带编号的章节列表的目录版式。",
+  "schema": {
+    "title": { "type": "text", "label": "标题", "required": true, "maxChars": 32 },
+    "items": { "type": "list", "label": "章节", "required": true, "maxItems": 10, "itemMaxChars": 30 }
+  },
+  "defaultData": {
+    "title": "目录",
+    "items": [
+      "课程背景与目标",
+      "核心内容概览",
+      "教学方法与活动",
+      "学习成果与评估",
+      "总结与下一步"
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 120, "w": 360 }, "size": 56 },
+    { "kind": "bar", "pos": { "x": 80, "y": 248, "w": 64, "h": 6 } },
+    { "kind": "numberedList", "field": "items", "pos": { "x": 520, "y": 110, "w": 680 }, "itemSize": 22, "gap": 12 }
+  ]
+}

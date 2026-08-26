@@ -1,0 +1,29 @@
+{
+  "id": "report-title-chart-metrics-cards-slide",
+  "name": "图表加指标卡",
+  "category": "Report",
+  "description": "顶部标题，左侧为图表，右侧并排排列可选的指标卡片。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 80 },
+    "chart": { "type": "image", "label": "图表/数据图" },
+    "legendLabel": { "type": "text", "label": "图例说明", "required": true, "maxChars": 32 },
+    "metrics": { "type": "stat-list", "label": "指标(数值/说明)", "required": true, "maxItems": 4, "statValueMaxChars": 12, "statLabelMaxChars": 36 }
+  },
+  "defaultData": {
+    "title": "数据分析",
+    "chart": "",
+    "legendLabel": "传统工作流",
+    "metrics": [
+      { "value": "25K", "label": "覆盖人数" },
+      { "value": "98%", "label": "完成率" },
+      { "value": "3.2x", "label": "同比增长" },
+      { "value": "12", "label": "关键节点" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 64, "w": 1120 }, "size": 64 },
+    { "kind": "image", "field": "chart", "pos": { "x": 80, "y": 220, "w": 540, "h": 356 } },
+    { "kind": "paragraph", "field": "legendLabel", "pos": { "x": 80, "y": 592, "w": 540 }, "size": 20, "color": "accent" },
+    { "kind": "statGrid", "field": "metrics", "pos": { "x": 680, "y": 220, "w": 520, "h": 180 }, "valueSize": 38, "labelSize": 16, "cols": 2 }
+  ]
+}

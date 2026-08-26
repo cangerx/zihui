@@ -1,0 +1,29 @@
+{
+  "id": "neostd-title-description-multi-chart-grid-metrics",
+  "name": "标题描述加多图表网格与指标",
+  "category": "neo-standard",
+  "description": "标题、描述、最多 4 个 KPI 指标与多图表网格的仪表盘版式(图表区以配图承载)。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 50 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 200 },
+    "metrics": { "type": "stat-list", "label": "指标(数值/说明)", "required": true, "maxItems": 4, "statValueMaxChars": 12, "statLabelMaxChars": 24 },
+    "charts": { "type": "image", "label": "图表网格" }
+  },
+  "defaultData": {
+    "title": "数据分析仪表盘",
+    "description": "围绕关键指标与绩效表现的多维度综合概览，帮助快速把握业务全貌与趋势变化。",
+    "metrics": [
+      { "value": "350万", "label": "管线规模" },
+      { "value": "28%", "label": "转化率" },
+      { "value": "1.9x", "label": "投资回报" },
+      { "value": "42", "label": "签约客户" }
+    ],
+    "charts": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 60, "y": 48, "w": 1160 }, "size": 40 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 60, "y": 122, "w": 1160 }, "size": 15, "merge": true },
+    { "kind": "statGrid", "field": "metrics", "pos": { "x": 60, "y": 190, "w": 1160, "h": 96 }, "valueSize": 28, "labelSize": 13, "cols": 4 },
+    { "kind": "image", "field": "charts", "pos": { "x": 60, "y": 320, "w": 1160, "h": 340 } }
+  ]
+}

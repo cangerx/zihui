@@ -1,0 +1,30 @@
+{
+  "id": "swift-icon-bullet-list-description-slide",
+  "name": "功能要点列表",
+  "category": "swift",
+  "description": "标题 + 描述 + 一行功能卡片(标题与简述)，用于核心特性展示。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 48 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 200 },
+    "features": { "type": "stat-list", "label": "功能(标题/描述)", "required": true, "maxItems": 4, "statValueMaxChars": 28, "statLabelMaxChars": 140 },
+    "website": { "type": "text", "label": "网址", "maxChars": 60 }
+  },
+  "defaultData": {
+    "title": "核心产品功能",
+    "description": "我们围绕真实业务场景打磨产品能力，让团队以更低的成本获得更高的效率与确定性。",
+    "features": [
+      { "value": "可定制工作流", "label": "按业务流程灵活配置，无需改动底层系统。" },
+      { "value": "多端无缝访问", "label": "随时随地查看与协作，数据保持同步。" },
+      { "value": "可扩展架构", "label": "随业务增长平滑扩容，性能稳定可靠。" },
+      { "value": "详尽数据报表", "label": "自动汇总关键指标，辅助快速决策。" }
+    ],
+    "website": "www.yourwebsite.com"
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 96, "w": 1120 }, "size": 44 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 170, "w": 760 }, "size": 16 },
+    { "kind": "bulletCards", "field": "features", "pos": { "x": 80, "y": 280, "w": 1120, "h": 320 }, "titleSize": 19, "descSize": 14, "cols": 4 },
+    { "kind": "rule", "pos": { "x": 80, "y": 650, "w": 1120, "h": 2 } },
+    { "kind": "paragraph", "field": "website", "pos": { "x": 80, "y": 628, "w": 600 }, "size": 14, "color": "muted" }
+  ]
+}

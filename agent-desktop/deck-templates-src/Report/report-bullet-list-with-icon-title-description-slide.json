@@ -1,0 +1,25 @@
+{
+  "id": "report-bullet-list-with-icon-title-description-slide",
+  "name": "图标要点双列",
+  "category": "Report",
+  "description": "顶部标题加两列要点列表，每条含简短标题与下方支撑说明。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 12 },
+    "items": { "type": "stat-list", "label": "要点(标题/描述)", "required": true, "maxItems": 6, "statValueMaxChars": 30, "statLabelMaxChars": 60 }
+  },
+  "defaultData": {
+    "title": "数据分析",
+    "items": [
+      { "value": "趋势识别", "label": "捕捉关键指标的变化方向与拐点。" },
+      { "value": "结构拆解", "label": "按维度拆分数据，定位差异来源。" },
+      { "value": "异常监测", "label": "标记偏离基线的波动并及时预警。" },
+      { "value": "对比分析", "label": "横向与纵向对比，验证假设结论。" },
+      { "value": "归因解读", "label": "结合背景解释信号背后的原因。" },
+      { "value": "行动建议", "label": "将分析结论转化为可执行动作。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 64, "w": 1120 }, "size": 72 },
+    { "kind": "bulletCards", "field": "items", "pos": { "x": 80, "y": 220, "w": 1120, "h": 400 }, "titleSize": 22, "descSize": 16, "cols": 2 }
+  ]
+}

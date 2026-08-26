@@ -1,0 +1,25 @@
+{
+  "id": "metrics-grid-slide",
+  "name": "指标网格",
+  "category": "Code",
+  "description": "标题 + 三列大数字指标卡片网格。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 18 },
+    "metrics": { "type": "stat-list", "label": "指标(数值/说明)", "required": true, "maxItems": 6, "statValueMaxChars": 6, "statLabelMaxChars": 30 }
+  },
+  "defaultData": {
+    "title": "关键指标",
+    "metrics": [
+      { "value": "99.9%", "label": "服务可用性" },
+      { "value": "<100ms", "label": "平均响应时间" },
+      { "value": "5万+", "label": "活跃用户" },
+      { "value": "3.2x", "label": "营收同比增长" },
+      { "value": "98%", "label": "客户留存率" },
+      { "value": "24/7", "label": "全天候运维" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 64, "w": 1120 }, "size": 56 },
+    { "kind": "statGrid", "field": "metrics", "pos": { "x": 80, "y": 180, "w": 1120, "h": 200 }, "valueSize": 48, "labelSize": 16, "cols": 3 }
+  ]
+}

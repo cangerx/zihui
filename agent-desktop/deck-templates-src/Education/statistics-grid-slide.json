@@ -1,0 +1,26 @@
+{
+  "id": "statistics-grid-slide",
+  "name": "统计网格",
+  "category": "Education",
+  "description": "左侧标题与说明，右侧数值卡片网格的统计版式。",
+  "schema": {
+    "title": { "type": "text", "label": "标题", "required": true, "maxChars": 16 },
+    "description": { "type": "multiline", "label": "说明文字", "maxChars": 160 },
+    "stats": { "type": "stat-list", "label": "统计项(数值/说明)", "required": true, "maxItems": 8, "statValueMaxChars": 8, "statLabelMaxChars": 45 }
+  },
+  "defaultData": {
+    "title": "数据统计",
+    "description": "以下数据概括了我们在团队规模、覆盖范围与成果方面的关键指标，帮助快速了解整体情况。",
+    "stats": [
+      { "value": "120", "label": "销售团队总人数" },
+      { "value": "15", "label": "高级销售主管" },
+      { "value": "25", "label": "区域销售专员" },
+      { "value": "50", "label": "渠道分销代表" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 250, "w": 360 }, "size": 56 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 380, "w": 360 }, "size": 20 },
+    { "kind": "statGrid", "field": "stats", "pos": { "x": 500, "y": 110, "w": 700, "h": 150 }, "valueSize": 44, "labelSize": 16, "cols": 2 }
+  ]
+}

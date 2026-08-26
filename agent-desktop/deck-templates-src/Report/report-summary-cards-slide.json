@@ -1,0 +1,39 @@
+{
+  "id": "report-summary-cards-slide",
+  "name": "执行摘要卡片",
+  "category": "Report",
+  "description": "报告页：标题、概述语、紧凑指标卡、支撑要点卡与结语。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 36 },
+    "subtitle": { "type": "multiline", "label": "副标题", "required": true, "maxChars": 140 },
+    "summary": { "type": "multiline", "label": "核心摘要", "required": true, "maxChars": 220 },
+    "metrics": { "type": "stat-list", "label": "指标(数值/说明)", "required": true, "maxItems": 4, "statValueMaxChars": 10, "statLabelMaxChars": 28 },
+    "highlights": { "type": "stat-list", "label": "要点(标签/描述)", "required": true, "maxItems": 4, "statValueMaxChars": 24, "statLabelMaxChars": 110 },
+    "conclusion": { "type": "multiline", "label": "结语", "required": true, "maxChars": 150 }
+  },
+  "defaultData": {
+    "title": "执行摘要",
+    "subtitle": "对报告背景、主要观察与总体方向的简要概述。",
+    "summary": "报告识别出最重要的趋势，解释了发生的变化，并归纳出对决策者的影响。",
+    "metrics": [
+      { "value": "84%", "label": "完成度" },
+      { "value": "12", "label": "关键输入" },
+      { "value": "3", "label": "主要发现" }
+    ],
+    "highlights": [
+      { "value": "背景", "label": "报告对比了近期活动、支撑证据及由此产生的运营信号。" },
+      { "value": "趋势", "label": "最显著的变化出现在权责最清晰、跟进节奏最稳的领域。" },
+      { "value": "方向", "label": "近期工作应聚焦于最能改善可量化结果的少数行动。" }
+    ],
+    "conclusion": "请通过后续章节查看证据、风险、建议与下一步行动。"
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 64, "w": 1000 }, "size": 54 },
+    { "kind": "paragraph", "field": "subtitle", "pos": { "x": 80, "y": 142, "w": 1000 }, "size": 20, "color": "muted" },
+    { "kind": "bar", "pos": { "x": 80, "y": 192, "w": 64, "h": 6 } },
+    { "kind": "paragraph", "field": "summary", "pos": { "x": 80, "y": 232, "w": 680 }, "size": 24, "color": "fg", "merge": true },
+    { "kind": "statGrid", "field": "metrics", "pos": { "x": 800, "y": 232, "w": 400, "h": 120 }, "valueSize": 32, "labelSize": 16, "cols": 2 },
+    { "kind": "bulletCards", "field": "highlights", "pos": { "x": 80, "y": 432, "w": 1120, "h": 130 }, "titleSize": 18, "descSize": 15, "cols": 3 },
+    { "kind": "paragraph", "field": "conclusion", "pos": { "x": 80, "y": 600, "w": 1120 }, "size": 18, "color": "muted" }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "id": "centered-cover-with-footer-meta",
+  "name": "居中封面带页脚信息",
+  "category": "pitch-deck",
+  "description": "单焦点封面版式：居中主标题、副标题，配底部信息组。适合开场封面页。",
+  "schema": {
+    "title": { "type": "text", "label": "封面主标题", "required": true, "maxChars": 20 },
+    "subtitle": { "type": "text", "label": "副标题", "maxChars": 34 },
+    "footerItems": { "type": "stat-list", "label": "页脚信息(标签/内容)", "maxItems": 2, "statValueMaxChars": 14, "statLabelMaxChars": 24 }
+  },
+  "defaultData": {
+    "title": "演示文稿",
+    "subtitle": "团队运营管理",
+    "footerItems": [
+      { "value": "演讲人", "label": "汇报人姓名" },
+      { "value": "日期", "label": "2026 年 12 月 4 日" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 250, "w": 1120 }, "size": 96 },
+    { "kind": "paragraph", "field": "subtitle", "pos": { "x": 80, "y": 392, "w": 1120 }, "size": 28, "color": "muted" },
+    { "kind": "bulletCards", "field": "footerItems", "pos": { "x": 80, "y": 560, "w": 1120, "h": 96 }, "titleSize": 14, "descSize": 16, "cols": 2 }
+  ]
+}

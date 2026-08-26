@@ -1,0 +1,24 @@
+{
+  "id": "workflow-slide",
+  "name": "工作流程",
+  "category": "Code",
+  "description": "标题 + 横向流程步骤卡片（每步含标题与简短描述）。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 16 },
+    "steps": { "type": "stat-list", "label": "流程步骤(标题/描述)", "required": true, "maxItems": 4, "statValueMaxChars": 12, "statLabelMaxChars": 50 }
+  },
+  "defaultData": {
+    "title": "工作流程",
+    "steps": [
+      { "value": "设计", "label": "绘制线框图并搭建设计系统组件。" },
+      { "value": "开发", "label": "用现代框架与最佳实践构建功能。" },
+      { "value": "测试", "label": "执行自动化测试与质量保证检查。" },
+      { "value": "部署", "label": "通过 CI/CD 流水线自动化上线。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 56 },
+    { "kind": "bar", "pos": { "x": 80, "y": 178, "w": 64, "h": 6 } },
+    { "kind": "bulletCards", "field": "steps", "pos": { "x": 80, "y": 260, "w": 1120, "h": 300 }, "titleSize": 24, "descSize": 15, "cols": 4 }
+  ]
+}

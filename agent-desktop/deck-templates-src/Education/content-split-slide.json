@@ -1,0 +1,25 @@
+{
+  "id": "content-split-slide",
+  "name": "图文分栏",
+  "category": "Education",
+  "description": "左侧配图，右侧标题、标签与正文段落的分栏版式。",
+  "schema": {
+    "heading": { "type": "text", "label": "标题", "required": true, "maxChars": 24 },
+    "tagline": { "type": "text", "label": "标签", "maxChars": 12 },
+    "body": { "type": "multiline", "label": "正文段落", "required": true, "maxChars": 300 },
+    "image": { "type": "image", "label": "配图" }
+  },
+  "defaultData": {
+    "heading": "内容标题",
+    "tagline": "标签",
+    "body": "在此填写主体描述段落，介绍本页的核心内容与要点。可结合背景、方法与成果，让读者快速理解你想传达的信息，并保持表述简洁清晰。",
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "image", "field": "image", "pos": { "x": 0, "y": 0, "w": 640, "h": 720 } },
+    { "kind": "heading", "field": "heading", "level": 2, "pos": { "x": 720, "y": 200, "w": 480 }, "size": 40 },
+    { "kind": "kicker", "field": "tagline", "pos": { "x": 720, "y": 264, "w": 480 }, "size": 14 },
+    { "kind": "bar", "pos": { "x": 720, "y": 300, "w": 64, "h": 6 } },
+    { "kind": "paragraph", "field": "body", "pos": { "x": 720, "y": 332, "w": 480 }, "size": 20, "merge": true }
+  ]
+}

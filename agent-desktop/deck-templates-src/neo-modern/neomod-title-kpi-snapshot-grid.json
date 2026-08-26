@@ -1,0 +1,28 @@
+{
+  "id": "neomod-title-kpi-snapshot-grid",
+  "name": "标题 KPI 快照网格",
+  "category": "neo-modern",
+  "description": "居中标题，下方为最多 8 张指标卡片的网格(4 列 2 行)。每张卡片含数值与说明。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "kpiCards": { "type": "stat-list", "label": "指标(数值/说明)", "required": true, "maxItems": 8, "statValueMaxChars": 20, "statLabelMaxChars": 25 }
+  },
+  "defaultData": {
+    "title": "KPI 快照",
+    "kpiCards": [
+      { "value": "15%", "label": "营收增长" },
+      { "value": "22%", "label": "社媒互动增长" },
+      { "value": "10", "label": "成功交付项目" },
+      { "value": "10", "label": "成功交付项目" },
+      { "value": "15%", "label": "营收增长" },
+      { "value": "22%", "label": "社媒互动增长" },
+      { "value": "10", "label": "重点交付项目" },
+      { "value": "10", "label": "重点交付项目" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 42 },
+    { "kind": "bar", "pos": { "x": 608, "y": 158, "w": 64, "h": 6 } },
+    { "kind": "statGrid", "field": "kpiCards", "pos": { "x": 80, "y": 210, "w": 1120, "h": 195 }, "valueSize": 38, "labelSize": 15, "cols": 4 }
+  ]
+}

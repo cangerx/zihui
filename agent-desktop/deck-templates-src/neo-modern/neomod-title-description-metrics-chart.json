@@ -1,0 +1,38 @@
+{
+  "id": "neomod-title-description-metrics-chart",
+  "name": "标题描述指标图表",
+  "category": "neo-modern",
+  "description": "左侧为主标题、描述与指标卡片网格，右侧为图表面板(以配图占位)。适合数据看板类页面。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 25 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 180 },
+    "metricCards": { "type": "stat-list", "label": "指标卡片(数值/说明)", "required": true, "maxItems": 4, "statValueMaxChars": 8, "statLabelMaxChars": 25 },
+    "chartTitle": { "type": "text", "label": "图表标题", "maxChars": 12 },
+    "chartCategory": { "type": "text", "label": "图表副标签", "maxChars": 12 },
+    "chartFooterLabel": { "type": "text", "label": "图表脚注", "maxChars": 15 },
+    "image": { "type": "image", "label": "图表配图" }
+  },
+  "defaultData": {
+    "title": "图表与指标",
+    "description": "聚焦金融服务、医疗健康与科技行业中员工规模 500 人以上的企业，通过基于客户的营销与内容驱动策略，目标实现 350 万元新增管道。",
+    "metricCards": [
+      { "value": "85%", "label": "客户响应延迟挑战" },
+      { "value": "5亿+", "label": "注册用户总数" },
+      { "value": "3.2x", "label": "营收同比增长" },
+      { "value": "98%", "label": "客户留存率" }
+    ],
+    "chartTitle": "投放渠道",
+    "chartCategory": "头部渠道",
+    "chartFooterLabel": "互动率对比",
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 88, "w": 540 }, "size": 38 },
+    { "kind": "bar", "pos": { "x": 80, "y": 156, "w": 64, "h": 6 } },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 190, "w": 540 }, "size": 15 },
+    { "kind": "bulletCards", "field": "metricCards", "pos": { "x": 80, "y": 320, "w": 540, "h": 300 }, "titleSize": 30, "descSize": 14, "cols": 2 },
+    { "kind": "kicker", "field": "chartTitle", "pos": { "x": 680, "y": 88, "w": 520 }, "size": 16 },
+    { "kind": "image", "field": "image", "pos": { "x": 680, "y": 130, "w": 520, "h": 470 } },
+    { "kind": "paragraph", "field": "chartFooterLabel", "pos": { "x": 680, "y": 612, "w": 520 }, "size": 14, "color": "muted" }
+  ]
+}

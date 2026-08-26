@@ -1,0 +1,31 @@
+{
+  "id": "neogen-multi-chart-grid-slide",
+  "name": "标题描述配多图表网格",
+  "category": "neo-general",
+  "description": "标题与描述加 1-6 个自动排布的图表（占位）组成的仪表盘式布局。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 50 },
+    "description": { "type": "multiline", "label": "描述正文", "maxChars": 200 },
+    "chartImage1": { "type": "image", "label": "图表一" },
+    "chartImage2": { "type": "image", "label": "图表二" },
+    "chartImage3": { "type": "image", "label": "图表三" },
+    "chartImage4": { "type": "image", "label": "图表四" }
+  },
+  "defaultData": {
+    "title": "数据分析仪表盘",
+    "description": "全面呈现跨多个数据维度的关键指标与绩效表现。",
+    "chartImage1": "",
+    "chartImage2": "",
+    "chartImage3": "",
+    "chartImage4": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 64, "w": 1120 }, "size": 38 },
+    { "kind": "bar", "pos": { "x": 80, "y": 124, "w": 64, "h": 6 } },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 144, "w": 1120 }, "size": 16 },
+    { "kind": "image", "field": "chartImage1", "pos": { "x": 80, "y": 210, "w": 545, "h": 200 } },
+    { "kind": "image", "field": "chartImage2", "pos": { "x": 655, "y": 210, "w": 545, "h": 200 } },
+    { "kind": "image", "field": "chartImage3", "pos": { "x": 80, "y": 430, "w": 545, "h": 200 } },
+    { "kind": "image", "field": "chartImage4", "pos": { "x": 655, "y": 430, "w": 545, "h": 200 } }
+  ]
+}

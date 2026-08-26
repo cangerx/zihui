@@ -1,0 +1,26 @@
+{
+  "id": "table-of-contents",
+  "name": "目录概览",
+  "category": "modern",
+  "description": "主标题与两列目录卡片（章节标题与简短说明），适合作为章节导览。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 40 },
+    "items": { "type": "stat-list", "label": "章节(标题/说明)", "required": true, "maxItems": 10, "statValueMaxChars": 40, "statLabelMaxChars": 80 }
+  },
+  "defaultData": {
+    "title": "目录",
+    "items": [
+      { "value": "市场背景", "label": "行业现状与机会的整体概览。" },
+      { "value": "产品方案", "label": "核心产品与解决方案介绍。" },
+      { "value": "商业模式", "label": "盈利路径与价值创造方式。" },
+      { "value": "团队介绍", "label": "核心团队的背景与分工。" },
+      { "value": "市场验证", "label": "早期成果与客户反馈。" },
+      { "value": "发展规划", "label": "未来阶段的目标与节奏。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 88, "w": 1120 }, "size": 44 },
+    { "kind": "bar", "pos": { "x": 80, "y": 162, "w": 64, "h": 6 } },
+    { "kind": "bulletCards", "field": "items", "pos": { "x": 80, "y": 216, "w": 1120, "h": 400 }, "titleSize": 19, "descSize": 14, "cols": 2 }
+  ]
+}

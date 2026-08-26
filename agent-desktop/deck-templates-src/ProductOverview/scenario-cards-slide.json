@@ -1,0 +1,28 @@
+{
+  "id": "scenario-cards-slide",
+  "name": "应用场景卡片",
+  "category": "ProductOverview",
+  "description": "左侧标题副标题 + 右侧场景卡片(场景/结果)的应用案例版式。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 42 },
+    "subtitle": { "type": "multiline", "label": "副标题", "maxChars": 140 },
+    "useCases": { "type": "stat-list", "label": "场景(场景名/结果)", "required": true, "maxItems": 6, "statValueMaxChars": 34, "statLabelMaxChars": 80 }
+  },
+  "defaultData": {
+    "title": "应用场景",
+    "subtitle": "通过场景卡片展示不同团队、流程或情境如何连接到实际成果。",
+    "useCases": [
+      { "value": "路线图规划", "label": "把客户信号、投入、影响与战略目标整合为清晰的规划视图。" },
+      { "value": "上线就绪", "label": "在发布前追踪归属、依赖、审批、阻塞与上线里程碑。" },
+      { "value": "高管汇报", "label": "把实时产品数据转化为简洁的进度摘要与董事会报告。" },
+      { "value": "客户反馈", "label": "把客户诉求与异议直接连接到路线图决策与产品策略。" },
+      { "value": "运营评审", "label": "标准化状态更新、周期评审与跨职能的产品例会。" },
+      { "value": "数据驱动", "label": "用统一指标支撑日常决策与持续改进。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 80, "w": 360 }, "size": 56 },
+    { "kind": "paragraph", "field": "subtitle", "pos": { "x": 80, "y": 200, "w": 360 }, "size": 19 },
+    { "kind": "bulletCards", "field": "useCases", "pos": { "x": 480, "y": 80, "w": 720, "h": 560 }, "titleSize": 22, "descSize": 16, "cols": 2 }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "neostd-title-description-image-right",
+  "name": "标题描述加右侧配图",
+  "category": "neo-standard",
+  "description": "左侧标题与描述段落，右侧一张大幅特色配图的两栏版式。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 17 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 226 },
+    "image": { "type": "image", "label": "配图" }
+  },
+  "defaultData": {
+    "title": "执行摘要",
+    "description": "聚焦员工规模 500 人以上、处于金融服务、医疗健康与科技行业的企业，通过基于客户的精准营销与内容驱动策略，争取新增管线规模并控制获客成本。",
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "bar", "pos": { "x": 90, "y": 220, "w": 116, "h": 4 } },
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 90, "y": 248, "w": 510 }, "size": 43 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 90, "y": 330, "w": 510 }, "size": 16, "merge": true },
+    { "kind": "image", "field": "image", "pos": { "x": 659, "y": 31, "w": 531, "h": 657 } }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "neomod-title-horizontal-alternating-timeline",
+  "name": "标题横向时间线",
+  "category": "neo-modern",
+  "description": "居中标题，下方为最多 7 个时间节点的卡片，每个含年份/标题与说明，呈现时间顺序的递进。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 20 },
+    "items": { "type": "stat-list", "label": "时间节点(标题/说明)", "required": true, "maxItems": 7, "statValueMaxChars": 10, "statLabelMaxChars": 150 }
+  },
+  "defaultData": {
+    "title": "发展历程",
+    "items": [
+      { "value": "2014", "label": "业务流程应目标清晰、尽可能细化，并产出稳定一致的结果。" },
+      { "value": "2016", "label": "业务流程应目标清晰、尽可能细化，并产出稳定一致的结果。" },
+      { "value": "2018", "label": "业务流程应目标清晰、尽可能细化，并产出稳定一致的结果。" },
+      { "value": "2020", "label": "业务流程应目标清晰、尽可能细化，并产出稳定一致的结果。" },
+      { "value": "2022", "label": "业务流程应目标清晰、尽可能细化，并产出稳定一致的结果。" },
+      { "value": "2024", "label": "业务流程应目标清晰、尽可能细化，并产出稳定一致的结果。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 42 },
+    { "kind": "bar", "pos": { "x": 608, "y": 158, "w": 64, "h": 6 } },
+    { "kind": "bulletCards", "field": "items", "pos": { "x": 80, "y": 214, "w": 1120, "h": 410 }, "titleSize": 22, "descSize": 14, "cols": 3 }
+  ]
+}

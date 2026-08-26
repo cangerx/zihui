@@ -1,0 +1,25 @@
+{
+  "id": "defensibility-slide",
+  "name": "护城河",
+  "category": "pitch-deck",
+  "description": "小标题 + 大字护城河陈述 + 优势支柱卡片。用于阐述竞争壁垒。",
+  "schema": {
+    "title": { "type": "text", "label": "小标题", "required": true, "maxChars": 28 },
+    "statement": { "type": "multiline", "label": "护城河陈述", "required": true, "maxChars": 90 },
+    "advantages": { "type": "stat-list", "label": "优势支柱(标题/说明)", "required": true, "maxItems": 4, "statValueMaxChars": 26, "statLabelMaxChars": 70 }
+  },
+  "defaultData": {
+    "title": "护城河",
+    "statement": "随着工作流数据、客户习惯与系统集成日益难以替代，优势会不断累积。",
+    "advantages": [
+      { "value": "数据上下文", "label": "每次工作流都会丰富运营记录，让后续决策更轻松。" },
+      { "value": "嵌入流程", "label": "团队采用共享的工作方式，使其成为日常运作的一部分。" },
+      { "value": "集成深度", "label": "与现有系统的连接降低迁移成本，提升日常实用价值。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "kicker", "field": "title", "pos": { "x": 80, "y": 96, "w": 1120 }, "size": 18 },
+    { "kind": "heading", "field": "statement", "level": 2, "pos": { "x": 80, "y": 150, "w": 1080 }, "size": 48 },
+    { "kind": "bulletCards", "field": "advantages", "pos": { "x": 80, "y": 400, "w": 1120, "h": 220 }, "titleSize": 24, "descSize": 16, "cols": 3 }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "id": "code-explanation-split-slide",
+  "name": "代码讲解分栏",
+  "category": "Code",
+  "description": "左侧代码面板 + 右侧文字讲解的分栏版式。代码以逐行列表承载。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 24 },
+    "fileName": { "type": "text", "label": "文件名", "maxChars": 36 },
+    "code": { "type": "list", "label": "代码(每行一项)", "required": true, "maxItems": 14, "itemMaxChars": 52 },
+    "descriptionTitle": { "type": "text", "label": "讲解标题", "maxChars": 20 },
+    "description": { "type": "multiline", "label": "讲解正文", "required": true, "maxChars": 360 }
+  },
+  "defaultData": {
+    "title": "代码解析",
+    "fileName": "services/createPresentation.ts",
+    "code": [
+      "export async function createPresentation(input) {",
+      "  const payload = validateInput(input);",
+      "",
+      "  const presentation = await prisma.create({",
+      "    data: {",
+      "      title: payload.title,",
+      "      ownerId: payload.ownerId,",
+      "    },",
+      "  });",
+      "",
+      "  await jobs.enqueue('generate-slides');",
+      "  return presentation;",
+      "}"
+    ],
+    "descriptionTitle": "讲解",
+    "description": "该函数先校验输入，再创建演示文稿记录，并将生成幻灯片的任务投递到后台队列。把校验、持久化与任务派发集中在一条清晰的流程里，使实现更易于讲解和评审。"
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 64, "w": 1120 }, "size": 52 },
+    { "kind": "kicker", "field": "fileName", "pos": { "x": 80, "y": 152, "w": 540 }, "size": 13, "color": "accent" },
+    { "kind": "list", "field": "code", "pos": { "x": 80, "y": 182, "w": 540 }, "itemSize": 14, "gap": 3, "color": "fg" },
+    { "kind": "heading", "field": "descriptionTitle", "level": 2, "pos": { "x": 680, "y": 152, "w": 520 }, "size": 24 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 680, "y": 200, "w": 520 }, "size": 20, "color": "muted" }
+  ]
+}

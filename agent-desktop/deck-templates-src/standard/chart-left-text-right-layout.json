@@ -1,0 +1,22 @@
+{
+  "id": "chart-left-text-right-layout",
+  "name": "左图表右文字",
+  "category": "standard",
+  "description": "左侧图表配图、右侧大标题与说明段落，用于数据洞察展示。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 64 },
+    "paragraph": { "type": "multiline", "label": "说明段落", "required": true, "maxChars": 200 },
+    "chartImage": { "type": "image", "label": "图表配图" }
+  },
+  "defaultData": {
+    "title": "一图读懂关键洞察",
+    "paragraph": "通过对核心指标的持续追踪与分析，我们清晰呈现业务趋势与增长动能，为决策提供可靠的数据支撑。",
+    "chartImage": ""
+  },
+  "blocks": [
+    { "kind": "image", "field": "chartImage", "pos": { "x": 80, "y": 140, "w": 540, "h": 440 } },
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 700, "y": 160, "w": 500 }, "size": 46 },
+    { "kind": "bar", "pos": { "x": 700, "y": 300, "w": 64, "h": 6 } },
+    { "kind": "paragraph", "field": "paragraph", "pos": { "x": 700, "y": 340, "w": 500 }, "size": 18 }
+  ]
+}

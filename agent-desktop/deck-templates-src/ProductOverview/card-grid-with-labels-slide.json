@@ -1,0 +1,28 @@
+{
+  "id": "card-grid-with-labels-slide",
+  "name": "特性卡片网格",
+  "category": "ProductOverview",
+  "description": "标题 + 副标题 + 多张特性卡片网格(每张含名称与简短说明)。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 42 },
+    "subtitle": { "type": "multiline", "label": "副标题", "maxChars": 140 },
+    "features": { "type": "stat-list", "label": "特性(名称/说明)", "required": true, "maxItems": 6, "statValueMaxChars": 30, "statLabelMaxChars": 100 }
+  },
+  "defaultData": {
+    "title": "核心亮点",
+    "subtitle": "一目了然地呈现产品的主要能力，以及每项能力为业务带来的价值。",
+    "features": [
+      { "value": "统一工作台", "label": "把规划、客户信号与上线任务汇聚到同一视图。" },
+      { "value": "优先级引擎", "label": "基于影响力自动排序，让决策更清晰。" },
+      { "value": "上线追踪", "label": "全流程可视，减少遗漏与返工。" },
+      { "value": "客户洞察", "label": "连接反馈与使用趋势，反哺路线规划。" },
+      { "value": "高管报表", "label": "无需重做幻灯，快速生成进度汇报。" },
+      { "value": "流程自动化", "label": "自动流转常规事务，让运营更清爽。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 54 },
+    { "kind": "paragraph", "field": "subtitle", "pos": { "x": 80, "y": 168, "w": 1000 }, "size": 20 },
+    { "kind": "bulletCards", "field": "features", "pos": { "x": 80, "y": 256, "w": 1120, "h": 384 }, "titleSize": 22, "descSize": 16, "cols": 3 }
+  ]
+}

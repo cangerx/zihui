@@ -1,0 +1,18 @@
+{
+  "id": "full-width-statement",
+  "name": "整幅陈述",
+  "category": "pitch-deck",
+  "description": "极简强调版式：小标签 + 大字整幅陈述块。用于金句/愿景/核心主张。",
+  "schema": {
+    "label": { "type": "text", "label": "小标签", "maxChars": 12 },
+    "statement": { "type": "text", "label": "陈述金句", "required": true, "maxChars": 90 }
+  },
+  "defaultData": {
+    "label": "标签",
+    "statement": "这是一句用于占位的示例陈述，可替换为你想要强调的核心观点或主张。"
+  },
+  "blocks": [
+    { "kind": "paragraph", "field": "label", "pos": { "x": 80, "y": 300, "w": 1120 }, "size": 30, "color": "muted" },
+    { "kind": "quote", "field": "statement", "pos": { "x": 80, "y": 360, "w": 1120 }, "size": 64 }
+  ]
+}

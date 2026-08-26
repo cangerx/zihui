@@ -1,0 +1,30 @@
+{
+  "id": "title-description-with-chart-and-kpi-cards-slide",
+  "name": "标题描述配图表与 KPI",
+  "category": "ProductOverview",
+  "description": "左侧标题与小标题段落 + 图表占位 + 右侧 KPI 卡片(数值/说明)。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 24 },
+    "taglineLabel": { "type": "text", "label": "段落小标题", "maxChars": 24 },
+    "taglineBody": { "type": "multiline", "label": "段落正文", "maxChars": 120 },
+    "chartImage": { "type": "image", "label": "图表占位" },
+    "metricCards": { "type": "stat-list", "label": "KPI 卡片(数值/说明)", "required": true, "maxItems": 2, "statValueMaxChars": 8, "statLabelMaxChars": 40 }
+  },
+  "defaultData": {
+    "title": "数据快照",
+    "taglineLabel": "本期概览",
+    "taglineBody": "结合可视化图表与关键指标，快速把握本周期的整体表现与趋势走向。",
+    "chartImage": "",
+    "metricCards": [
+      { "value": "+32%", "label": "环比增长稳步提升。" },
+      { "value": "￥640万", "label": "本期累计营收规模。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 56 },
+    { "kind": "kicker", "field": "taglineLabel", "pos": { "x": 80, "y": 188, "w": 1120 }, "size": 16 },
+    { "kind": "paragraph", "field": "taglineBody", "pos": { "x": 80, "y": 222, "w": 760 }, "size": 18 },
+    { "kind": "image", "field": "chartImage", "pos": { "x": 80, "y": 320, "w": 700, "h": 320 } },
+    { "kind": "bulletCards", "field": "metricCards", "pos": { "x": 820, "y": 320, "w": 380, "h": 320 }, "titleSize": 38, "descSize": 18, "cols": 1 }
+  ]
+}

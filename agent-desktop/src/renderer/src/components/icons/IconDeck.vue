@@ -1,0 +1,17 @@
+<template>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <rect x="3" y="4" width="18" height="12" rx="1" />
+    <path d="M12 16v4" />
+    <path d="M8 20h8" />
+    <path d="M7 9h7" />
+    <path d="M7 12h4" />
+  </svg>
+</template>

@@ -1,0 +1,19 @@
+# agent-build 顶层 .gitignore
+# backend/ 内还有自己的 Laravel 默认 .gitignore（vendor/、.env 等）
+
+# 未来 frontend
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.env
+/frontend/.env.local
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.swp
+
+# 运行时产物（agent-build 中转 artifact + Laravel 日志/缓存）
+/backend/storage/app/build-artifacts/
+/backend/storage/logs/*.log

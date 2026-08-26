@@ -1,0 +1,26 @@
+{
+  "id": "neogen-title-six-card-grid-slide-layout",
+  "name": "标题配六文字卡网格",
+  "category": "neo-general",
+  "description": "左对齐粗体标题加强调条，下方 3x2 共最多 6 张卡片，每张含强调色标题与描述。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 25 },
+    "cards": { "type": "stat-list", "label": "卡片(标题/描述)", "required": true, "maxItems": 6, "statValueMaxChars": 56, "statLabelMaxChars": 46 }
+  },
+  "defaultData": {
+    "title": "关键洞察与收获",
+    "cards": [
+      { "value": "企业 ABM 带来 3.2 倍更高转化率", "label": "面向企业的基于账户营销活动。" },
+      { "value": "内容与付费社交组合驱动最高质量线索", "label": "整合营销的线索成交速度提升 47%。" },
+      { "value": "移动端优化提升移动转化", "label": "落地页改版聚焦移动端体验。" },
+      { "value": "邮件培育提升留存", "label": "分层培育序列提升复购意愿。" },
+      { "value": "数据驱动决策见效", "label": "实时看板缩短决策周期。" },
+      { "value": "渠道协同放大效果", "label": "多渠道协同带来叠加增益。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 760 }, "size": 40 },
+    { "kind": "bar", "pos": { "x": 80, "y": 152, "w": 116, "h": 6 } },
+    { "kind": "bulletCards", "field": "cards", "pos": { "x": 80, "y": 220, "w": 1120, "h": 400 }, "titleSize": 18, "descSize": 14, "cols": 3 }
+  ]
+}

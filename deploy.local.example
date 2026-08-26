@@ -1,0 +1,39 @@
+# 每个仓库 / 每个客户实例单独复制为 deploy.local 再填写。
+# 实填文件不入库。禁止粘贴私钥、密码、API Token、APP_KEY。
+#
+# 用法：用户说「更新到服务器」时，先读本仓库根 deploy.local。
+# 文件不存在、provider 为空、或仍是 YOUR_* 占位 → 停下来让用户填，不得用占位值发布。
+# 未说「更新到服务器」→ 不连任何生产通道。
+
+provider: none          # ssh | cloudflare | none
+
+# --- provider: ssh（宝塔 / 自有 VPS）---
+ssh:
+  key_path: ~/.ssh/id_ed25519    # 本机钥匙路径，不是钥匙内容
+  user: root
+  host: YOUR_SERVER_HOST
+  php: /www/server/php/82/bin/php
+  sites:
+    - id: auth
+      name: 授权端
+      local_admin: agent-build/backend/public/admin
+      remote_root: /www/wwwroot/YOUR_BUILD_DOMAIN
+      probe_url: https://YOUR_BUILD_DOMAIN/
+    - id: cloud
+      name: 云控端
+      local_admin: agent-admin/backend/public/admin
+      remote_root: /www/wwwroot/YOUR_ADMIN_DOMAIN
+      probe_url: https://YOUR_ADMIN_DOMAIN/
+
+# --- provider: cloudflare（Pages / Workers / R2）---
+# Token 只走环境变量 CLOUDFLARE_API_TOKEN，不要写进本文件。
+cloudflare:
+  kind: pages                 # pages | workers | r2
+  project_name: YOUR_CF_PROJECT
+  wrangler_config: wrangler.toml
+  account_id: YOUR_CF_ACCOUNT_ID
+
+# 正式发版用的更新 CDN（与 SSH/Cloudflare 通道独立；没有则留空）
+cdn:
+  adminup: https://YOUR_CDN_DOMAIN/adminup/
+  buildup: https://YOUR_CDN_DOMAIN/buildup/

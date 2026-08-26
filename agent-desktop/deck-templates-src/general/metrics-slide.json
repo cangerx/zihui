@@ -1,0 +1,23 @@
+{
+  "id": "metrics-slide",
+  "name": "关键指标",
+  "category": "general",
+  "description": "标题 + 大数字指标网格，仅用于展示数据与指标。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 100 },
+    "metrics": { "type": "stat-list", "label": "指标(数值/说明)", "required": true, "maxItems": 3, "statValueMaxChars": 10, "statLabelMaxChars": 50 }
+  },
+  "defaultData": {
+    "title": "公司业绩",
+    "metrics": [
+      { "value": "3.2x", "label": "年营收同比增长" },
+      { "value": "98%", "label": "客户留存率" },
+      { "value": "50万+", "label": "平台活跃用户" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 96, "w": 1120 }, "size": 40 },
+    { "kind": "bar", "pos": { "x": 80, "y": 176, "w": 64, "h": 6 } },
+    { "kind": "statGrid", "field": "metrics", "pos": { "x": 80, "y": 250, "w": 1120, "h": 240 }, "valueSize": 56, "labelSize": 18, "cols": 3 }
+  ]
+}

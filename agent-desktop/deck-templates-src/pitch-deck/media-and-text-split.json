@@ -1,0 +1,27 @@
+{
+  "id": "media-and-text-split",
+  "name": "媒体与文字分栏",
+  "category": "pitch-deck",
+  "description": "左侧标题与配图 + 右侧叙述文字与页脚的分栏版式。适合图文结合讲述。",
+  "schema": {
+    "title": { "type": "text", "label": "左侧标题", "required": true, "maxChars": 16 },
+    "image": { "type": "image", "label": "左侧配图" },
+    "headline": { "type": "text", "label": "右侧标题", "maxChars": 50 },
+    "body": { "type": "multiline", "label": "正文段落", "maxChars": 128 },
+    "footerText": { "type": "text", "label": "页脚文字", "maxChars": 28 }
+  },
+  "defaultData": {
+    "title": "概览",
+    "image": "",
+    "headline": "这是一段用于向受众讲述故事的标题文字。",
+    "body": "在此补充更详细的背景说明与论据，帮助受众理解核心观点与价值主张，并引导其关注重点信息。",
+    "footerText": "页脚说明"
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 520 }, "size": 60 },
+    { "kind": "image", "field": "image", "pos": { "x": 80, "y": 210, "w": 520, "h": 430 } },
+    { "kind": "paragraph", "field": "headline", "pos": { "x": 660, "y": 210, "w": 540 }, "size": 28, "color": "fg" },
+    { "kind": "paragraph", "field": "body", "pos": { "x": 660, "y": 330, "w": 540 }, "size": 19 },
+    { "kind": "paragraph", "field": "footerText", "pos": { "x": 660, "y": 580, "w": 540 }, "size": 24, "color": "fg" }
+  ]
+}

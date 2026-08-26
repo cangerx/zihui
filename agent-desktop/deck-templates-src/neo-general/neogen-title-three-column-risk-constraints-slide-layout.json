@@ -1,0 +1,23 @@
+{
+  "id": "neogen-title-three-column-risk-constraints-slide-layout",
+  "name": "三栏类别卡片",
+  "category": "neo-general",
+  "description": "顶部粗体标题加强调条，下方三栏卡片，每栏含大号类别标签、副标题与详细描述。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 20 },
+    "items": { "type": "stat-list", "label": "类别(副标题/描述)", "required": true, "maxItems": 3, "statValueMaxChars": 20, "statLabelMaxChars": 70 }
+  },
+  "defaultData": {
+    "title": "风险与约束",
+    "items": [
+      { "value": "市场饱和", "label": "关键垂直领域竞争加剧，可能挤压转化率并推高获客成本。" },
+      { "value": "预算约束", "label": "第一季度预算削减 15%，可能限制成功活动的规模化能力。" },
+      { "value": "资源产能", "label": "内容生产团队已超负荷运转，可能影响内容产出节奏。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 96, "w": 1120 }, "size": 40 },
+    { "kind": "bar", "pos": { "x": 80, "y": 168, "w": 116, "h": 6 } },
+    { "kind": "bulletCards", "field": "items", "pos": { "x": 80, "y": 280, "w": 1120, "h": 320 }, "titleSize": 26, "descSize": 16, "cols": 3 }
+  ]
+}

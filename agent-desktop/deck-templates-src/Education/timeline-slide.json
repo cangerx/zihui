@@ -1,0 +1,24 @@
+{
+  "id": "timeline-slide",
+  "name": "时间轴",
+  "category": "Education",
+  "description": "标题加横向时间轴节点(短标题与描述成对)的版式。",
+  "schema": {
+    "title": { "type": "text", "label": "标题", "required": true, "maxChars": 14 },
+    "milestones": { "type": "stat-list", "label": "节点(标题/描述)", "required": true, "maxItems": 12, "statValueMaxChars": 6, "statLabelMaxChars": 100 }
+  },
+  "defaultData": {
+    "title": "时间轴",
+    "milestones": [
+      { "value": "2022", "label": "在此填写该节点的关键事件与里程碑描述。" },
+      { "value": "2018", "label": "在此填写该节点的关键事件与里程碑描述。" },
+      { "value": "2015", "label": "在此填写该节点的关键事件与里程碑描述。" },
+      { "value": "2011", "label": "在此填写该节点的关键事件与里程碑描述。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 90, "w": 1120 }, "size": 72 },
+    { "kind": "rule", "pos": { "x": 80, "y": 300, "w": 1120 } },
+    { "kind": "bulletCards", "field": "milestones", "pos": { "x": 80, "y": 330, "w": 1120, "h": 300 }, "titleSize": 28, "descSize": 16, "cols": 4 }
+  ]
+}

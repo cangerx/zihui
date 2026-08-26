@@ -1,0 +1,369 @@
+name: Cloud Build (macOS)
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_id:
+        description: 'Build UUID issued by agent-build'
+        required: true
+        type: string
+      app_name:
+        description: 'Display name of the white-labeled app'
+        required: true
+        type: string
+      domain:
+        description: 'Tenant domain (with scheme, e.g. https://a.com)'
+        required: true
+        type: string
+      api_domain:
+        description: 'API domain for the desktop runtime (with scheme)'
+        required: true
+        type: string
+      icon_path:
+        description: 'Repo-relative path to the icon PNG (pre-uploaded by agent-build)'
+        required: true
+        type: string
+      icon_url:
+        description: 'Cloud-hosted icon URL; inject falls back to it if the committed icon is missing'
+        required: false
+        type: string
+      callback_url:
+        description: 'agent-build callback endpoint'
+        required: true
+        type: string
+      callback_token:
+        description: 'One-time bearer token for callback'
+        required: true
+        type: string
+      app_id:
+        description: 'Optional explicit Electron appId'
+        required: false
+        type: string
+      update_url:
+        description: 'Optional explicit electron-updater base URL'
+        required: false
+        type: string
+      app_version:
+        description: 'Optional explicit application version'
+        required: false
+        type: string
+      build_mode:
+        description: 'Build mode: normal or oem'
+        required: false
+        type: string
+      oem_project_key:
+        description: 'Optional OEM project key'
+        required: false
+        type: string
+      build_options:
+        description: 'Optional JSON build options'
+        required: false
+        type: string
+
+permissions:
+  # softprops/action-gh-release 创建 release 需要 contents:write；
+  # 默认 GITHUB_TOKEN 在 2023+ 创建的 repo 是 read-only，必须显式声明。
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      # Electron 缓存路径：写到 runner.temp（GHA runner 的临时目录），不在 github.workspace 内。
+      # 关键原因：electron-builder 默认 files 规则会把 workspace 内未被 ! 排除的内容打进 app.asar，
+      # 之前用 ${{ github.workspace }}/.cache/electron 时，~110MB 的 electron prebuilt zip
+      # 被泄漏到 app.asar 里。改到 runner.temp 后从根因杜绝（builder 看不到这个路径）。
+      #
+      # 用 step 写 $GITHUB_ENV 而不是 job-level env: 是因为 GHA 的 ${{ runner.temp }} 在
+      # job-level env 评估阶段尚未可用（runner 信息在 job 调度时才确定），那么写 lint 报错。
+      # $RUNNER_TEMP 是 runner 启动时注入的 shell 环境变量，shell 内可直接使用。
+      - name: Configure Electron cache paths (out of workspace)
+        shell: bash
+        run: |
+          echo "ELECTRON_CACHE=$RUNNER_TEMP/electron-cache" >> "$GITHUB_ENV"
+          echo "ELECTRON_BUILDER_CACHE=$RUNNER_TEMP/electron-builder-cache" >> "$GITHUB_ENV"
+
+      - name: Cache Electron binaries
+        uses: actions/cache@v5
+        with:
+          path: |
+            ${{ runner.temp }}/electron-cache
+            ${{ runner.temp }}/electron-builder-cache
+          key: ${{ runner.os }}-electron-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-electron-
+
+      # 不再需要 Setup Python：原本是为装 coscmd (Python 包) 避开 macOS 系统 Python 的 PEP 668。
+      # 现在换成 aws-cli (预装二进制)，Python 依赖全部去掉。
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Inject build parameters
+        run: node scripts/inject-build-params.js
+        env:
+          BUILD_ID: ${{ inputs.build_id }}
+          APP_NAME: ${{ inputs.app_name }}
+          DOMAIN: ${{ inputs.domain }}
+          API_DOMAIN: ${{ inputs.api_domain }}
+          ICON_LOCAL_PATH: ${{ inputs.icon_path }}
+          ICON_URL: ${{ inputs.icon_url }}
+          PLATFORM: mac
+          APP_ID: ${{ inputs.app_id }}
+          UPDATE_URL: ${{ inputs.update_url }}
+          APP_VERSION: ${{ inputs.app_version }}
+          BUILD_MODE: ${{ inputs.build_mode }}
+          OEM_PROJECT_KEY: ${{ inputs.oem_project_key }}
+          BUILD_OPTIONS: ${{ inputs.build_options }}
+
+      # 双架构稳健打包：先编一次 arch 无关的渲染层/主进程 JS（electron-vite build），
+      # 再由 dist-mac-per-arch.js 为每个 arch 做「干净 npm ci（按目标 arch 选装 optional
+      # 平台子包 + prebuild）→ 单 arch 打包 → 合并 latest-mac.yml」。
+      # 不能用旧的 `npm run dist`（单次 electron-builder 同打双 arch）：那会把 host(arm64) 的
+      # better_sqlite3.node / resvg / sqlite-vec 原样塞进 x64 包 → Intel Mac dlopen wrong architecture。
+      - name: Build & Package
+        run: |
+          npm run build
+          node scripts/dist-mac-per-arch.js
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      # 防回归硬断言：核验每个 zip 内全部原生 .node（better-sqlite3 / resvg / sqlite-vec / onnx 若有）
+      # 架构与该包 arch 一致，且 latest-mac.yml 同时覆盖双架构。任一不符即 ::error:: 退 1，
+      # 触发后续 failure callback + release cleanup，绝不放行错架构包。
+      - name: Assert native module arch per zip (anti-regression)
+        shell: bash
+        working-directory: ./dist
+        run: |
+          set -uo pipefail
+          fail=0
+          check() {
+            local zip="$1" want="$2" out
+            out="/tmp/arch-$want"
+            rm -rf "$out"; mkdir -p "$out"
+            unzip -oq "$zip" -d "$out"
+            local found=0
+            while IFS= read -r node; do
+              found=1
+              local archs
+              archs=$(lipo -archs "$node" 2>/dev/null || file -b "$node")
+              echo "[$want] $(basename "$node"): $archs"
+              case "$want" in
+                x64)   echo "$archs" | grep -qw 'x86_64' || { echo "::error::$zip :: $(basename "$node") 不是 x86_64 ($archs)"; fail=1; } ;;
+                arm64) echo "$archs" | grep -qw 'arm64'  || { echo "::error::$zip :: $(basename "$node") 不是 arm64 ($archs)";  fail=1; } ;;
+              esac
+            done < <(find "$out" -name '*.node')
+            [ "$found" = 1 ] || { echo "::error::$zip 内未找到任何 .node（解包异常）"; fail=1; }
+          }
+          x64zip=$(ls *-x64-mac.zip 2>/dev/null | head -n1)
+          armzip=$(ls *-arm64-mac.zip 2>/dev/null | head -n1)
+          [ -n "$x64zip" ] && [ -n "$armzip" ] || { echo "::error::缺 x64 或 arm64 的 zip"; ls -la; exit 1; }
+          check "$x64zip" x64
+          check "$armzip" arm64
+          grep -q -- '-x64-mac.zip'   latest-mac.yml || { echo '::error::latest-mac.yml 缺 x64 条目'; cat latest-mac.yml; fail=1; }
+          grep -q -- '-arm64-mac.zip' latest-mac.yml || { echo '::error::latest-mac.yml 缺 arm64 条目'; cat latest-mac.yml; fail=1; }
+          [ "$fail" = 0 ] || { echo '::error::arch 校验失败，拒绝发布错误架构包'; exit 1; }
+          echo 'OK: 两架构原生模块校验通过，latest-mac.yml 覆盖双架构。'
+
+      # 包体积预算自检：mac 出 zip（双架构 x64/arm64），各自校验。
+      # 阈值 130MB（mac zip 基线略高于 win nsis）。超阈值通过 ::warning:: 上 GHA Annotation。
+      - name: Validate installer size budget
+        shell: bash
+        working-directory: ./dist
+        run: |
+          set -uo pipefail
+          SIZE_BUDGET_MB=130
+          OVER=0
+          for ZIP in *.zip; do
+            [ -f "$ZIP" ] || continue
+            SIZE_BYTES=$(stat -f%z "$ZIP" 2>/dev/null || stat -c%s "$ZIP")
+            SIZE_MB=$(( SIZE_BYTES / 1024 / 1024 ))
+            echo "Installer: $ZIP = ${SIZE_MB} MB (budget ${SIZE_BUDGET_MB} MB)"
+            if [ "$SIZE_MB" -gt "$SIZE_BUDGET_MB" ]; then
+              echo "::warning::Installer ${ZIP} is ${SIZE_MB}MB, exceeds budget ${SIZE_BUDGET_MB}MB."
+              OVER=$(( OVER + 1 ))
+            fi
+          done
+          if [ "$OVER" -gt 0 ]; then
+            ASAR=$(find . -path '*mac*/*.app/Contents/Resources/app.asar' 2>/dev/null | head -n1 || true)
+            if [ -n "$ASAR" ]; then
+              echo "=== Top 200 entries inside app.asar (first arch) ==="
+              npx --yes @electron/asar list "$ASAR" 2>/dev/null | head -200 || true
+            fi
+          fi
+
+      - name: Stage artifacts and compute metadata
+        id: files
+        shell: bash
+        working-directory: ./dist
+        run: |
+          set -uo pipefail
+          echo "=== dist contents ==="
+          ls -la
+
+          # mac 只打 zip（见 electron-builder.yml mac.target 注释），primary 后缀固定为 .zip
+          # 三件套：*.zip (primary) + *.zip.blockmap (blockmap) + latest-mac.yml (metadata)
+          mkdir -p ../release-upload
+          files_json="["
+          first=true
+          have_primary=false
+          for f in *; do
+            [ -f "$f" ] || continue
+            role=""
+            lower=$(echo "$f" | tr '[:upper:]' '[:lower:]')
+            case "$lower" in
+              *.blockmap)
+                role="blockmap"
+                ;;
+              latest*.yml)
+                role="metadata"
+                ;;
+              *.zip)
+                role="primary"
+                have_primary=true
+                ;;
+              *) continue ;;
+            esac
+            cp "$f" ../release-upload/
+            size=$(stat -c%s "$f" 2>/dev/null || stat -f%z "$f")
+            sha=$(sha256sum "$f" 2>/dev/null | awk '{print $1}' || shasum -a 256 "$f" | awk '{print $1}')
+            [ "$first" = true ] && first=false || files_json="$files_json,"
+            files_json="$files_json{\"filename\":\"$f\",\"size\":$size,\"sha256\":\"$sha\",\"role\":\"$role\"}"
+          done
+          files_json="$files_json]"
+
+          # 防御性校验：build step 已经成功才会到这里，正常情况一定有 zip 产出；
+          # 如果没有说明 electron-builder 行为意外变化，显式失败方便排查。
+          if [ "$have_primary" != "true" ]; then
+            echo "ERROR: no .zip artifact produced — electron-builder behavior unexpected"
+            exit 1
+          fi
+
+          echo "files=$files_json" >> "$GITHUB_OUTPUT"
+          echo "Generated metadata: $files_json"
+          echo "--- Staged files in ./release-upload ---"
+          ls -la ../release-upload/
+
+      - name: Upload artifacts to GitHub Release
+        id: release
+        # 0.5.0：放弃跨境 COS 直传。GHA 的产物上传到 GitHub Release（同 GitHub 基础设施，
+        # 0 跨境）→ 家庭电脑用梯子拉 + 内网 SFTP 推到本地服务器 → agent-admin 拉国内
+        # mirror URL。Release tag 必为 "build-{build_id}"，agent-build callback 会校验该 tag。
+        # prerelease=true 让 release 不显眼但公网可访问；make_latest=false 不动 repo
+        # 默认 latest release。家庭电脑成功 mirror 后会主动删 release 释放 GitHub 存储。
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: build-${{ inputs.build_id }}
+          name: "Build ${{ inputs.app_name }} (${{ inputs.build_id }}) [mac]"
+          prerelease: true
+          make_latest: 'false'
+          target_commitish: ${{ github.sha }}
+          files: release-upload/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enrich file metadata with GitHub Release asset URLs
+        id: enrich_files
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUILD_ID: ${{ inputs.build_id }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          # 拉刚创建的 release 的所有 asset（含 id 和 GitHub API 下载 URL）。
+          # gh CLI v2 的 release view --json assets 输出每个 asset 的 id/name/apiUrl/url/size。
+          # 家庭电脑要用 Authorization Bearer 拉，所以传给 callback 的 asset_url 用 apiUrl
+          # （形如 https://api.github.com/repos/{owner}/{repo}/releases/assets/{id}）。
+          assets=$(gh release view "build-${BUILD_ID}" --repo "$REPO" --json assets --jq '.assets')
+
+          # 把 stage step 输出的 files（含 size/sha256/role）跟 assets（含 id/apiUrl）按 name 拼接。
+          files='${{ steps.files.outputs.files }}'
+          # 注意：gh CLI `--json assets` 里 .id 是 GraphQL node_id 字符串（如 "RA_kw..."），
+          # 不是 REST API 的数字 id。从 apiUrl 末尾正则提取数字 id 才是 REST 通用形式。
+          # 例：https://api.github.com/.../releases/assets/416817002 → 416817002
+          merged=$(jq -nc \
+            --argjson files "$files" \
+            --argjson assets "$assets" \
+            '[ $files[] as $f | ($assets[] | select(.name == $f.filename)) as $a |
+               $f + {
+                 asset_id: ($a.apiUrl | capture("/assets/(?<id>[0-9]+)$") | .id | tonumber),
+                 asset_url: $a.apiUrl
+               } ]')
+
+          # 校验：合并后条数应等于 files 条数，否则 release 上传缺文件。
+          files_count=$(jq 'length' <<< "$files")
+          merged_count=$(jq 'length' <<< "$merged")
+          if [ "$files_count" -ne "$merged_count" ]; then
+            echo "ERROR: file/asset count mismatch (files=$files_count, merged=$merged_count)"
+            echo "files=$files"
+            echo "assets=$assets"
+            exit 1
+          fi
+
+          echo "files=$merged" >> "$GITHUB_OUTPUT"
+          echo "Enriched files: $merged"
+
+      - name: Notify agent-build (success)
+        if: success()
+        shell: bash
+        run: |
+          curl -fsS -X POST "${{ inputs.callback_url }}" \
+            -H "Authorization: Bearer ${{ inputs.callback_token }}" \
+            -H "Content-Type: application/json" \
+            -d "$(cat <<EOF
+          {
+            "build_id": "${{ inputs.build_id }}",
+            "run_id": ${{ github.run_id }},
+            "status": "success",
+            "artifact_storage": "github_release",
+            "release_tag": "build-${{ inputs.build_id }}",
+            "files": ${{ steps.enrich_files.outputs.files }}
+          }
+          EOF
+          )"
+
+      - name: Notify agent-build (failure)
+        if: failure()
+        run: |
+          curl -fsS -X POST "${{ inputs.callback_url }}" \
+            -H "Authorization: Bearer ${{ inputs.callback_token }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"build_id\":\"${{ inputs.build_id }}\",\"run_id\":${{ github.run_id }},\"status\":\"failed\",\"error\":\"github_job_failed\"}"
+
+      - name: Cleanup partial GitHub Release on failure
+        # GHA 失败时也可能已创建部分 release（如 softprops upload 中途 abort）。
+        # 这里无条件尝试删一次，release 不存在则全部 || true 吞下，避免 GitHub 存储泄漏。
+        if: failure()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUILD_ID: ${{ inputs.build_id }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh release delete "build-${BUILD_ID}" --repo "$REPO" --yes --cleanup-tag 2>/dev/null || true
+
+      - name: Cleanup temp icon from repo
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ICON_SHA=$(gh api repos/${{ github.repository }}/contents/${{ inputs.icon_path }} --jq '.sha' 2>/dev/null || true)
+          if [ -n "$ICON_SHA" ]; then
+            gh api --method DELETE repos/${{ github.repository }}/contents/${{ inputs.icon_path }} \
+              -f message="chore: cleanup build icon ${{ inputs.build_id }}" \
+              -f sha="$ICON_SHA" \
+              -f branch="${{ github.ref_name }}" || true
+          fi

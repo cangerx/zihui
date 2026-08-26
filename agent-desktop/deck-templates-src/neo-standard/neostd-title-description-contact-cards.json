@@ -1,0 +1,26 @@
+{
+  "id": "neostd-title-description-contact-cards",
+  "name": "标题描述加联系卡片",
+  "category": "neo-standard",
+  "description": "标题、描述文字与三张联系方式卡片(邮箱、电话、网站)，适合结束页或联系页。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 20 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 300 },
+    "contactItems": { "type": "stat-list", "label": "联系方式(项目/内容)", "required": true, "maxItems": 3, "statValueMaxChars": 20, "statLabelMaxChars": 50 }
+  },
+  "defaultData": {
+    "title": "感谢聆听",
+    "description": "聚焦员工规模 500 人以上、处于金融服务、医疗健康与科技行业的企业，通过基于客户的精准营销与内容驱动策略推进增长。",
+    "contactItems": [
+      { "value": "邮箱", "label": "presenton@gmail.com" },
+      { "value": "电话", "label": "+86 138 0000 0000" },
+      { "value": "网站", "label": "www.example.com" }
+    ]
+  },
+  "blocks": [
+    { "kind": "bar", "pos": { "x": 114, "y": 130, "w": 116, "h": 3 } },
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 114, "y": 158, "w": 1000 }, "size": 43 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 114, "y": 248, "w": 680 }, "size": 16, "merge": true },
+    { "kind": "bulletCards", "field": "contactItems", "pos": { "x": 114, "y": 400, "w": 950, "h": 180 }, "titleSize": 22, "descSize": 17, "cols": 3 }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "images-with-description",
+  "name": "团队成员",
+  "category": "modern",
+  "description": "主标题、副标题与多列成员卡片（姓名与简介），适合团队介绍。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 40 },
+    "subtitle": { "type": "text", "label": "副标题", "maxChars": 120 },
+    "teamMembers": { "type": "stat-list", "label": "成员(姓名/简介)", "required": true, "maxItems": 4, "statValueMaxChars": 50, "statLabelMaxChars": 120 }
+  },
+  "defaultData": {
+    "title": "我们的团队",
+    "subtitle": "一支兼具战略视野与技术深度的团队，致力于以前沿技术帮助客户达成目标。",
+    "teamMembers": [
+      { "value": "张三", "label": "拥有 15 年以上技术与商业发展经验的战略领导者，曾任大型企业副总裁。" },
+      { "value": "李四", "label": "专注可扩展架构与人工智能方案的技术专家，计算机科学博士。" },
+      { "value": "王五", "label": "销售负责人，擅长组建高绩效团队并在 B2B 市场驱动营收增长。" },
+      { "value": "赵六", "label": "产品策略专家，聚焦用户体验与市场驱动的解决方案。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 88, "w": 1120 }, "size": 44 },
+    { "kind": "paragraph", "field": "subtitle", "pos": { "x": 80, "y": 162, "w": 1120 }, "size": 18 },
+    { "kind": "bulletCards", "field": "teamMembers", "pos": { "x": 80, "y": 250, "w": 1120, "h": 360 }, "titleSize": 20, "descSize": 14, "cols": 4 }
+  ]
+}

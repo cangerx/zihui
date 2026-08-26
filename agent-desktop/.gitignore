@@ -1,0 +1,87 @@
+# Dependencies / build output
+node_modules
+out
+dist
+*.local
+.env
+.env.*
+!.env.example
+*.db
+
+# Editor / IDE
+.vscode
+.idea
+.windsurf
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# TypeScript incremental build cache
+*.tsbuildinfo
+
+# Volar / vue-tsc 偶发生成的 .vue 旁车文件（不应提交，且会污染 Vite 解析）
+*.vue.js
+*.vue.d.ts
+
+# tsc 误产物：src 下所有 .ts 都不应产生同名 .js / .d.ts（唯一例外 env.d.ts 是手写源码，需单独 negate）
+/src/**/*.js
+/src/**/*.d.ts
+!/src/renderer/src/env.d.ts
+
+# electron-vite runtime-generated config / 根目录 sidecar 产物
+electron.vite.config.*.mjs
+/electron.vite.config.js
+/electron.vite.config.d.ts
+
+# electron-builder local-only
+dev-app-update.yml
+
+# Unrelated sub-projects (deployed / tracked separately)
+/agent-admin/
+/agent-build/
+
+# Temp build icons (uploaded by agent-build, cleaned up by workflow)
+.build-icons/
+
+# Dev loose files at repo root
+/find_pptmaster.py
+/progress.txt
+/_dev.bat
+*.log
+
+# === 防御性排除（防止误提交无关内容到桌面端 repo）===
+
+# 内部 / 团队文档（CI 配置、setup 指南、私人笔记等）
+# 如确需保留某个文件，单独用 !docs/specific.md 反向允许
+/docs/*-setup.md
+/docs/*-internal.md
+/docs/internal-*
+/docs/notes-*
+/docs/*.private.md
+
+# 内部 / 草稿 / 实验性 bundled skill
+# 命名约定：下划线开头 = 内部，.draft 后缀 = 草稿
+/resources/bundled-skills/_*
+/resources/bundled-skills/*.draft
+# 已知不属于桌面端产品的特定外部服务集成 skill
+/resources/bundled-skills/tianque-*
+/resources/bundled-skills/wechat-pay*
+/resources/bundled-skills/alipay*
+
+# 通用临时 / scratch 文件
+/scratch/
+/.notes/
+*.tmp
+*.tmp.*
+*.bak
+*.orig
+
+# 跨项目防御：本仓库是桌面端 (Electron + Vue + TS)
+# PHP / Laravel / Composer 文件不应存在于此 repo
+*.php
+/composer.json
+/composer.lock
+/artisan
+/vendor/

@@ -1,0 +1,30 @@
+{
+  "id": "neoswift-title-description-eight-metrics-grid",
+  "name": "标题描述八指标网格",
+  "category": "neo-swift",
+  "description": "顶部居中标题与描述，下方为 4x2 的指标卡片网格，每卡含标签、数值与支撑说明。适合 KPI、看板或对比统计。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 200 },
+    "metrics": { "type": "stat-list", "label": "指标卡片(数值/说明)", "required": true, "maxItems": 8, "statValueMaxChars": 15, "statLabelMaxChars": 50 }
+  },
+  "defaultData": {
+    "title": "执行摘要",
+    "description": "聚焦金融服务、医疗健康与科技行业中员工数 500 人以上的企业，通过基于客户的营销与内容驱动策略达成新增销售线索目标。",
+    "metrics": [
+      { "value": "8,450", "label": "调研投入：客户响应延迟" },
+      { "value": "92%", "label": "核心环节按时交付率" },
+      { "value": "3.2x", "label": "投入产出同比提升" },
+      { "value": "150+", "label": "覆盖的活跃合作客户" },
+      { "value": "98%", "label": "核心客户群留存率" },
+      { "value": "6 月", "label": "获客成本平均回收周期" },
+      { "value": "35%", "label": "企业客户转化率提升" },
+      { "value": "4.8", "label": "客户满意度评分" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 64, "w": 1120 }, "size": 40 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 130, "w": 1120 }, "size": 16 },
+    { "kind": "statGrid", "field": "metrics", "pos": { "x": 80, "y": 224, "w": 1120, "h": 180 }, "valueSize": 34, "labelSize": 13, "cols": 4 }
+  ]
+}

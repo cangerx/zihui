@@ -1,0 +1,6 @@
+{
+    "version": "1.6.42",
+    "changelog": "在线更新源：默认从授权端 /api/updates/admin/version.json 检查；zip 域名白名单自动包含检查地址与授权端主机。后续把安装包放到 COS 时，发布填 COS 地址，并在 UPDATE_ALLOWED_ZIP_HOSTS 加上 COS 域名。\n一键云打包模板版本：本地执行后端会读取授权端当前桌面模板版本；远程 SDK 改为 GET /api/license/desktop-template。\n后台侧栏：「直充配置」从「计费与订单」归入「系统设置」；该分组原「系统运维」改名为「系统设置」，「系统配置」与「直充配置」置顶。",
+    "source": "CHANGELOG Unreleased",
+    "generated_at": "2026-08-24T14:00:30+08:00"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "table-info-slide",
+  "name": "对比信息",
+  "category": "general",
+  "description": "标题 + 说明 + 横向对比卡片(每条含主体与关键指标)。适配自 presenton 表格版式。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 40 },
+    "caption": { "type": "text", "label": "说明", "maxChars": 60 },
+    "rows": { "type": "stat-list", "label": "对比项(主体/指标)", "required": true, "maxItems": 5, "statValueMaxChars": 40, "statLabelMaxChars": 100 }
+  },
+  "defaultData": {
+    "title": "市场对比",
+    "caption": "主要厂商关键指标横向对比",
+    "rows": [
+      { "value": "我方", "label": "营收 120 万 · 增长 35% · 份额 12%" },
+      { "value": "厂商 A", "label": "营收 250 万 · 增长 15% · 份额 25%" },
+      { "value": "厂商 B", "label": "营收 180 万 · 增长 12% · 份额 18%" },
+      { "value": "厂商 C", "label": "营收 320 万 · 增长 20% · 份额 32%" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 88, "w": 1120 }, "size": 40 },
+    { "kind": "paragraph", "field": "caption", "pos": { "x": 80, "y": 158, "w": 1120 }, "size": 16, "color": "muted" },
+    { "kind": "bulletCards", "field": "rows", "pos": { "x": 80, "y": 212, "w": 1120 }, "titleSize": 19, "descSize": 15, "cols": 1, "rowH": 84 }
+  ]
+}

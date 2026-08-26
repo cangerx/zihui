@@ -1,0 +1,26 @@
+{
+  "id": "cards-grid-slide",
+  "name": "卡片网格",
+  "category": "Code",
+  "description": "标题 + 三列特性卡片网格（每张含标题与简短描述）。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 20 },
+    "features": { "type": "stat-list", "label": "特性卡片(标题/描述)", "required": true, "maxItems": 6, "statValueMaxChars": 17, "statLabelMaxChars": 80 }
+  },
+  "defaultData": {
+    "title": "功能矩阵",
+    "features": [
+      { "value": "现代技术栈", "label": "采用 React、TypeScript 与 Tailwind CSS 构建。" },
+      { "value": "组件库", "label": "可复用的 UI 组件，保持设计风格一致。" },
+      { "value": "命令行工具", "label": "用于脚手架搭建与流程自动化的命令行工具。" },
+      { "value": "数据分析", "label": "内置埋点追踪与性能监控能力。" },
+      { "value": "版本控制", "label": "基于 Git 的工作流与自动化部署。" },
+      { "value": "最佳实践", "label": "遵循行业标准与现代化开发范式。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 72, "w": 1120 }, "size": 56 },
+    { "kind": "bar", "pos": { "x": 80, "y": 162, "w": 64, "h": 6 } },
+    { "kind": "bulletCards", "field": "features", "pos": { "x": 80, "y": 200, "w": 1120, "h": 456 }, "titleSize": 22, "descSize": 14, "cols": 3 }
+  ]
+}

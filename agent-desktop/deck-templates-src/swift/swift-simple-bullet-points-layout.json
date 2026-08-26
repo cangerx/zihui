@@ -1,0 +1,30 @@
+{
+  "id": "swift-simple-bullet-points-layout",
+  "name": "要点陈述",
+  "category": "swift",
+  "description": "左侧大标题与陈述 + 右侧带描述的要点卡片。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 36 },
+    "statement": { "type": "multiline", "label": "陈述正文", "required": true, "maxChars": 260 },
+    "points": { "type": "stat-list", "label": "要点(标题/描述)", "required": true, "maxItems": 4, "statValueMaxChars": 60, "statLabelMaxChars": 220 },
+    "website": { "type": "text", "label": "网址", "maxChars": 60 }
+  },
+  "defaultData": {
+    "title": "我们的坚持",
+    "statement": "我们坚信，持续的创新与稳健的执行同样重要，二者共同支撑长期价值的实现。",
+    "points": [
+      { "value": "以客户为中心", "label": "深入理解真实需求，把客户价值放在每一次决策的首位。" },
+      { "value": "持续创新", "label": "鼓励尝试与迭代，让前沿技术真正服务于业务增长。" },
+      { "value": "务实落地", "label": "重视交付质量与稳定性，确保方案可被验证、可被复制。" }
+    ],
+    "website": "www.yourwebsite.com"
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 110, "w": 520 }, "size": 52 },
+    { "kind": "bar", "pos": { "x": 80, "y": 230, "w": 64, "h": 6 } },
+    { "kind": "paragraph", "field": "statement", "pos": { "x": 80, "y": 268, "w": 520 }, "size": 16 },
+    { "kind": "bulletCards", "field": "points", "pos": { "x": 660, "y": 110, "w": 540, "h": 500 }, "titleSize": 22, "descSize": 15, "cols": 1 },
+    { "kind": "rule", "pos": { "x": 80, "y": 650, "w": 1120, "h": 2 } },
+    { "kind": "paragraph", "field": "website", "pos": { "x": 80, "y": 628, "w": 600 }, "size": 14, "color": "muted" }
+  ]
+}

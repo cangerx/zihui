@@ -1,0 +1,30 @@
+{
+  "id": "text-blocks-with-image-block-slide",
+  "name": "文字块配图块",
+  "category": "ProductOverview",
+  "description": "左上标题 + 右上与左下两个文字块(小标题/正文) + 右下配图的四宫格版式。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "topleftTextBlockLabel": { "type": "text", "label": "文字块一小标题", "required": true, "maxChars": 20 },
+    "topleftTextBlockBody": { "type": "multiline", "label": "文字块一正文", "required": true, "maxChars": 90 },
+    "bottomleftTextBlockLabel": { "type": "text", "label": "文字块二小标题", "required": true, "maxChars": 20 },
+    "bottomleftTextBlockBody": { "type": "multiline", "label": "文字块二正文", "required": true, "maxChars": 90 },
+    "image": { "type": "image", "label": "右下配图" }
+  },
+  "defaultData": {
+    "title": "使命与愿景",
+    "topleftTextBlockLabel": "使命",
+    "topleftTextBlockBody": "用技术的力量打破信息壁垒，让每一个组织都能高效协作、稳健成长。",
+    "bottomleftTextBlockLabel": "愿景",
+    "bottomleftTextBlockBody": "成为行业领先的智能协作平台，持续为客户创造可衡量的长期价值。",
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 96, "w": 540 }, "size": 56 },
+    { "kind": "kicker", "field": "topleftTextBlockLabel", "pos": { "x": 660, "y": 96, "w": 540 }, "size": 16 },
+    { "kind": "paragraph", "field": "topleftTextBlockBody", "pos": { "x": 660, "y": 134, "w": 540 }, "size": 20 },
+    { "kind": "kicker", "field": "bottomleftTextBlockLabel", "pos": { "x": 80, "y": 396, "w": 540 }, "size": 16 },
+    { "kind": "paragraph", "field": "bottomleftTextBlockBody", "pos": { "x": 80, "y": 434, "w": 540 }, "size": 20 },
+    { "kind": "image", "field": "image", "pos": { "x": 660, "y": 376, "w": 540, "h": 264 } }
+  ]
+}

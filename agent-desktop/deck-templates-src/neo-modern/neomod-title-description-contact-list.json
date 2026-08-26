@@ -1,0 +1,26 @@
+{
+  "id": "neomod-title-description-contact-list",
+  "name": "标题描述联系方式",
+  "category": "neo-modern",
+  "description": "左侧标题与描述，右侧最多 3 条联系方式条目，每条含标签与具体内容。适用于致谢/联系页。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 20 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 350 },
+    "contacts": { "type": "stat-list", "label": "联系方式(标签/内容)", "required": true, "maxItems": 3, "statValueMaxChars": 20, "statLabelMaxChars": 50 }
+  },
+  "defaultData": {
+    "title": "感谢观看",
+    "description": "聚焦金融服务、医疗健康与科技行业中员工规模 500 人以上的企业，通过基于客户的营销与内容驱动策略，目标实现 350 万元新增管道，并将获客成本控制在 150 元以内。",
+    "contacts": [
+      { "value": "邮箱", "label": "presenton@gmail.com" },
+      { "value": "电话", "label": "+86 138-0000-0000" },
+      { "value": "网站", "label": "www.presenton.com" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 180, "w": 500 }, "size": 46 },
+    { "kind": "bar", "pos": { "x": 80, "y": 270, "w": 64, "h": 6 } },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 306, "w": 500 }, "size": 16, "merge": true },
+    { "kind": "bulletCards", "field": "contacts", "pos": { "x": 660, "y": 150, "w": 540, "h": 420 }, "titleSize": 18, "descSize": 16, "cols": 1 }
+  ]
+}

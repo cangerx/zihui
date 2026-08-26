@@ -1,0 +1,64 @@
+{
+  "id": "edu-cover-slide",
+  "name": "封面页",
+  "category": "Education",
+  "description": "开篇封面页：机构/演讲者名称 + 大字主标题 + 背景配图，用于开场。",
+  "background": "accent",
+  "schema": {
+    "name": {
+      "type": "text",
+      "label": "机构/演讲者名称",
+      "maxChars": 16
+    },
+    "title": {
+      "type": "text",
+      "label": "主标题",
+      "required": true,
+      "maxChars": 32
+    },
+    "image": {
+      "type": "image",
+      "label": "背景配图"
+    }
+  },
+  "defaultData": {
+    "name": "示范学院",
+    "title": "演示文稿模板",
+    "image": ""
+  },
+  "blocks": [
+    {
+      "kind": "image",
+      "field": "image",
+      "pos": {
+        "x": 0,
+        "y": 0,
+        "w": 1280,
+        "h": 720
+      }
+    },
+    {
+      "kind": "kicker",
+      "field": "name",
+      "pos": {
+        "x": 160,
+        "y": 250,
+        "w": 960
+      },
+      "size": 22,
+      "color": "on-accent"
+    },
+    {
+      "kind": "heading",
+      "field": "title",
+      "level": 1,
+      "pos": {
+        "x": 160,
+        "y": 310,
+        "w": 960
+      },
+      "size": 64,
+      "color": "on-accent"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "id": "agenda-timeline-slide",
+  "name": "议程时间轴",
+  "category": "Education",
+  "description": "左侧信息面板，右侧带时间块的纵向议程卡片(时间·活动/方式与描述)。",
+  "schema": {
+    "title": { "type": "text", "label": "标题", "required": true, "maxChars": 32 },
+    "subtitle": { "type": "multiline", "label": "副标题", "maxChars": 130 },
+    "sessionInfo": { "type": "list", "label": "课程信息", "maxItems": 3, "itemMaxChars": 40 },
+    "agenda": { "type": "stat-list", "label": "议程(时间·活动/方式与描述)", "required": true, "maxItems": 7, "statValueMaxChars": 42, "statLabelMaxChars": 126 }
+  },
+  "defaultData": {
+    "title": "课程议程",
+    "subtitle": "展示课程顺序、时间安排、形式与关键活动细节的结构化议程。",
+    "sessionInfo": [
+      "时长：60 分钟",
+      "对象：八年级学生",
+      "形式：互动式课程"
+    ],
+    "agenda": [
+      { "value": "00-05 分 · 课前预热", "label": "思考-配对-分享：学员回顾已有知识并讨论引导性问题。" },
+      { "value": "05-15 分 · 微型讲解", "label": "教师讲解：结合示例与图示引入主要概念。" },
+      { "value": "15-40 分 · 小组任务", "label": "协作学习：学员通过结构化练习活动应用所学概念。" },
+      { "value": "40-55 分 · 复盘回顾", "label": "课堂讨论：各组分享答案，教师给予纠正性反馈。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 96, "w": 360 }, "size": 46 },
+    { "kind": "paragraph", "field": "subtitle", "pos": { "x": 80, "y": 196, "w": 360 }, "size": 18 },
+    { "kind": "list", "field": "sessionInfo", "pos": { "x": 80, "y": 360, "w": 360 }, "itemSize": 17, "gap": 10 },
+    { "kind": "bulletCards", "field": "agenda", "pos": { "x": 480, "y": 96, "w": 720, "h": 528 }, "titleSize": 20, "descSize": 15, "cols": 1 }
+  ]
+}

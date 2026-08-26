@@ -1,0 +1,55 @@
+{
+  "id": "code-output-slide",
+  "name": "代码与结果",
+  "category": "Code",
+  "description": "标题 + 概述 + 左侧代码面板与右侧输出面板 + 底部洞察。内容以逐行列表承载。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 44 },
+    "summary": { "type": "multiline", "label": "概述", "required": true, "maxChars": 180 },
+    "codeLabel": { "type": "text", "label": "代码面板标签", "maxChars": 20 },
+    "code": { "type": "list", "label": "代码(每行一项)", "required": true, "maxItems": 14, "itemMaxChars": 64 },
+    "outputLabel": { "type": "text", "label": "输出面板标签", "maxChars": 20 },
+    "output": { "type": "list", "label": "输出(每行一项)", "required": true, "maxItems": 12, "itemMaxChars": 44 },
+    "insight": { "type": "multiline", "label": "底部洞察", "required": true, "maxChars": 160 }
+  },
+  "defaultData": {
+    "title": "代码到输出",
+    "summary": "本页展示实现如何把输入数据转换为输出结果。",
+    "codeLabel": "代码",
+    "code": [
+      "export function normalizeSlide(input) {",
+      "  return {",
+      "    id: crypto.randomUUID(),",
+      "    layout: input.layout,",
+      "    title: input.title.trim(),",
+      "    blocks: input.blocks.map((b) => ({",
+      "      ...b,",
+      "      text: clampText(b.text),",
+      "    })),",
+      "  };",
+      "}"
+    ],
+    "outputLabel": "输出",
+    "output": [
+      "{",
+      "  \"id\": \"slide_01\",",
+      "  \"layout\": \"code-output\",",
+      "  \"title\": \"示例标题\",",
+      "  \"blocks\": [",
+      "    { \"type\": \"code\" }",
+      "  ]",
+      "}"
+    ],
+    "insight": "输出验证了该转换是确定性的，且对导出安全。"
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 60, "w": 1120 }, "size": 44 },
+    { "kind": "paragraph", "field": "summary", "pos": { "x": 80, "y": 134, "w": 1050 }, "size": 17, "color": "muted" },
+    { "kind": "kicker", "field": "codeLabel", "pos": { "x": 80, "y": 190, "w": 620 }, "size": 14, "color": "accent" },
+    { "kind": "list", "field": "code", "pos": { "x": 80, "y": 220, "w": 620 }, "itemSize": 14, "gap": 3, "color": "fg" },
+    { "kind": "kicker", "field": "outputLabel", "pos": { "x": 740, "y": 190, "w": 460 }, "size": 14, "color": "accent" },
+    { "kind": "list", "field": "output", "pos": { "x": 740, "y": 220, "w": 460 }, "itemSize": 14, "gap": 3, "color": "fg" },
+    { "kind": "rule", "pos": { "x": 80, "y": 600, "w": 1120, "h": 1 } },
+    { "kind": "paragraph", "field": "insight", "pos": { "x": 80, "y": 616, "w": 1120 }, "size": 17, "color": "accent" }
+  ]
+}

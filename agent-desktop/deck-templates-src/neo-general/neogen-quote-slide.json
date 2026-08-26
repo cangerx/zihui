@@ -1,0 +1,23 @@
+{
+  "id": "neogen-quote-slide",
+  "name": "图上居中金句",
+  "category": "neo-general",
+  "description": "强调底色上居中的眉题加强调线、大字引用与署名，用于金句页。",
+  "background": "accent",
+  "schema": {
+    "heading": { "type": "text", "label": "眉题", "required": true, "maxChars": 60 },
+    "quote": { "type": "multiline", "label": "引用金句", "required": true, "maxChars": 200 },
+    "author": { "type": "text", "label": "署名", "required": true, "maxChars": 50 }
+  },
+  "defaultData": {
+    "heading": "智慧之言",
+    "quote": "成功不是终点，失败也并非末日，重要的是继续前行的勇气。未来属于那些坚信梦想之美的人。",
+    "author": "温斯顿·丘吉尔"
+  },
+  "blocks": [
+    { "kind": "kicker", "field": "heading", "pos": { "x": 160, "y": 150, "w": 960 }, "size": 18, "color": "on-accent" },
+    { "kind": "bar", "pos": { "x": 600, "y": 200, "w": 80, "h": 4 }, "color": "on-accent" },
+    { "kind": "quote", "field": "quote", "pos": { "x": 160, "y": 270, "w": 960 }, "size": 36, "color": "on-accent" },
+    { "kind": "paragraph", "field": "author", "pos": { "x": 160, "y": 540, "w": 960 }, "size": 20, "color": "on-accent" }
+  ]
+}

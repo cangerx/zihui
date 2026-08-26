@@ -1,0 +1,30 @@
+{
+  "id": "neomod-title-description-metrics-image",
+  "name": "标题描述指标配图",
+  "category": "neo-modern",
+  "description": "左侧为标题、描述与 2x2 指标网格，右侧为大幅竖向配图。交错的指标卡片营造视觉层次。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 25 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 150 },
+    "metrics": { "type": "stat-list", "label": "指标(数值/说明)", "required": true, "maxItems": 4, "statValueMaxChars": 10, "statLabelMaxChars": 15 },
+    "image": { "type": "image", "label": "配图" }
+  },
+  "defaultData": {
+    "title": "核心指标",
+    "description": "一页简洁专业的版式，包含标题、描述、2x2 高亮指标网格，以及右侧大幅竖向配图。",
+    "metrics": [
+      { "value": "85%", "label": "客户响应延迟" },
+      { "value": "5亿+", "label": "注册用户总数" },
+      { "value": "3.2x", "label": "营收同比增长" },
+      { "value": "98%", "label": "客户留存率" }
+    ],
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 96, "w": 540 }, "size": 40 },
+    { "kind": "bar", "pos": { "x": 80, "y": 170, "w": 64, "h": 6 } },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 206, "w": 540 }, "size": 16 },
+    { "kind": "statGrid", "field": "metrics", "pos": { "x": 80, "y": 330, "w": 540, "h": 150 }, "valueSize": 40, "labelSize": 15, "cols": 2 },
+    { "kind": "image", "field": "image", "pos": { "x": 680, "y": 80, "w": 520, "h": 560 } }
+  ]
+}

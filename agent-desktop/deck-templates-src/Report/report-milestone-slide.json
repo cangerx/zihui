@@ -1,0 +1,24 @@
+{
+  "id": "report-milestone-slide",
+  "name": "里程碑序列",
+  "category": "Report",
+  "description": "顶部标题加一条横向里程碑序列，每个节点含编号标题与简短描述。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 12 },
+    "items": { "type": "stat-list", "label": "里程碑(标题/描述)", "required": true, "maxItems": 5, "statValueMaxChars": 30, "statLabelMaxChars": 80 }
+  },
+  "defaultData": {
+    "title": "里程碑",
+    "items": [
+      { "value": "立项启动", "label": "明确目标与范围，组建团队并完成资源准备。" },
+      { "value": "方案设计", "label": "确定技术路线与实施计划，对齐关键交付物。" },
+      { "value": "开发实施", "label": "按计划推进核心功能开发与阶段性验证。" },
+      { "value": "测试验收", "label": "完成质量验证与问题修复，确保达标交付。" },
+      { "value": "上线运营", "label": "正式发布并进入持续运营与优化阶段。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 64, "w": 1120 }, "size": 72 },
+    { "kind": "bulletCards", "field": "items", "pos": { "x": 80, "y": 240, "w": 1120, "h": 300 }, "titleSize": 18, "descSize": 14, "cols": 5 }
+  ]
+}

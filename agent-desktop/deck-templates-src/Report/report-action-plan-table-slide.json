@@ -1,0 +1,26 @@
+{
+  "id": "report-action-plan-table-slide",
+  "name": "行动计划表",
+  "category": "Report",
+  "description": "报告页：标题、副标题及紧凑行动表，涵盖行动、负责人、时机、状态与衡量标准。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 34 },
+    "subtitle": { "type": "multiline", "label": "副标题", "required": true, "maxChars": 140 },
+    "actions": { "type": "stat-list", "label": "行动(动作/负责人时机状态与衡量)", "required": true, "maxItems": 6, "statValueMaxChars": 42, "statLabelMaxChars": 120 }
+  },
+  "defaultData": {
+    "title": "行动计划",
+    "subtitle": "一张结构化的下一步行动表，将建议动作与负责人、时机、状态及衡量标准相连。",
+    "actions": [
+      { "value": "确认优先范围", "label": "负责人：报告负责人 · 时机：第 1 周 · 状态：就绪 · 衡量：优先级清单获批" },
+      { "value": "指定责任人", "label": "负责人：运营 · 时机：第 1-2 周 · 状态：计划中 · 衡量：责任分工完成" },
+      { "value": "复盘进度信号", "label": "负责人：工作组 · 时机：每月 · 状态：进行中 · 衡量：按节奏复盘状态" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 64, "w": 1120 }, "size": 54 },
+    { "kind": "paragraph", "field": "subtitle", "pos": { "x": 80, "y": 142, "w": 1000 }, "size": 20, "color": "muted" },
+    { "kind": "bar", "pos": { "x": 80, "y": 192, "w": 64, "h": 6 } },
+    { "kind": "bulletCards", "field": "actions", "pos": { "x": 80, "y": 240, "w": 1120, "h": 400 }, "titleSize": 21, "descSize": 15, "cols": 1, "rowH": 90 }
+  ]
+}

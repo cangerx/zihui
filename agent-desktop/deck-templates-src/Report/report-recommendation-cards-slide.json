@@ -1,0 +1,26 @@
+{
+  "id": "report-recommendation-cards-slide",
+  "name": "建议卡片",
+  "category": "Report",
+  "description": "报告页：标题、副标题及建议卡片，包含优先级、行动、理由与影响。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 36 },
+    "subtitle": { "type": "multiline", "label": "副标题", "required": true, "maxChars": 140 },
+    "recommendations": { "type": "stat-list", "label": "建议(标题/行动理由与影响)", "required": true, "maxItems": 5, "statValueMaxChars": 32, "statLabelMaxChars": 110 }
+  },
+  "defaultData": {
+    "title": "改进建议",
+    "subtitle": "基于发现与现有证据，一组按优先级排序的建议行动。",
+    "recommendations": [
+      { "value": "聚焦权责", "label": "为最高优先领域指定唯一责任人，清晰权责可减少交接、提升执行力。影响：执行更快。" },
+      { "value": "统一复盘", "label": "为最重要的报告信号建立可重复的复盘节奏，使决策持续贴合最新证据。影响：决策更清晰。" },
+      { "value": "跟踪缺口", "label": "用简单指标与可见状态监控主要缺口，便于随时间比较进展。影响：可见度更高。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 64, "w": 1120 }, "size": 54 },
+    { "kind": "paragraph", "field": "subtitle", "pos": { "x": 80, "y": 142, "w": 1000 }, "size": 20, "color": "muted" },
+    { "kind": "bar", "pos": { "x": 80, "y": 192, "w": 64, "h": 6 } },
+    { "kind": "bulletCards", "field": "recommendations", "pos": { "x": 80, "y": 240, "w": 1120, "h": 380 }, "titleSize": 24, "descSize": 16, "cols": 3 }
+  ]
+}

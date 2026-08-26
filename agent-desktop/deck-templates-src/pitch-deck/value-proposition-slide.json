@@ -1,0 +1,28 @@
+{
+  "id": "value-proposition-slide",
+  "name": "价值主张",
+  "category": "pitch-deck",
+  "description": "小标题 + 价值主张陈述 + 补充说明 + 价值支柱卡片。用于阐述解决方案价值。",
+  "schema": {
+    "title": { "type": "text", "label": "小标题", "required": true, "maxChars": 28 },
+    "valueStatement": { "type": "multiline", "label": "价值主张陈述", "required": true, "maxChars": 105 },
+    "supportingText": { "type": "multiline", "label": "补充说明", "required": true, "maxChars": 90 },
+    "pillars": { "type": "stat-list", "label": "价值支柱(标题/说明)", "required": true, "maxItems": 4, "statValueMaxChars": 28, "statLabelMaxChars": 70 }
+  },
+  "defaultData": {
+    "title": "解决方案",
+    "valueStatement": "一个聚焦的工作空间，将分散的输入转化为清晰的优先级、归属与进展。",
+    "supportingText": "让团队保持一致，而无需再增加一层手工汇报。",
+    "pillars": [
+      { "value": "统一上下文", "label": "把目标、更新、阻塞与客户信号汇入同一运营视图。" },
+      { "value": "厘清优先级", "label": "将原始动态转化为聚焦的待办视图，明确下一步重点。" },
+      { "value": "跟踪进展", "label": "在整个工作流中保持归属、时间线与状态可见。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "kicker", "field": "title", "pos": { "x": 80, "y": 96, "w": 1120 }, "size": 18 },
+    { "kind": "heading", "field": "valueStatement", "level": 2, "pos": { "x": 80, "y": 150, "w": 1030 }, "size": 36 },
+    { "kind": "paragraph", "field": "supportingText", "pos": { "x": 80, "y": 300, "w": 780 }, "size": 20, "color": "muted" },
+    { "kind": "bulletCards", "field": "pillars", "pos": { "x": 80, "y": 400, "w": 1120, "h": 220 }, "titleSize": 24, "descSize": 16, "cols": 3 }
+  ]
+}

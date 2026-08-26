@@ -1,0 +1,29 @@
+{
+  "id": "neoswift-title-description-metrics-grid-large-image",
+  "name": "标题描述指标网格大图",
+  "category": "neo-swift",
+  "description": "左侧标题、描述与 2x2 指标卡片网格，右侧一张竖向大图。适合执行摘要、项目概览或需要视觉佐证的报告。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 25 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 120 },
+    "metrics": { "type": "stat-list", "label": "指标卡片(数值/标签)", "required": true, "maxItems": 4, "statValueMaxChars": 6, "statLabelMaxChars": 12 },
+    "image": { "type": "image", "label": "配图" }
+  },
+  "defaultData": {
+    "title": "图文指标概览",
+    "description": "聚焦金融服务、医疗健康与科技行业中员工数 500 人以上的企业，目标新增 350 万元销售线索。",
+    "metrics": [
+      { "value": "8,450", "label": "调研" },
+      { "value": "92%", "label": "交付率" },
+      { "value": "3.2x", "label": "增长" },
+      { "value": "150+", "label": "客户" }
+    ],
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 96, "w": 520 }, "size": 40 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 178, "w": 520 }, "size": 16 },
+    { "kind": "statGrid", "field": "metrics", "pos": { "x": 80, "y": 280, "w": 520, "h": 150 }, "valueSize": 32, "labelSize": 14, "cols": 2 },
+    { "kind": "image", "field": "image", "pos": { "x": 640, "y": 76, "w": 560, "h": 568 } }
+  ]
+}

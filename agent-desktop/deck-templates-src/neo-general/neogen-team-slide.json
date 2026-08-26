@@ -1,0 +1,27 @@
+{
+  "id": "neogen-team-slide",
+  "name": "描述配人物卡片网格",
+  "category": "neo-general",
+  "description": "左侧标题、强调线与公司描述，右侧 2-4 张人物卡片网格，每张含照片、姓名、职位与简介。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 40 },
+    "companyDescription": { "type": "multiline", "label": "公司描述", "maxChars": 150 },
+    "teamMembers": { "type": "stat-list", "label": "成员(姓名/职位简介)", "required": true, "maxItems": 4, "statValueMaxChars": 50, "statLabelMaxChars": 150 }
+  },
+  "defaultData": {
+    "title": "我们的团队",
+    "companyDescription": "本公司是面向企业的创新数字解决方案领先供应商，致力于通过前沿技术与战略合作助力组织达成目标。",
+    "teamMembers": [
+      { "value": "茱莉安娜 · 席尔瓦", "label": "首席执行官 · 在数字化转型与业务增长领域拥有 15 年以上经验。" },
+      { "value": "丹尼尔 · 加列戈", "label": "首席技术官 · 专注可扩展解决方案与创新软件架构。" },
+      { "value": "克图特 · 苏西洛", "label": "首席运营官 · 聚焦效率提升、流程优化与团队建设。" },
+      { "value": "安娜 · 罗伯逊", "label": "首席营销官 · 擅长品牌建设与客户互动策略。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 130, "w": 480 }, "size": 40 },
+    { "kind": "bar", "pos": { "x": 80, "y": 210, "w": 80, "h": 6 } },
+    { "kind": "paragraph", "field": "companyDescription", "pos": { "x": 80, "y": 260, "w": 480 }, "size": 18 },
+    { "kind": "bulletCards", "field": "teamMembers", "pos": { "x": 620, "y": 110, "w": 580, "h": 500 }, "titleSize": 18, "descSize": 14, "cols": 2 }
+  ]
+}

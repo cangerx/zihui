@@ -1,0 +1,29 @@
+{
+  "id": "title-description-with-cards-slide",
+  "name": "团队成员卡片",
+  "category": "ProductOverview",
+  "description": "顶部标题与介绍 + 底部一排团队成员卡片(头像/职位/姓名)。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 18 },
+    "taglineLabel": { "type": "text", "label": "介绍小标题", "maxChars": 16 },
+    "taglineBody": { "type": "multiline", "label": "团队介绍", "maxChars": 80 },
+    "members": { "type": "stat-list", "label": "成员(职位/姓名)", "required": true, "maxItems": 4, "statValueMaxChars": 12, "statLabelMaxChars": 16 }
+  },
+  "defaultData": {
+    "title": "团队成员",
+    "taglineLabel": "核心团队",
+    "taglineBody": "一支跨职能的资深团队，覆盖产品、技术、设计与运营各个环节。",
+    "members": [
+      { "value": "首席执行官", "label": "李明" },
+      { "value": "技术负责人", "label": "王强" },
+      { "value": "产品负责人", "label": "张华" },
+      { "value": "设计负责人", "label": "刘洋" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 80, "w": 540 }, "size": 56 },
+    { "kind": "kicker", "field": "taglineLabel", "pos": { "x": 680, "y": 90, "w": 520 }, "size": 16 },
+    { "kind": "paragraph", "field": "taglineBody", "pos": { "x": 680, "y": 124, "w": 520 }, "size": 18 },
+    { "kind": "bulletCards", "field": "members", "pos": { "x": 80, "y": 300, "w": 1120, "h": 340 }, "titleSize": 20, "descSize": 17, "cols": 4 }
+  ]
+}

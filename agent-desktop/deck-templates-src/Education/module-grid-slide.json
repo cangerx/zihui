@@ -1,0 +1,25 @@
+{
+  "id": "module-grid-slide",
+  "name": "多列模块网格",
+  "category": "Education",
+  "description": "标题与副标题，配合多列纵向卡片(阶段标签、标题与描述)的模块网格。",
+  "schema": {
+    "title": { "type": "text", "label": "标题", "required": true, "maxChars": 32 },
+    "subtitle": { "type": "multiline", "label": "副标题", "maxChars": 140 },
+    "modules": { "type": "stat-list", "label": "模块(阶段·标题/描述)", "required": true, "maxItems": 6, "statValueMaxChars": 44, "statLabelMaxChars": 90 }
+  },
+  "defaultData": {
+    "title": "课程模块结构",
+    "subtitle": "按阶段、周期或类别对课程内容进行分组的结构化概览，帮助学员把握学习路径。",
+    "modules": [
+      { "value": "第一年 · 基础阶段", "label": "学员打牢核心学术与技术基础，涵盖数学、编程入门与学术写作。" },
+      { "value": "第二年 · 核心技能", "label": "进入学科专业课程，学习数据结构、统计学与数据库等内容。" },
+      { "value": "第三年 · 综合应用", "label": "通过实验、项目与研究将技能应用于实践，涉及机器学习与云系统。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 50 },
+    { "kind": "paragraph", "field": "subtitle", "pos": { "x": 80, "y": 162, "w": 1000 }, "size": 20 },
+    { "kind": "bulletCards", "field": "modules", "pos": { "x": 80, "y": 250, "w": 1120, "h": 400 }, "titleSize": 22, "descSize": 16, "cols": 3 }
+  ]
+}

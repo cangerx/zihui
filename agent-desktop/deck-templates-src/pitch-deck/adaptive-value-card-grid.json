@@ -1,0 +1,23 @@
+{
+  "id": "adaptive-value-card-grid",
+  "name": "自适应数值卡片网格",
+  "category": "pitch-deck",
+  "description": "顶部标题 + 数值卡片网格(大数值与说明标签)。适合多项关键指标并列展示。",
+  "schema": {
+    "title": { "type": "text", "label": "顶部标题", "required": true, "maxChars": 16 },
+    "items": { "type": "stat-list", "label": "数值卡片(数值/标签)", "required": true, "maxItems": 8, "statValueMaxChars": 6, "statLabelMaxChars": 28 }
+  },
+  "defaultData": {
+    "title": "亮点速览",
+    "items": [
+      { "value": "5x", "label": "效率提升倍数" },
+      { "value": "98%", "label": "客户满意度" },
+      { "value": "200+", "label": "服务客户数量" },
+      { "value": "24h", "label": "全天候技术支持" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 60 },
+    { "kind": "statGrid", "field": "items", "pos": { "x": 80, "y": 220, "w": 1120, "h": 180 }, "valueSize": 50, "labelSize": 18, "cols": 4 }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "neomod-title-subtitles-chart",
+  "name": "标题副标题图表",
+  "category": "neo-modern",
+  "description": "居中标题与左右副标题，下方为带边框的图表区域(以配图占位)。适合单图表强调页。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 8 },
+    "subtitleLeft": { "type": "text", "label": "左副标题", "maxChars": 10 },
+    "subtitleRight": { "type": "text", "label": "右副标题", "maxChars": 12 },
+    "footerLabel": { "type": "text", "label": "脚注标签", "maxChars": 15 },
+    "image": { "type": "image", "label": "图表配图" }
+  },
+  "defaultData": {
+    "title": "柱状图",
+    "subtitleLeft": "活动 A",
+    "subtitleRight": "头部活动",
+    "footerLabel": "互动率",
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 42 },
+    { "kind": "kicker", "field": "subtitleLeft", "pos": { "x": 80, "y": 152, "w": 540 }, "size": 16 },
+    { "kind": "kicker", "field": "subtitleRight", "pos": { "x": 660, "y": 152, "w": 540 }, "size": 16 },
+    { "kind": "image", "field": "image", "pos": { "x": 80, "y": 196, "w": 1120, "h": 400 } },
+    { "kind": "paragraph", "field": "footerLabel", "pos": { "x": 80, "y": 612, "w": 1120 }, "size": 15, "color": "muted" }
+  ]
+}

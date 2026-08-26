@@ -1,0 +1,24 @@
+{
+  "id": "text-and-chart-split-layout",
+  "name": "文字加图表分栏",
+  "category": "pitch-deck",
+  "description": "左侧标题与叙述文字 + 右侧图表占位的分栏版式。图表区可放数据图。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 16 },
+    "leadText": { "type": "text", "label": "导语", "maxChars": 52 },
+    "supportingText": { "type": "multiline", "label": "补充说明", "maxChars": 126 },
+    "chart": { "type": "image", "label": "图表/数据图" }
+  },
+  "defaultData": {
+    "title": "亮点速览",
+    "leadText": "这是一段用于向受众讲述故事的示例文字。",
+    "supportingText": "在此补充更详细的背景说明、数据解读或论据，帮助受众理解图表所呈现的趋势与结论。",
+    "chart": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 520 }, "size": 60 },
+    { "kind": "paragraph", "field": "leadText", "pos": { "x": 80, "y": 260, "w": 520 }, "size": 28, "color": "fg" },
+    { "kind": "paragraph", "field": "supportingText", "pos": { "x": 80, "y": 360, "w": 520 }, "size": 19 },
+    { "kind": "image", "field": "chart", "pos": { "x": 660, "y": 130, "w": 540, "h": 460 } }
+  ]
+}

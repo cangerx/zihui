@@ -1,0 +1,30 @@
+{
+  "id": "swift-timeline",
+  "name": "发展历程",
+  "category": "swift",
+  "description": "居中标题与导语横幅 + 一行时间轴卡片(年份、标题与说明)。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 60 },
+    "subtitle": { "type": "multiline", "label": "导语横幅", "required": true, "maxChars": 200 },
+    "items": { "type": "stat-list", "label": "节点(年份标题/说明)", "required": true, "maxItems": 4, "statValueMaxChars": 36, "statLabelMaxChars": 160 },
+    "website": { "type": "text", "label": "网址", "maxChars": 60 }
+  },
+  "defaultData": {
+    "title": "我们的发展历程",
+    "subtitle": "从初创到成长，每一个关键节点都凝聚着团队的坚持与积累。",
+    "items": [
+      { "value": "2018 · 公司成立", "label": "团队组建，确立产品方向与愿景。" },
+      { "value": "2021 · 首款产品", "label": "首个正式版本发布，获得早期客户认可。" },
+      { "value": "2022 · 关键里程碑", "label": "用户规模快速增长，验证商业模式。" },
+      { "value": "2024 · 全球拓展", "label": "业务进入多个市场，迈向国际化。" }
+    ],
+    "website": "www.yourwebsite.com"
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 90, "w": 1120 }, "size": 44 },
+    { "kind": "paragraph", "field": "subtitle", "pos": { "x": 240, "y": 168, "w": 800 }, "size": 16 },
+    { "kind": "bulletCards", "field": "items", "pos": { "x": 80, "y": 270, "w": 1120, "h": 330 }, "titleSize": 18, "descSize": 14, "cols": 4 },
+    { "kind": "rule", "pos": { "x": 80, "y": 650, "w": 1120, "h": 2 } },
+    { "kind": "paragraph", "field": "website", "pos": { "x": 80, "y": 628, "w": 600 }, "size": 14, "color": "muted" }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "neoswift-title-subtitle-four-team-member-cards",
+  "name": "标题副标题团队卡片",
+  "category": "neo-swift",
+  "description": "顶部居中标题与副标题，下方为最多 4 张团队成员卡片，每卡含姓名职位与简介。适合介绍领导团队或核心成员。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 40 },
+    "subtitle": { "type": "multiline", "label": "副标题", "required": true, "maxChars": 300 },
+    "teamMembers": { "type": "stat-list", "label": "成员(姓名职位/简介)", "required": true, "maxItems": 4, "statValueMaxChars": 60, "statLabelMaxChars": 100 }
+  },
+  "defaultData": {
+    "title": "我们的团队",
+    "subtitle": "聚焦金融服务、医疗健康与科技行业中员工数 500 人以上的企业。通过基于客户的营销与内容驱动策略，力争达成 350 万元新增销售线索，并将获客成本控制在 150 元以内。",
+    "teamMembers": [
+      { "value": "韩娜 · 创始人兼 CEO", "label": "专注服务 500 人以上规模的大型企业客户。" },
+      { "value": "李伟 · 联合创始人兼 CTO", "label": "深耕可扩展架构与创新软件工程。" },
+      { "value": "王芳 · 运营负责人", "label": "擅长流程优化与规模化交付。" },
+      { "value": "陈明 · 市场负责人", "label": "深耕品牌建设与增长营销。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 72, "w": 1120 }, "size": 40 },
+    { "kind": "paragraph", "field": "subtitle", "pos": { "x": 80, "y": 140, "w": 1120 }, "size": 16 },
+    { "kind": "bulletCards", "field": "teamMembers", "pos": { "x": 80, "y": 244, "w": 1120, "h": 360 }, "titleSize": 19, "descSize": 14, "cols": 4 }
+  ]
+}

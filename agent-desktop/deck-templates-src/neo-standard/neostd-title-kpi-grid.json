@@ -1,0 +1,26 @@
+{
+  "id": "neostd-title-kpi-grid",
+  "name": "标题加 KPI 网格",
+  "category": "neo-standard",
+  "description": "居中标题，下方最多 8 个带数值与说明的 KPI 指标卡片网格，适合仪表盘与汇报。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 20 },
+    "kpiList": { "type": "stat-list", "label": "KPI(数值/说明)", "required": true, "maxItems": 8, "statValueMaxChars": 5, "statLabelMaxChars": 25 }
+  },
+  "defaultData": {
+    "title": "KPI 速览",
+    "kpiList": [
+      { "value": "85%", "label": "客户交付准时率" },
+      { "value": "92%", "label": "系统稳定运行率" },
+      { "value": "3.2x", "label": "投资回报提升" },
+      { "value": "68%", "label": "管线转化占比" },
+      { "value": "1.9x", "label": "营收同比增长" },
+      { "value": "24/7", "label": "全天候技术支持" }
+    ]
+  },
+  "blocks": [
+    { "kind": "bar", "pos": { "x": 582, "y": 96, "w": 116, "h": 4 } },
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 124, "w": 1120 }, "size": 42 },
+    { "kind": "statGrid", "field": "kpiList", "pos": { "x": 80, "y": 230, "w": 1120, "h": 180 }, "valueSize": 40, "labelSize": 16, "cols": 3 }
+  ]
+}

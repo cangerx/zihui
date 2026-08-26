@@ -1,0 +1,26 @@
+{
+  "id": "closing-actions-contact-slide",
+  "name": "结尾行动与联系页",
+  "category": "ProductOverview",
+  "description": "左侧大标题与寄语 + 右侧行动卡片(标题/说明)的收尾版式。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 34 },
+    "message": { "type": "multiline", "label": "结尾寄语", "maxChars": 170 },
+    "actions": { "type": "stat-list", "label": "行动项(标题/说明)", "required": true, "maxItems": 4, "statValueMaxChars": 28, "statLabelMaxChars": 60 }
+  },
+  "defaultData": {
+    "title": "下一步",
+    "message": "从了解到行动，我们为你准备了清晰的推进路径：预约演示、启动试点、并完成一次完整的评估。",
+    "actions": [
+      { "value": "预约演示", "label": "与产品和业务负责人一起走查核心流程。" },
+      { "value": "启动试点", "label": "选定一个团队、一个流程、一个成功指标先行验证。" },
+      { "value": "评估契合度", "label": "比较集成需求、落地成本与预期收益。" },
+      { "value": "正式合作", "label": "确认方案后进入实施与持续优化阶段。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 110, "w": 380 }, "size": 66 },
+    { "kind": "paragraph", "field": "message", "pos": { "x": 80, "y": 240, "w": 380 }, "size": 20 },
+    { "kind": "bulletCards", "field": "actions", "pos": { "x": 520, "y": 110, "w": 680, "h": 500 }, "titleSize": 22, "descSize": 16, "cols": 2 }
+  ]
+}

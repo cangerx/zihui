@@ -1,0 +1,22 @@
+{
+  "id": "neogen-title-side-insight-slide",
+  "name": "标题配侧边文字卡",
+  "category": "neo-general",
+  "description": "左侧粗体标题与强调条，右侧白色卡片含强调色标题与描述文字。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 25 },
+    "insightTitle": { "type": "text", "label": "卡片标题", "required": true, "maxChars": 63 },
+    "insightDescription": { "type": "multiline", "label": "卡片描述", "maxChars": 99 }
+  },
+  "defaultData": {
+    "title": "关键洞察与收获",
+    "insightTitle": "内容与付费社交组合带来最高质量线索",
+    "insightDescription": "整合营销活动产生的线索成交周期缩短 47%，平均合同金额提升 28%。"
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 280, "w": 520 }, "size": 42 },
+    { "kind": "bar", "pos": { "x": 80, "y": 370, "w": 116, "h": 6 } },
+    { "kind": "heading", "field": "insightTitle", "level": 2, "pos": { "x": 680, "y": 230, "w": 520 }, "size": 22, "color": "accent" },
+    { "kind": "paragraph", "field": "insightDescription", "pos": { "x": 680, "y": 360, "w": 520 }, "size": 20, "color": "fg" }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "table-slide",
+  "name": "对比表格",
+  "category": "Code",
+  "description": "标题 + 横向对比卡片（每行主体 + 各列取值合并为一段）。承载自 presenton 表格版式。",
+  "schema": {
+    "caption": { "type": "text", "label": "列说明", "maxChars": 80 },
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 18 },
+    "rows": { "type": "stat-list", "label": "对比项(主体/各列取值)", "required": true, "maxItems": 6, "statValueMaxChars": 24, "statLabelMaxChars": 100 }
+  },
+  "defaultData": {
+    "caption": "特性 · 方案 A · 方案 B · 方案 C",
+    "title": "方案对比",
+    "rows": [
+      { "value": "组件化", "label": "支持 · 支持 · 支持" },
+      { "value": "TypeScript 支持", "label": "支持 · 支持 · 支持" },
+      { "value": "学习曲线", "label": "中等 · 简单 · 陡峭" },
+      { "value": "打包体积", "label": "40KB · 34KB · 167KB" },
+      { "value": "性能表现", "label": "优秀 · 优秀 · 良好" },
+      { "value": "社区规模", "label": "庞大 · 较大 · 较大" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 64, "w": 1120 }, "size": 52 },
+    { "kind": "paragraph", "field": "caption", "pos": { "x": 80, "y": 146, "w": 1120 }, "size": 15, "color": "muted" },
+    { "kind": "bulletCards", "field": "rows", "pos": { "x": 80, "y": 190, "w": 1120, "h": 466 }, "titleSize": 18, "descSize": 15, "cols": 1 }
+  ]
+}

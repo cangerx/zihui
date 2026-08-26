@@ -1,0 +1,23 @@
+{
+  "id": "horizontal-timeline",
+  "name": "横向时间线",
+  "category": "pitch-deck",
+  "description": "顶部标题 + 编号阶段(标题与描述)。适合阶段路线图或里程碑时间线。",
+  "schema": {
+    "title": { "type": "text", "label": "顶部标题", "required": true, "maxChars": 18 },
+    "items": { "type": "stat-list", "label": "阶段(标题/描述)", "required": true, "maxItems": 5, "statValueMaxChars": 16, "statLabelMaxChars": 132 }
+  },
+  "defaultData": {
+    "title": "时间线",
+    "items": [
+      { "value": "阶段一", "label": "对该阶段目标与关键交付的简要说明，帮助受众理解整体推进节奏。" },
+      { "value": "阶段二", "label": "对该阶段目标与关键交付的简要说明，帮助受众理解整体推进节奏。" },
+      { "value": "阶段三", "label": "对该阶段目标与关键交付的简要说明，帮助受众理解整体推进节奏。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 64, "w": 1120 }, "size": 60 },
+    { "kind": "rule", "pos": { "x": 80, "y": 200, "w": 1120, "h": 2 }, "color": "accent" },
+    { "kind": "bulletCards", "field": "items", "pos": { "x": 80, "y": 240, "w": 1120, "h": 380 }, "titleSize": 24, "descSize": 16, "cols": 3 }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "metrics-with-description-image",
+  "name": "市场规模",
+  "category": "modern",
+  "description": "左侧标题、地图配图与说明，右侧市场规模指标卡片（指标名与数值、说明）。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 15 },
+    "mapImage": { "type": "image", "label": "地图配图" },
+    "description": { "type": "multiline", "label": "说明正文", "required": true, "maxChars": 200 },
+    "marketStats": { "type": "stat-list", "label": "指标(名称数值/说明)", "required": true, "maxItems": 4, "statValueMaxChars": 60, "statLabelMaxChars": 130 }
+  },
+  "defaultData": {
+    "title": "市场规模",
+    "mapImage": "",
+    "description": "市场规模是利益相关者可直接观察到的全部销售与客户总量，通常在年末进行测算。它帮助企业判断未来的市场与业务潜力，对初创企业尤为重要。",
+    "marketStats": [
+      { "value": "总体市场 TAM · 14 亿", "label": "可购买产品的潜在人群，或企业通过销售可获得的最大营收规模。" },
+      { "value": "可服务市场 SAM · 1.94 亿", "label": "在产品类型、技术条件与地理因素约束下，可成为目标市场的部分。" },
+      { "value": "可获取市场 SOM · 4800 万", "label": "在现有资源与渠道下，短期内可实际触达并转化的市场规模。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 96, "w": 520 }, "size": 44 },
+    { "kind": "image", "field": "mapImage", "pos": { "x": 80, "y": 180, "w": 520, "h": 240 } },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 444, "w": 520 }, "size": 14, "merge": true },
+    { "kind": "bulletCards", "field": "marketStats", "pos": { "x": 660, "y": 130, "w": 540, "h": 460 }, "titleSize": 18, "descSize": 14, "cols": 1 }
+  ]
+}

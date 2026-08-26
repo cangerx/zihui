@@ -1,0 +1,27 @@
+{
+  "id": "bullet-with-icons-description-grid",
+  "name": "方案要点网格",
+  "category": "modern",
+  "description": "顶部主标题与描述，下方两列要点卡片网格，适合展示解决方案的多个维度。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 25 },
+    "mainDescription": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 300 },
+    "sections": { "type": "stat-list", "label": "要点(标题/描述)", "required": true, "maxItems": 6, "statValueMaxChars": 30, "statLabelMaxChars": 70 }
+  },
+  "defaultData": {
+    "title": "方案优势",
+    "mainDescription": "我们提供的方案能够解决前述被识别的问题，坚持有效、高效的价值导向，并与当前市场环境与社会需求高度契合。",
+    "sections": [
+      { "value": "市场契合", "label": "创新且被广泛接受，贴合真实需求。" },
+      { "value": "行业洞察", "label": "基于扎实的市场判断与行业理解。" },
+      { "value": "数据驱动", "label": "由精准的数据与分析作为支撑。" },
+      { "value": "用户为本", "label": "聚焦真实用户的体验与价值。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 88, "w": 1120 }, "size": 44 },
+    { "kind": "bar", "pos": { "x": 80, "y": 162, "w": 64, "h": 6 } },
+    { "kind": "paragraph", "field": "mainDescription", "pos": { "x": 80, "y": 196, "w": 1120 }, "size": 17 },
+    { "kind": "bulletCards", "field": "sections", "pos": { "x": 80, "y": 300, "w": 1120, "h": 320 }, "titleSize": 19, "descSize": 14, "cols": 2 }
+  ]
+}

@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="好伙伴 — 你的本地 AI 工作站。打开文件夹就开始工作；对话、知识库与创作留在本机，模型用你自己的密钥。">
+  <title>好伙伴</title>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="preload" as="image" href="/home-workspace/assets/hero.png">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      color: var(--body);
+      background: #fff;
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+
+    :root {
+      /* 对齐 www.haohuoban.com 色板；正文铺近白，避免淡紫/暖灰交替 */
+      --primary: #473bf0;
+      --primary-2: #0040e5;
+      --primary-soft: #eceef8;
+      --heading: #161c2d;
+      --body: #6e727d;
+      --dark: #1b202f;
+      --dark-2: #16171b;
+      --paper: #f8f9fb;
+      --grey: #f8f9fb;
+      --line: #e8e9ed;
+      --logo-gold: #c9b896;
+      --max: 1140px;
+      --radius: 8px;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+
+    /* Header — 叠在深色首屏上 */
+    .nav {
+      position: absolute; top: 0; left: 0; right: 0; z-index: 40;
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 72px; max-width: var(--max); margin: 0 auto; padding: 0 24px;
+    }
+    .brand {
+      display: flex; align-items: center;
+      line-height: 0;
+    }
+    .brand-logo {
+      display: block;
+      height: 40px;
+      width: auto;
+    }
+    .nav-links {
+      display: flex; align-items: center; gap: 28px;
+      font-size: 14px; color: rgba(255,255,255,0.88); font-weight: 500;
+    }
+    .nav-links a:hover { color: #fff; }
+    .nav-cta {
+      display: inline-flex; align-items: center; height: 38px; padding: 0 18px;
+      border-radius: 6px; background: var(--primary); color: #fff;
+      font-size: 13.5px; font-weight: 600;
+    }
+
+    /* Hero — 深色全宽 + 左文案 + 竖线强调（官网同构） */
+    .hero {
+      position: relative;
+      min-height: 85vh;
+      display: flex; align-items: center;
+      padding: 96px 0 56px;
+      color: #fff;
+      background:
+        radial-gradient(900px 520px at 85% 20%, rgba(71, 59, 240, 0.35), transparent 55%),
+        radial-gradient(700px 400px at 10% 80%, rgba(0, 64, 229, 0.22), transparent 50%),
+        linear-gradient(135deg, #0d1020 0%, #1b202f 48%, #12152a 100%);
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(90deg, rgba(10,12,22,0.55) 0%, rgba(10,12,22,0.2) 55%, transparent 100%);
+      pointer-events: none;
+    }
+    .hero-grid {
+      position: relative; z-index: 1;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 48px;
+      align-items: center;
+      width: 100%;
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .hero-copy { max-width: 34rem; }
+    .hero-brand {
+      font-size: clamp(36px, 5vw, 52px);
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 10px;
+    }
+    .hero-line {
+      font-size: clamp(20px, 2.4vw, 28px);
+      font-weight: 600;
+      color: rgba(255,255,255,0.95);
+      margin-bottom: 18px;
+    }
+    .hero-desc-wrap {
+      display: flex; gap: 14px; align-items: stretch;
+      margin-bottom: 28px;
+    }
+    .hero-bar {
+      width: 4px; flex-shrink: 0;
+      background: #fff; border-radius: 2px;
+    }
+    .hero-desc {
+      font-size: 15px;
+      color: rgba(255,255,255,0.78);
+      line-height: 1.75;
+    }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
+    .btn-primary, .btn-ghost {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 46px; padding: 0 20px;
+      border-radius: 6px;
+      font-weight: 600; font-size: 14.5px;
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: var(--primary); color: #fff;
+      transition: background 0.2s var(--ease), transform 0.2s var(--ease);
+    }
+    .btn-ghost {
+      border: 1px solid rgba(255,255,255,0.35);
+      color: #fff; font-weight: 560;
+      background: rgba(255,255,255,0.04);
+    }
+    .btn-ghost.on-light {
+      border-color: #d8dbe7; color: var(--heading); background: #fff;
+    }
+    .btn-primary.on-light { box-shadow: 0 10px 28px -12px rgba(71, 59, 240, 0.55); }
+    @media (hover: hover) {
+      .btn-primary:hover { background: var(--primary-2); transform: translateY(-1px); }
+      .btn-ghost:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
+      .btn-ghost.on-light:hover { border-color: var(--primary); color: var(--primary); }
+      .nav-cta:hover { background: var(--primary-2); transform: translateY(-1px); }
+    }
+    .version-note { font-size: 13px; color: rgba(255,255,255,0.5); }
+
+    .hero-visual {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 16px;
+      padding: 12px;
+      backdrop-filter: blur(8px);
+      overflow: hidden;
+    }
+    .hero-visual img {
+      width: 100%; height: auto; border-radius: 10px;
+      box-shadow: 0 24px 60px -20px rgba(0,0,0,0.55);
+      object-fit: cover;
+      object-position: top center;
+      max-height: min(58vh, 420px);
+      min-height: 240px;
+      background: rgba(255,255,255,0.04);
+    }
+    .hero-fallback {
+      min-height: 120px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.45); font-size: 13px;
+      border: 1px dashed rgba(255,255,255,0.2);
+    }
+
+    /* Sections — 浅灰铺卡片区、白色铺留白区，灰更亮 */
+    .section { padding: 88px 0; background: #fff; }
+    .section.soft, .section.grey { background: var(--paper); }
+    .section.dark {
+      background: var(--dark);
+      color: rgba(255,255,255,0.72);
+    }
+    .section-head { text-align: center; max-width: 40rem; margin: 0 auto 48px; }
+    .section-head h2 {
+      font-size: clamp(26px, 3vw, 34px);
+      font-weight: 700;
+      color: var(--heading);
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+      line-height: 1.25;
+    }
+    .section.dark .section-head h2 { color: #fff; }
+    .section-head p { font-size: 15.5px; color: var(--body); }
+    .section.dark .section-head p { color: rgba(255,255,255,0.6); }
+
+    /* 为什么选择我们 — 四宫格 */
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+    .why-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 28px 22px;
+      text-align: center;
+      border: 1px solid var(--line);
+      box-shadow: none;
+      transition: transform 0.25s var(--ease), border-color 0.2s var(--ease);
+    }
+    .why-card:hover {
+      transform: translateY(-3px);
+      border-color: color-mix(in srgb, var(--primary) 28%, var(--line));
+    }
+    .why-icon {
+      width: 52px; height: 52px; margin: 0 auto 16px;
+      border-radius: 14px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 700;
+    }
+    .why-card h3 {
+      font-size: 16px; font-weight: 700; color: var(--heading); margin-bottom: 8px;
+    }
+    .why-card p { font-size: 13.5px; color: var(--body); line-height: 1.55; }
+
+    /* 三点 — 浅灰带，和上下白底间隔 */
+    .stats-section {
+      background: #fff;
+      padding: 56px 0;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      text-align: center;
+    }
+    .stat { padding: 0 24px; }
+    .stat + .stat { border-left: 1px solid var(--line); }
+    .stat strong {
+      display: block;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--heading);
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+    .stat span {
+      font-size: 14px;
+      color: var(--body);
+      line-height: 1.6;
+    }
+
+    /* 能力卡片 */
+    .feat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .feat-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 26px 22px;
+      border: 1px solid var(--line);
+      transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+    }
+    .feat-card:hover {
+      border-color: color-mix(in srgb, var(--primary) 28%, var(--line));
+      box-shadow: none;
+    }
+    .feat-card h3 {
+      font-size: 16px; font-weight: 700; color: var(--heading); margin-bottom: 8px;
+    }
+    .feat-card p { font-size: 13.5px; color: var(--body); }
+
+    /* 下载 — 卡片沿用英雄区渐变蓝 */
+    .download-box {
+      position: relative;
+      display: flex; flex-wrap: wrap;
+      align-items: center; justify-content: space-between;
+      gap: 20px;
+      overflow: hidden;
+      border-radius: 12px;
+      padding: 32px 28px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background:
+        radial-gradient(420px 180px at 92% 0%, rgba(71, 59, 240, 0.42), transparent 70%),
+        radial-gradient(380px 160px at 8% 110%, rgba(0, 64, 229, 0.28), transparent 65%),
+        linear-gradient(135deg, #0d1020 0%, #1b202f 48%, #12152a 100%);
+    }
+    .download-box h2 {
+      font-size: 24px; color: #fff; font-weight: 700; margin-bottom: 6px;
+    }
+    .download-box p { font-size: 14px; color: rgba(255,255,255,0.72); }
+    .dl-row { display: flex; flex-wrap: wrap; gap: 10px; }
+
+    /* Footer */
+    footer {
+      background: var(--dark-2);
+      color: rgba(255,255,255,0.45);
+      padding: 28px 0 32px;
+      font-size: 13px;
+      text-align: center;
+    }
+    footer .wrap {
+      max-width: none;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .footer-legal {
+      display: inline-block;
+      white-space: nowrap;
+      line-height: 1.6;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+    .footer-legal a { color: rgba(255,255,255,0.5); }
+    .footer-legal a:hover { color: #fff; }
+    .footer-meta {
+      display: flex; flex-wrap: nowrap; gap: 10px 16px;
+      margin-top: 8px;
+      justify-content: center;
+    }
+
+    [hidden] { display: none !important; }
+
+    @media (max-width: 960px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 28px; }
+      .why-grid { grid-template-columns: 1fr 1fr; }
+      .feat-grid { grid-template-columns: 1fr 1fr; }
+      .hero-visual img { min-height: 180px; max-height: 280px; }
+      .stats { grid-template-columns: 1fr; }
+      .stat { padding: 18px 0; }
+      .stat + .stat { border-left: 0; border-top: 1px solid var(--line); }
+      .cta-row { flex-wrap: nowrap; gap: 8px; }
+      .cta-row .btn-primary, .cta-row .btn-ghost {
+        flex: 1; min-width: 0; padding: 0 8px; font-size: 13px;
+      }
+      .dl-row { flex-direction: column; align-items: stretch; max-width: 360px; }
+      .dl-row .btn-primary, .dl-row .btn-ghost { width: 100%; }
+      .download-box { flex-direction: column; align-items: stretch; }
+    }
+    @media (max-width: 640px) {
+      .wrap, .nav-inner, .hero-grid { padding-left: 16px; padding-right: 16px; }
+      .nav-inner { height: 60px; }
+      .brand-logo { height: 32px; }
+      .nav-links { gap: 12px; }
+      .nav-links .hide-sm { display: none; }
+      .nav-cta { height: 34px; padding: 0 14px; font-size: 13px; }
+      .hero { min-height: auto; padding: 80px 0 40px; }
+      .hero-brand { font-size: 28px; margin-bottom: 8px; }
+      .hero-line { font-size: 17px; margin-bottom: 12px; }
+      .hero-desc { font-size: 14px; }
+      .hero-desc-wrap { margin-bottom: 20px; }
+      .cta-row { gap: 6px; }
+      .cta-row .btn-primary, .cta-row .btn-ghost {
+        height: 40px; padding: 0 6px; font-size: 12px;
+      }
+      .dl-row { max-width: none; gap: 10px; }
+      .dl-row .btn-primary, .dl-row .btn-ghost {
+        height: 44px; padding: 0 16px; font-size: 14px;
+      }
+      .hero-visual { padding: 8px; border-radius: 12px; }
+      .hero-visual img { min-height: 0; max-height: 220px; }
+      .why-grid, .feat-grid { grid-template-columns: 1fr; }
+      .stats-section { padding: 40px 0; }
+      .section { padding: 56px 0; }
+      .section-head { margin-bottom: 32px; }
+      .download-box { padding: 24px 18px; gap: 16px; }
+      .download-box h2 { font-size: 20px; }
+      .footer-legal { white-space: normal; }
+      .footer-meta { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="#" aria-label="好伙伴">
+        <img class="brand-logo" id="nav-logo" src="/home-workspace/assets/logo-0.png" alt="好伙伴" height="40">
+      </a>
+      <div class="nav-links">
+        <a class="hide-sm" href="#why">为什么选择</a>
+        <a class="hide-sm" href="#features">能力</a>
+        <a id="nav-docs-link" href="/docs/" hidden>文档</a>
+        <a class="nav-cta" href="#download">立即下载</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-label="首屏">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1 class="hero-brand" id="hero-title">好伙伴AI Agent助手</h1>
+          <p class="hero-line">你的本地 AI 工作站</p>
+          <div class="hero-desc-wrap">
+            <span class="hero-bar" aria-hidden="true"></span>
+            <p class="hero-desc" id="hero-desc">打开一个文件夹，就开始工作。对话、知识库与创作默认留在本机；模型用你自己的密钥，不必把资料先送进云端对话框。</p>
+          </div>
+          <div class="cta-row">
+            <a class="btn-primary" id="dl-win" href="#download">Windows</a>
+            <a class="btn-ghost" id="dl-mac-arm" href="#download">Mac M 系列</a>
+            <a class="btn-ghost" id="dl-mac" href="#download">Mac Intel</a>
+          </div>
+          <p class="version-note" id="version-text">本地存储 · 自带密钥 · Windows / macOS</p>
+        </div>
+        <div class="hero-visual">
+          <img id="hero-image" src="/home-workspace/assets/hero.png" alt="好伙伴客户端浅色工作台">
+          <div class="hero-fallback" id="hero-fallback" hidden>上传客户端截图后显示于此</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft" id="why">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>为什么用好伙伴</h2>
+          <p>把 AI 放进本机工作流，资料与产出默认不出你的电脑</p>
+        </div>
+        <div class="why-grid">
+          <div class="why-card">
+            <div class="why-icon">01</div>
+            <h3>本地工作区</h3>
+            <p>一个文件夹即一个工作区，对话与产出跟着目录走</p>
+          </div>
+          <div class="why-card">
+            <div class="why-icon">02</div>
+            <h3>密钥自管</h3>
+            <p>接入你自己的 API Key，对话与生图模型可分开配置</p>
+          </div>
+          <div class="why-card">
+            <div class="why-icon">03</div>
+            <h3>创作一体</h3>
+            <p>生图、批量、反推与画布，都在同一工作台里完成</p>
+          </div>
+          <div class="why-card">
+            <div class="why-icon">04</div>
+            <h3>可编排</h3>
+            <p>Skill、定时任务与权限档位，让重复工作按计划执行</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats-section" aria-label="产品要点">
+      <div class="wrap">
+        <div class="stats">
+          <div class="stat">
+            <strong>本机</strong>
+            <span>对话与文件默认本地保存</span>
+          </div>
+          <div class="stat">
+            <strong>自管密钥</strong>
+            <span>API Key 由你自己配置</span>
+          </div>
+          <div class="stat">
+            <strong>双平台</strong>
+            <span>支持 Windows 与 macOS</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section grey" id="features">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>核心能力</h2>
+          <p>从工作区出发：读资料、写对话、做创作、再沉淀成可复用流程</p>
+        </div>
+        <div class="feat-grid">
+          <div class="feat-card">
+            <h3>本地工作区</h3>
+            <p>绑定本机文件夹；换目录即换上下文，附件与产出落在约定目录。</p>
+          </div>
+          <div class="feat-card">
+            <h3>知识库</h3>
+            <p>用本地文档检索驱动提示词，适合品牌规范与业务资料。</p>
+          </div>
+          <div class="feat-card">
+            <h3>创作工具</h3>
+            <p>生图、批量、反推、图像处理与流式画布，按任务随时调用。</p>
+          </div>
+          <div class="feat-card">
+            <h3>Skill 与定时任务</h3>
+            <p>把常用流程沉淀成 Skill；定时任务按天/周自动执行。</p>
+          </div>
+          <div class="feat-card">
+            <h3>微信 ClawBot</h3>
+            <p>微信侧对话与桌面会话打通，适合需要持续值守的业务场景。</p>
+          </div>
+          <div class="feat-card">
+            <h3>权限与通知</h3>
+            <p>对话权限档位清晰可见；托盘常驻，任务完成可提醒。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="download">
+      <div class="wrap">
+        <div class="download-box">
+          <div>
+            <h2>下载桌面客户端</h2>
+            <p>Windows · Mac M 系列 · Mac Intel</p>
+          </div>
+          <div class="dl-row">
+            <a class="btn-primary" id="dl-win-2" href="#">Windows</a>
+            <a class="btn-ghost" id="dl-mac-arm-2" href="#">Mac M 系列</a>
+            <a class="btn-ghost" id="dl-mac-2" href="#">Mac Intel</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="footer-legal" id="footer-text">Copyright © 2017-2021 西行村（北京）科技有限公司<span aria-hidden="true"> | </span>增值电信业务经营许可证:京B2-20190780<span aria-hidden="true"> | </span><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010502041389" target="_blank" rel="noopener noreferrer">京公网安备:11010502041389号</a><span aria-hidden="true"> | </span><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">京ICP备17014928号-2</a></div>
+      <div class="footer-meta">
+        <span id="footer-company" hidden></span>
+        <span id="footer-contact" hidden></span>
+        <a id="footer-beian" href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" hidden></a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var productName = '';
+      var siteTitle = '';
+      var defaultLogo = '/home-workspace/assets/logo-0.png';
+
+      fetch('/api/public/homepage-config')
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          productName = (data.site && data.site.product_name) || '';
+          siteTitle = (data.site && data.site.title) || '好伙伴';
+          applyBranding();
+          applyTexts(data.texts || {});
+          applyImages(data.images || {});
+          if (data.docs_enabled) {
+            var docsLink = document.getElementById('nav-docs-link');
+            if (docsLink) docsLink.removeAttribute('hidden');
+          }
+        })
+        .catch(function () {
+          siteTitle = '好伙伴';
+          applyBranding();
+        });
+
+      function applyBranding() {
+        var displayName = productName || siteTitle;
+        document.title = displayName;
+        // 英雄区主标题以 HTML / 官网设置文案为准，不用站点简称覆盖
+      }
+
+      function setHref(ids, url) {
+        ids.forEach(function (id) {
+          var el = document.getElementById(id);
+          if (!el) return;
+          el.href = url || '#download';
+        });
+      }
+
+      function applyTexts(texts) {
+        if (texts.homepage_page_title) document.title = texts.homepage_page_title;
+        // 英雄区标题/说明/副注以 HTML 为准，避免接口返回后整段换字闪一下
+        setHref(['dl-win', 'dl-win-2'], texts.homepage_download_windows);
+        setHref(['dl-mac', 'dl-mac-2'], texts.homepage_download_mac);
+        setHref(['dl-mac-arm', 'dl-mac-arm-2'], texts.homepage_download_mac_arm || texts.homepage_download_mac);
+        function showMeta(id, val) {
+          var el = document.getElementById(id);
+          if (!el) return;
+          if (val) { el.textContent = val; el.hidden = false; }
+        }
+        showMeta('footer-company', texts.homepage_footer_company);
+        showMeta('footer-contact', texts.homepage_footer_contact);
+        if (texts.homepage_footer_beian) {
+          var beian = document.getElementById('footer-beian');
+          beian.textContent = texts.homepage_footer_beian;
+          beian.hidden = false;
+        }
+      }
+
+      function sameAsset(a, b) {
+        if (!a || !b) return false;
+        try {
+          var ua = new URL(a, location.href);
+          var ub = new URL(b, location.href);
+          return ua.pathname === ub.pathname && ua.search === ub.search;
+        } catch (e) {
+          return a === b;
+        }
+      }
+
+      function applyImages(images) {
+        var defaultHero = '/home-workspace/assets/hero.png';
+        var heroUrl = images.hero_main || images.hero || images.screenshot_1 || defaultHero;
+        var logoUrl = images.nav_logo || images.logo || defaultLogo;
+        var img = document.getElementById('hero-image');
+        var fallback = document.getElementById('hero-fallback');
+        img.onerror = function () {
+          img.hidden = true;
+          fallback.hidden = false;
+        };
+        if (!sameAsset(img.getAttribute('src'), heroUrl)) {
+          var probe = new Image();
+          probe.onload = function () {
+            img.src = heroUrl;
+            img.hidden = false;
+            fallback.hidden = true;
+          };
+          probe.onerror = function () {
+            img.hidden = true;
+            fallback.hidden = false;
+          };
+          probe.src = heroUrl;
+        }
+        var logo = document.getElementById('nav-logo');
+        if (logo && !sameAsset(logo.getAttribute('src'), logoUrl)) logo.src = logoUrl;
+      }
+    })();
+  </script>
+</body>
+</html>

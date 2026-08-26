@@ -1,0 +1,20 @@
+[
+  { "id": "rocket", "name": "火箭", "keywords": "启动 发射 增长 提速 上线 launch startup growth boost", "file": "rocket.svg" },
+  { "id": "chart-bar", "name": "柱状图", "keywords": "数据 柱状 增长 统计 分析 data bar chart analytics statistics", "file": "chart-bar.svg" },
+  { "id": "chart-line", "name": "折线图", "keywords": "趋势 折线 增长 走势 trend line chart growth", "file": "chart-line.svg" },
+  { "id": "target", "name": "目标", "keywords": "目标 精准 聚焦 命中 goal target focus aim", "file": "target.svg" },
+  { "id": "lightbulb", "name": "灯泡", "keywords": "创意 想法 灵感 创新 idea innovation insight inspiration", "file": "lightbulb.svg" },
+  { "id": "gear", "name": "齿轮", "keywords": "设置 流程 系统 配置 引擎 settings process system config engine", "file": "gear.svg" },
+  { "id": "users", "name": "团队", "keywords": "团队 用户 协作 人群 客户 team users collaboration people customer", "file": "users.svg" },
+  { "id": "shield", "name": "盾牌", "keywords": "安全 防护 可靠 隐私 security protection safety privacy", "file": "shield.svg" },
+  { "id": "check", "name": "对勾", "keywords": "完成 对勾 成功 通过 已办 done check success complete approved", "file": "check.svg" },
+  { "id": "clock", "name": "时钟", "keywords": "时间 效率 速度 准时 time efficiency speed schedule", "file": "clock.svg" },
+  { "id": "globe", "name": "地球", "keywords": "全球 网络 国际 世界 global network world international", "file": "globe.svg" },
+  { "id": "document", "name": "文档", "keywords": "文档 报告 资料 文件 合同 document report file paper", "file": "document.svg" },
+  { "id": "coins", "name": "金币", "keywords": "收益 成本 财务 营收 money revenue cost finance profit", "file": "coins.svg" },
+  { "id": "cloud", "name": "云", "keywords": "云 存储 服务 部署 cloud storage service deploy", "file": "cloud.svg" },
+  { "id": "warning", "name": "警告", "keywords": "风险 警告 注意 隐患 risk warning caution alert", "file": "warning.svg" },
+  { "id": "search", "name": "搜索", "keywords": "搜索 分析 发现 调研 search analyze discover research", "file": "search.svg" },
+  { "id": "layers", "name": "分层", "keywords": "架构 分层 结构 堆叠 architecture layers structure stack", "file": "layers.svg" },
+  { "id": "link", "name": "链接", "keywords": "连接 集成 关联 对接 link integration connect api", "file": "link.svg" }
+]

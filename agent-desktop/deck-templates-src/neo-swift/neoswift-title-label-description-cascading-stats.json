@@ -1,0 +1,28 @@
+{
+  "id": "neoswift-title-label-description-cascading-stats",
+  "name": "标题标签描述阶梯统计",
+  "category": "neo-swift",
+  "description": "左侧粗体标题、标签与描述段落，右侧三张统计卡片。适合在叙事文本旁呈现关键指标、成果或亮点。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 17 },
+    "label": { "type": "text", "label": "分类标签", "maxChars": 5 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 205 },
+    "stats": { "type": "stat-list", "label": "统计卡片(数值/说明)", "required": true, "maxItems": 3, "statValueMaxChars": 4, "statLabelMaxChars": 45 }
+  },
+  "defaultData": {
+    "title": "执行摘要",
+    "label": "线索",
+    "description": "聚焦金融服务、医疗健康与科技行业中员工数 500 人以上的企业。通过基于客户的营销与内容驱动策略，力争达成 350 万元新增销售线索，并将获客成本控制在 150 元以内。",
+    "stats": [
+      { "value": "10K", "label": "覆盖多行业的活跃用户" },
+      { "value": "90%", "label": "营收同比增长" },
+      { "value": "98%", "label": "留存率，平均评分 4.8/5" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 110, "w": 480 }, "size": 42 },
+    { "kind": "kicker", "field": "label", "pos": { "x": 80, "y": 200, "w": 480 }, "size": 16 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 240, "w": 460 }, "size": 16, "merge": true },
+    { "kind": "bulletCards", "field": "stats", "pos": { "x": 620, "y": 110, "w": 580, "h": 420 }, "titleSize": 24, "descSize": 15, "cols": 1 }
+  ]
+}

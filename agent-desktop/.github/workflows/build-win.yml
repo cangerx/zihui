@@ -1,0 +1,291 @@
+name: Cloud Build (Windows)
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_id:
+        description: 'Build UUID issued by agent-build'
+        required: true
+        type: string
+      app_name:
+        description: 'Display name of the white-labeled app'
+        required: true
+        type: string
+      domain:
+        description: 'Tenant domain (with scheme, e.g. https://a.com)'
+        required: true
+        type: string
+      api_domain:
+        description: 'API domain for the desktop runtime (with scheme)'
+        required: true
+        type: string
+      icon_path:
+        description: 'Repo-relative path to the icon PNG (pre-uploaded by agent-build)'
+        required: true
+        type: string
+      icon_url:
+        description: 'Cloud-hosted icon URL; inject falls back to it if the committed icon is missing'
+        required: false
+        type: string
+      callback_url:
+        description: 'agent-build callback endpoint'
+        required: true
+        type: string
+      callback_token:
+        description: 'One-time bearer token for callback'
+        required: true
+        type: string
+      app_id:
+        description: 'Optional explicit Electron appId'
+        required: false
+        type: string
+      update_url:
+        description: 'Optional explicit electron-updater base URL'
+        required: false
+        type: string
+      app_version:
+        description: 'Optional explicit application version'
+        required: false
+        type: string
+      build_mode:
+        description: 'Build mode: normal or oem'
+        required: false
+        type: string
+      oem_project_key:
+        description: 'Optional OEM project key'
+        required: false
+        type: string
+      build_options:
+        description: 'Optional JSON build options'
+        required: false
+        type: string
+
+permissions:
+  # softprops/action-gh-release 创建 release 需要 contents:write；
+  # 默认 GITHUB_TOKEN 在 2023+ 创建的 repo 是 read-only，必须显式声明。
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      # Electron 缓存路径：写到 runner.temp（GHA runner 的临时目录），不在 github.workspace 内。
+      # 关键原因：electron-builder 默认 files 规则会把 workspace 内未被 ! 排除的内容打进 app.asar，
+      # 之前用 ${{ github.workspace }}/.cache/electron 时，~110MB 的 electron prebuilt zip
+      # 被泄漏到 app.asar 里。改到 runner.temp 后从根因杜绝（builder 看不到这个路径）。
+      #
+      # 用 step 写 $GITHUB_ENV 而不是 job-level env: 是因为 GHA 的 ${{ runner.temp }} 在
+      # job-level env 评估阶段尚未可用（runner 信息在 job 调度时才确定），那么写 lint 报错。
+      # $RUNNER_TEMP 是 runner 启动时注入的 shell 环境变量，shell 内可直接使用。
+      - name: Configure Electron cache paths (out of workspace)
+        shell: bash
+        run: |
+          echo "ELECTRON_CACHE=$RUNNER_TEMP/electron-cache" >> "$GITHUB_ENV"
+          echo "ELECTRON_BUILDER_CACHE=$RUNNER_TEMP/electron-builder-cache" >> "$GITHUB_ENV"
+
+      - name: Cache Electron binaries
+        uses: actions/cache@v5
+        with:
+          path: |
+            ${{ runner.temp }}/electron-cache
+            ${{ runner.temp }}/electron-builder-cache
+          key: ${{ runner.os }}-electron-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-electron-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Inject build parameters
+        run: node scripts/inject-build-params.js
+        env:
+          BUILD_ID: ${{ inputs.build_id }}
+          APP_NAME: ${{ inputs.app_name }}
+          DOMAIN: ${{ inputs.domain }}
+          API_DOMAIN: ${{ inputs.api_domain }}
+          ICON_LOCAL_PATH: ${{ inputs.icon_path }}
+          ICON_URL: ${{ inputs.icon_url }}
+          PLATFORM: win
+          APP_ID: ${{ inputs.app_id }}
+          UPDATE_URL: ${{ inputs.update_url }}
+          APP_VERSION: ${{ inputs.app_version }}
+          BUILD_MODE: ${{ inputs.build_mode }}
+          OEM_PROJECT_KEY: ${{ inputs.oem_project_key }}
+          BUILD_OPTIONS: ${{ inputs.build_options }}
+
+      - name: Build & Package
+        run: npm run dist
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      # 包体积预算自检：超过阈值不阻塞流程，但通过 ::warning:: 上 GHA Annotation
+      # 让审包人在 Run summary 里第一眼看到，并自动 dump app.asar top 文件帮助定位泄漏。
+      # 阈值 110MB 来自当前 v0.6.2 排除 .cache 后的预期上限（约 75-85MB），留 ~30MB buffer。
+      - name: Validate installer size budget
+        shell: bash
+        working-directory: ./dist
+        run: |
+          set -uo pipefail
+          SIZE_BUDGET_MB=110
+          EXE=$(ls *.exe 2>/dev/null | head -n1 || true)
+          if [ -z "$EXE" ]; then
+            echo "::warning::No .exe found in dist/"
+            exit 0
+          fi
+          SIZE_BYTES=$(stat -c%s "$EXE" 2>/dev/null || stat -f%z "$EXE")
+          SIZE_MB=$(( SIZE_BYTES / 1024 / 1024 ))
+          echo "Installer: $EXE = ${SIZE_MB} MB (budget ${SIZE_BUDGET_MB} MB)"
+          if [ "$SIZE_MB" -gt "$SIZE_BUDGET_MB" ]; then
+            echo "::warning::Installer ${EXE} is ${SIZE_MB}MB, exceeds budget ${SIZE_BUDGET_MB}MB. Inspect app.asar before release."
+            ASAR=$(find . -path '*win-unpacked/resources/app.asar' 2>/dev/null | head -n1 || true)
+            if [ -n "$ASAR" ]; then
+              echo "=== Top 200 entries inside app.asar (size desc) ==="
+              npx --yes @electron/asar list "$ASAR" 2>/dev/null | head -200 || true
+            fi
+          fi
+
+      - name: Stage artifacts and compute metadata
+        id: files
+        shell: bash
+        working-directory: ./dist
+        run: |
+          PRIMARY_EXT=".exe"
+          mkdir -p ../release-upload
+          files_json="["
+          first=true
+          for f in *; do
+            [ -f "$f" ] || continue
+            role=""
+            lower=$(echo "$f" | tr '[:upper:]' '[:lower:]')
+            case "$lower" in
+              *"$PRIMARY_EXT") role="primary" ;;
+              *.blockmap)      role="blockmap" ;;
+              latest*.yml)     role="metadata" ;;
+              *) continue ;;
+            esac
+            cp "$f" ../release-upload/
+            size=$(stat -c%s "$f" 2>/dev/null || stat -f%z "$f")
+            sha=$(sha256sum "$f" 2>/dev/null | awk '{print $1}' || shasum -a 256 "$f" | awk '{print $1}')
+            [ "$first" = true ] && first=false || files_json="$files_json,"
+            files_json="$files_json{\"filename\":\"$f\",\"size\":$size,\"sha256\":\"$sha\",\"role\":\"$role\"}"
+          done
+          files_json="$files_json]"
+          echo "files=$files_json" >> "$GITHUB_OUTPUT"
+          echo "Generated metadata: $files_json"
+          echo "--- Staged files in ./release-upload ---"
+          ls -la ../release-upload/
+
+      - name: Upload artifacts to GitHub Release
+        id: release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: build-${{ inputs.build_id }}
+          name: "Build ${{ inputs.app_name }} (${{ inputs.build_id }}) [win]"
+          prerelease: true
+          make_latest: 'false'
+          target_commitish: ${{ github.sha }}
+          files: release-upload/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enrich file metadata with GitHub Release asset URLs
+        id: enrich_files
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUILD_ID: ${{ inputs.build_id }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          assets=$(gh release view "build-${BUILD_ID}" --repo "$REPO" --json assets --jq '.assets')
+
+          files='${{ steps.files.outputs.files }}'
+          # 注意：gh CLI `--json assets` 里 .id 是 GraphQL node_id 字符串（如 "RA_kw..."），
+          # 不是 REST API 的数字 id。从 apiUrl 末尾正则提取数字 id 才是 REST 通用形式。
+          # 例：https://api.github.com/.../releases/assets/416817002 → 416817002
+          merged=$(jq -nc \
+            --argjson files "$files" \
+            --argjson assets "$assets" \
+            '[ $files[] as $f | ($assets[] | select(.name == $f.filename)) as $a |
+               $f + {
+                 asset_id: ($a.apiUrl | capture("/assets/(?<id>[0-9]+)$") | .id | tonumber),
+                 asset_url: $a.apiUrl
+               } ]')
+
+          files_count=$(jq 'length' <<< "$files")
+          merged_count=$(jq 'length' <<< "$merged")
+          if [ "$files_count" -ne "$merged_count" ]; then
+            echo "ERROR: file/asset count mismatch (files=$files_count, merged=$merged_count)"
+            echo "files=$files"
+            echo "assets=$assets"
+            exit 1
+          fi
+
+          echo "files=$merged" >> "$GITHUB_OUTPUT"
+          echo "Enriched files: $merged"
+
+      - name: Notify agent-build (success)
+        if: success()
+        shell: bash
+        run: |
+          curl -fsS -X POST "${{ inputs.callback_url }}" \
+            -H "Authorization: Bearer ${{ inputs.callback_token }}" \
+            -H "Content-Type: application/json" \
+            -d "$(cat <<EOF
+          {
+            "build_id": "${{ inputs.build_id }}",
+            "run_id": ${{ github.run_id }},
+            "status": "success",
+            "artifact_storage": "github_release",
+            "release_tag": "build-${{ inputs.build_id }}",
+            "files": ${{ steps.enrich_files.outputs.files }}
+          }
+          EOF
+          )"
+
+      - name: Notify agent-build (failure)
+        if: failure()
+        shell: bash
+        run: |
+          curl -fsS -X POST "${{ inputs.callback_url }}" \
+            -H "Authorization: Bearer ${{ inputs.callback_token }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"build_id\":\"${{ inputs.build_id }}\",\"run_id\":${{ github.run_id }},\"status\":\"failed\",\"error\":\"github_job_failed\"}"
+
+      - name: Cleanup partial GitHub Release on failure
+        # GHA 失败时也可能已创建部分 release（如 softprops upload 中途 abort）。
+        # 这里无条件尝试删一次，release 不存在则全部 || true 吞下，避免 GitHub 存储泄漏。
+        if: failure()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUILD_ID: ${{ inputs.build_id }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh release delete "build-${BUILD_ID}" --repo "$REPO" --yes --cleanup-tag 2>/dev/null || true
+
+      - name: Cleanup temp icon from repo
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ICON_SHA=$(gh api repos/${{ github.repository }}/contents/${{ inputs.icon_path }} --jq '.sha' 2>/dev/null || true)
+          if [ -n "$ICON_SHA" ]; then
+            gh api --method DELETE repos/${{ github.repository }}/contents/${{ inputs.icon_path }} \
+              -f message="chore: cleanup build icon ${{ inputs.build_id }}" \
+              -f sha="$ICON_SHA" \
+              -f branch="${{ github.ref_name }}" || true
+          fi

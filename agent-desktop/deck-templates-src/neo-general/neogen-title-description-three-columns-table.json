@@ -1,0 +1,26 @@
+{
+  "id": "neogen-title-description-three-columns-table",
+  "name": "标题描述配三栏表格",
+  "category": "neo-general",
+  "description": "顶部标题与描述，下方三栏表格，每栏含彩色表头与纵向要点。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 50 },
+    "description": { "type": "multiline", "label": "描述正文", "maxChars": 400 },
+    "sections": { "type": "stat-list", "label": "栏目(表头/要点)", "required": true, "maxItems": 3, "statValueMaxChars": 15, "statLabelMaxChars": 120 }
+  },
+  "defaultData": {
+    "title": "市场进入策略",
+    "description": "聚焦金融服务、医疗健康与科技行业中员工规模 500 人以上的企业，通过基于账户的营销与内容驱动策略实现增长目标。",
+    "sections": [
+      { "value": "付费渠道", "label": "领英广告：ABM 再营销 · 谷歌广告：意向捕获 · 展示广告：品牌认知" },
+      { "value": "自然渠道", "label": "SEO：思想领导力 · 内容：用户教育 · 社交：社区运营" },
+      { "value": "合作伙伴", "label": "活动：人脉拓展 · 联合营销：覆盖延伸 · 转介绍：建立信任" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 520 }, "size": 40 },
+    { "kind": "bar", "pos": { "x": 80, "y": 152, "w": 116, "h": 6 } },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 660, "y": 90, "w": 540 }, "size": 16 },
+    { "kind": "bulletCards", "field": "sections", "pos": { "x": 80, "y": 280, "w": 1120, "h": 340 }, "titleSize": 22, "descSize": 16, "cols": 3 }
+  ]
+}

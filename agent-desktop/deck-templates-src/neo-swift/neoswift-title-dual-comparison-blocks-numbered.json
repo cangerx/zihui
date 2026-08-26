@@ -1,0 +1,22 @@
+{
+  "id": "neoswift-title-dual-comparison-blocks-numbered",
+  "name": "标题双栏编号对比",
+  "category": "neo-swift",
+  "description": "居中标题，下方两个并排的编号对比卡片，每块含标题与描述。适合问题/方案、对比前后或两段式叙事。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 20 },
+    "comparisonBlocks": { "type": "stat-list", "label": "对比块(标题/描述)", "required": true, "maxItems": 2, "statValueMaxChars": 20, "statLabelMaxChars": 200 }
+  },
+  "defaultData": {
+    "title": "文本对比",
+    "comparisonBlocks": [
+      { "value": "问题", "label": "演示文稿是一种用于讲解、汇报与展示的沟通工具，通常面向特定受众进行呈现，但缺乏结构时易让信息分散。" },
+      { "value": "方案", "label": "通过清晰的结构与重点编排，让同样的内容更具条理与说服力，帮助受众快速抓住核心要点。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 42 },
+    { "kind": "bar", "pos": { "x": 80, "y": 168, "w": 64, "h": 6 } },
+    { "kind": "bulletCards", "field": "comparisonBlocks", "pos": { "x": 80, "y": 224, "w": 1120, "h": 380 }, "titleSize": 26, "descSize": 17, "cols": 2 }
+  ]
+}

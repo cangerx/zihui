@@ -1,0 +1,31 @@
+{
+  "id": "report-closing-contact-slide",
+  "name": "结尾联系页",
+  "category": "Report",
+  "description": "报告结尾页：大标题、结语、联系人信息，以及结构化的联系或跟进事项。",
+  "schema": {
+    "title": { "type": "text", "label": "结尾标题", "required": true, "maxChars": 28 },
+    "message": { "type": "multiline", "label": "结语", "required": true, "maxChars": 180 },
+    "contactName": { "type": "text", "label": "联系人/团队", "required": true, "maxChars": 42 },
+    "contactRole": { "type": "text", "label": "角色/团队说明", "required": true, "maxChars": 54 },
+    "contactItems": { "type": "stat-list", "label": "联系/跟进(标签/值)", "required": true, "maxItems": 5, "statValueMaxChars": 16, "statLabelMaxChars": 64 }
+  },
+  "defaultData": {
+    "title": "如有疑问？",
+    "message": "感谢您阅读本报告。如需提问、获取更新或协调下一步，请使用以下联系方式与跟进事项。",
+    "contactName": "报告团队",
+    "contactRole": "分析与报告负责人",
+    "contactItems": [
+      { "value": "邮箱", "label": "report@example.com" },
+      { "value": "资源", "label": "www.example.com/report" },
+      { "value": "跟进", "label": "下一复核周期" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 150, "w": 660 }, "size": 80 },
+    { "kind": "paragraph", "field": "message", "pos": { "x": 80, "y": 290, "w": 660 }, "size": 26, "color": "muted", "merge": true },
+    { "kind": "kicker", "field": "contactRole", "pos": { "x": 800, "y": 150, "w": 400 }, "size": 15 },
+    { "kind": "heading", "field": "contactName", "level": 2, "pos": { "x": 800, "y": 186, "w": 400 }, "size": 34 },
+    { "kind": "bulletCards", "field": "contactItems", "pos": { "x": 800, "y": 280, "w": 400, "h": 340 }, "titleSize": 17, "descSize": 16, "cols": 1, "rowH": 88 }
+  ]
+}

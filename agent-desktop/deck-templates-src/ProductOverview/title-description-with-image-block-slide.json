@@ -1,0 +1,32 @@
+{
+  "id": "title-description-with-image-block-slide",
+  "name": "标题描述配图与卡片",
+  "category": "ProductOverview",
+  "description": "左侧标题、小标题段落与配图 + 右侧 2x2 服务卡片(标题/简述)。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 16 },
+    "taglineLabel": { "type": "text", "label": "段落小标题", "maxChars": 16 },
+    "taglineBody": { "type": "multiline", "label": "段落正文", "maxChars": 30 },
+    "featureImage": { "type": "image", "label": "左下配图" },
+    "services": { "type": "stat-list", "label": "服务卡片(标题/简述)", "required": true, "maxItems": 4, "statValueMaxChars": 14, "statLabelMaxChars": 25 }
+  },
+  "defaultData": {
+    "title": "我们的服务",
+    "taglineLabel": "核心服务",
+    "taglineBody": "覆盖全流程的专业支持。",
+    "featureImage": "",
+    "services": [
+      { "value": "方案咨询", "label": "深入理解业务，定制落地路径。" },
+      { "value": "系统集成", "label": "无缝对接现有工具与数据。" },
+      { "value": "数据分析", "label": "实时洞察，驱动业务决策。" },
+      { "value": "持续运维", "label": "全天候保障，稳定可靠。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 80, "w": 540 }, "size": 56 },
+    { "kind": "kicker", "field": "taglineLabel", "pos": { "x": 80, "y": 184, "w": 540 }, "size": 16 },
+    { "kind": "paragraph", "field": "taglineBody", "pos": { "x": 80, "y": 218, "w": 540 }, "size": 18 },
+    { "kind": "image", "field": "featureImage", "pos": { "x": 80, "y": 300, "w": 540, "h": 300 } },
+    { "kind": "bulletCards", "field": "services", "pos": { "x": 660, "y": 100, "w": 540, "h": 500 }, "titleSize": 20, "descSize": 16, "cols": 2 }
+  ]
+}

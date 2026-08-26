@@ -1,0 +1,22 @@
+{
+  "id": "quote-slide",
+  "name": "引言金句",
+  "category": "general",
+  "description": "强调底色上的眉题 + 大字引用 + 署名，用于金句/愿景页。",
+  "background": "accent",
+  "schema": {
+    "kicker": { "type": "text", "label": "眉题", "maxChars": 60 },
+    "quote": { "type": "text", "label": "引用金句", "required": true, "maxChars": 200 },
+    "author": { "type": "text", "label": "署名", "maxChars": 50 }
+  },
+  "defaultData": {
+    "kicker": "智慧之言",
+    "quote": "成功不是终点，失败也并非末日，重要的是继续前行的勇气。",
+    "author": "温斯顿·丘吉尔"
+  },
+  "blocks": [
+    { "kind": "kicker", "field": "kicker", "pos": { "x": 160, "y": 130, "w": 960 }, "size": 16, "color": "on-accent" },
+    { "kind": "quote", "field": "quote", "pos": { "x": 160, "y": 230, "w": 960 }, "size": 42 },
+    { "kind": "paragraph", "field": "author", "pos": { "x": 160, "y": 488, "w": 960 }, "size": 22, "color": "on-accent" }
+  ]
+}

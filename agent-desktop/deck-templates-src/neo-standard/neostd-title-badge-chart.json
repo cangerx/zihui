@@ -1,0 +1,27 @@
+{
+  "id": "neostd-title-badge-chart",
+  "name": "标题徽标加图表",
+  "category": "neo-standard",
+  "description": "居中标题、类别徽标与带辅助标签的图表区(图表以配图承载，可放数据图)。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 10 },
+    "badgeText": { "type": "text", "label": "徽标文字", "required": true, "maxChars": 12 },
+    "topDescription": { "type": "text", "label": "右上标签", "maxChars": 20 },
+    "bottomDescription": { "type": "text", "label": "右下标签", "maxChars": 25 },
+    "chart": { "type": "image", "label": "图表/数据图" }
+  },
+  "defaultData": {
+    "title": "柱状图",
+    "badgeText": "活动 A",
+    "topDescription": "头部活动",
+    "bottomDescription": "互动率",
+    "chart": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 70, "w": 1120 }, "size": 44 },
+    { "kind": "kicker", "field": "badgeText", "pos": { "x": 110, "y": 170, "w": 400 }, "size": 22, "color": "accent" },
+    { "kind": "paragraph", "field": "topDescription", "pos": { "x": 760, "y": 174, "w": 410 }, "size": 18, "color": "muted" },
+    { "kind": "image", "field": "chart", "pos": { "x": 110, "y": 220, "w": 1060, "h": 400 } },
+    { "kind": "paragraph", "field": "bottomDescription", "pos": { "x": 760, "y": 636, "w": 410 }, "size": 18, "color": "muted" }
+  ]
+}

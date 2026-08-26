@@ -1,0 +1,25 @@
+{
+  "id": "header-counter-two-column-image-text-slide",
+  "name": "开篇双栏图文",
+  "category": "standard",
+  "description": "左侧配图、右侧眉题与大标题加正文段落的开篇版式。",
+  "schema": {
+    "counter": { "type": "text", "label": "页码标记", "maxChars": 3 },
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "paragraph": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 200 },
+    "image": { "type": "image", "label": "左侧配图" }
+  },
+  "defaultData": {
+    "counter": "1",
+    "title": "项目介绍与愿景",
+    "paragraph": "我们致力于用前沿技术帮助企业实现数字化转型，通过高效的产品与务实的落地方案，持续为客户创造长期价值。",
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "image", "field": "image", "pos": { "x": 0, "y": 0, "w": 640, "h": 720 } },
+    { "kind": "kicker", "field": "counter", "pos": { "x": 700, "y": 96, "w": 500 }, "size": 16 },
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 700, "y": 150, "w": 500 }, "size": 48 },
+    { "kind": "bar", "pos": { "x": 700, "y": 300, "w": 64, "h": 6 } },
+    { "kind": "paragraph", "field": "paragraph", "pos": { "x": 700, "y": 340, "w": 500 }, "size": 18 }
+  ]
+}

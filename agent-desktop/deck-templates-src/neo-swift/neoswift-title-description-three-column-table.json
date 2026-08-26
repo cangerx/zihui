@@ -1,0 +1,25 @@
+{
+  "id": "neoswift-title-description-three-column-table",
+  "name": "标题描述三列表格",
+  "category": "neo-swift",
+  "description": "左侧大标题、右侧描述，下方为带表头的三列对比卡片。适合结构化对比、问题-方案矩阵或特性拆解。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 12 },
+    "description": { "type": "multiline", "label": "概述描述", "required": true, "maxChars": 180 },
+    "rows": { "type": "stat-list", "label": "对比行(主体/说明)", "required": true, "maxItems": 3, "statValueMaxChars": 60, "statLabelMaxChars": 60 }
+  },
+  "defaultData": {
+    "title": "对照表",
+    "description": "聚焦金融服务、医疗健康与科技行业中员工数 500 人以上的企业，通过基于客户的营销与内容驱动策略达成新增销售线索目标。",
+    "rows": [
+      { "value": "问题：客户响应延迟", "label": "方案：自助激励与参考资料库支撑快速跟进。" },
+      { "value": "问题：自我驱动不足", "label": "方案：书籍与激励视频结合的内在动力建设。" },
+      { "value": "问题：流程不清晰", "label": "方案：标准化步骤与校验机制保障一致交付。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 400 }, "size": 42 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 520, "y": 86, "w": 680 }, "size": 16, "merge": true },
+    { "kind": "bulletCards", "field": "rows", "pos": { "x": 80, "y": 220, "w": 1120, "h": 400 }, "titleSize": 20, "descSize": 15, "cols": 1 }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "neomod-title-description-table",
+  "name": "标题描述对照表",
+  "category": "neo-modern",
+  "description": "顶部为标题与描述，下方为三栏对照内容(问题/描述/方案)。表头提供视觉层次，行卡片呈现现代感。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 12 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 250 },
+    "rows": { "type": "stat-list", "label": "对照行(主体/说明)", "required": true, "maxItems": 3, "statValueMaxChars": 60, "statLabelMaxChars": 120 }
+  },
+  "defaultData": {
+    "title": "对照表",
+    "description": "聚焦金融服务、医疗健康与科技行业中员工规模 500 人以上的企业，通过基于客户的营销与内容驱动策略，目标实现 350 万元新增管道。",
+    "rows": [
+      { "value": "自我驱动", "label": "问题：依赖外部督促 · 方案：参考书籍与激励视频建立内驱力。" },
+      { "value": "目标管理", "label": "问题：目标不清晰 · 方案：拆解可量化的阶段目标并持续复盘。" },
+      { "value": "结果一致", "label": "问题：产出波动大 · 方案：标准化流程确保结果稳定可复现。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 88, "w": 360 }, "size": 44 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 540, "y": 96, "w": 660 }, "size": 16, "color": "muted", "merge": true },
+    { "kind": "bulletCards", "field": "rows", "pos": { "x": 80, "y": 244, "w": 1120, "h": 380 }, "titleSize": 20, "descSize": 16, "cols": 1, "rowH": 108 }
+  ]
+}

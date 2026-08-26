@@ -1,0 +1,29 @@
+{
+  "id": "report-section-index-slide",
+  "name": "章节索引",
+  "category": "Report",
+  "description": "分栏版式：左侧为大标题区，右侧为分栏排列的报告章节编号列表。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 44 },
+    "subtitle": { "type": "multiline", "label": "副标题", "required": true, "maxChars": 140 },
+    "sections": { "type": "stat-list", "label": "章节(标题/简述)", "required": true, "maxItems": 10, "statValueMaxChars": 36, "statLabelMaxChars": 90 }
+  },
+  "defaultData": {
+    "title": "报告章节",
+    "subtitle": "本报告主要章节的结构化导览。",
+    "sections": [
+      { "value": "概述", "label": "背景、范围与报告目标。" },
+      { "value": "方法", "label": "来源、假设与采集方式。" },
+      { "value": "发现", "label": "分析中观察到的主要信号。" },
+      { "value": "建议", "label": "基于证据提出的行动建议。" },
+      { "value": "下一步", "label": "负责人、时机与跟进节点。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "kicker", "field": "title", "pos": { "x": 80, "y": 96, "w": 360 }, "size": 16 },
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 140, "w": 360 }, "size": 58 },
+    { "kind": "paragraph", "field": "subtitle", "pos": { "x": 80, "y": 320, "w": 360 }, "size": 20, "color": "muted" },
+    { "kind": "bar", "pos": { "x": 80, "y": 460, "w": 160, "h": 4 } },
+    { "kind": "bulletCards", "field": "sections", "pos": { "x": 500, "y": 96, "w": 700, "h": 528 }, "titleSize": 22, "descSize": 15, "cols": 2 }
+  ]
+}

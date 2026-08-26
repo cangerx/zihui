@@ -1,0 +1,22 @@
+{
+  "id": "overlapping-circle-cards",
+  "name": "编号圆形卡片",
+  "category": "pitch-deck",
+  "description": "顶部标题 + 一排编号要点卡片(编号、标题与描述)。适合横向流程或要点串联。",
+  "schema": {
+    "title": { "type": "text", "label": "顶部标题", "required": true, "maxChars": 12 },
+    "items": { "type": "stat-list", "label": "卡片(标题/描述)", "required": true, "maxItems": 5, "statValueMaxChars": 16, "statLabelMaxChars": 132 }
+  },
+  "defaultData": {
+    "title": "要点",
+    "items": [
+      { "value": "环节一", "label": "对该环节的简要说明，阐明其在整体流程中的作用与关键产出。" },
+      { "value": "环节二", "label": "对该环节的简要说明，阐明其在整体流程中的作用与关键产出。" },
+      { "value": "环节三", "label": "对该环节的简要说明，阐明其在整体流程中的作用与关键产出。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 72, "w": 1120 }, "size": 60 },
+    { "kind": "bulletCards", "field": "items", "pos": { "x": 80, "y": 210, "w": 1120, "h": 420 }, "titleSize": 24, "descSize": 17, "cols": 3 }
+  ]
+}

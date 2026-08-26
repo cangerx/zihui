@@ -1,0 +1,22 @@
+{
+  "id": "neomod-title-dual-comparison-cards",
+  "name": "标题双卡对比",
+  "category": "neo-modern",
+  "description": "居中标题，下方两张等大卡片。每张含小标题、强调短线与详细说明。对称版式强调两者的均衡评估。",
+  "schema": {
+    "mainTitle": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "comparisons": { "type": "stat-list", "label": "对比项(小标题/说明)", "required": true, "maxItems": 2, "statValueMaxChars": 20, "statLabelMaxChars": 200 }
+  },
+  "defaultData": {
+    "mainTitle": "对比分析",
+    "comparisons": [
+      { "value": "问题", "label": "演示文稿是用于演讲、讲座、汇报等场景的沟通工具，通常面向现场观众进行展示，传递信息效率较低。" },
+      { "value": "方案", "label": "演示文稿是用于演讲、讲座、汇报等场景的沟通工具，借助结构化设计可显著提升信息传递的清晰度与说服力。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "mainTitle", "level": 1, "pos": { "x": 80, "y": 110, "w": 1120 }, "size": 44 },
+    { "kind": "bar", "pos": { "x": 608, "y": 196, "w": 64, "h": 6 } },
+    { "kind": "bulletCards", "field": "comparisons", "pos": { "x": 80, "y": 270, "w": 1120, "h": 360 }, "titleSize": 28, "descSize": 18, "cols": 2 }
+  ]
+}

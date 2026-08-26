@@ -1,0 +1,28 @@
+{
+  "id": "neostd-title-description-icon-list",
+  "name": "标题描述加图标列表",
+  "category": "neo-standard",
+  "description": "左侧标题与描述，右侧纵向排列的条目列表(小标题加说明)，适合流程、步骤或特性列表。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 250 },
+    "listItems": { "type": "stat-list", "label": "条目(小标题/说明)", "required": true, "maxItems": 5, "statValueMaxChars": 10, "statLabelMaxChars": 50 }
+  },
+  "defaultData": {
+    "title": "流程 / 工作流",
+    "description": "聚焦员工规模 500 人以上、处于金融服务、医疗健康与科技行业的企业，通过基于客户的精准营销与内容驱动策略推进增长。",
+    "listItems": [
+      { "value": "2021", "label": "简要说明此阶段要讨论的内容。" },
+      { "value": "2020", "label": "简要说明此阶段要讨论的内容。" },
+      { "value": "2019", "label": "简要说明此阶段要讨论的内容。" },
+      { "value": "2018", "label": "简要说明此阶段要讨论的内容。" },
+      { "value": "2017", "label": "简要说明此阶段要讨论的内容。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "bar", "pos": { "x": 80, "y": 150, "w": 116, "h": 3 } },
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 178, "w": 520 }, "size": 43 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 268, "w": 500 }, "size": 16, "merge": true },
+    { "kind": "bulletCards", "field": "listItems", "pos": { "x": 660, "y": 110, "w": 540, "h": 500 }, "titleSize": 21, "descSize": 15, "cols": 1 }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "id": "header-bullets-image-split-slide",
+  "name": "编号要点配图三栏",
+  "category": "standard",
+  "description": "左侧编号要点、中间配图、右侧标题与段落的三栏版式。",
+  "schema": {
+    "bullets": { "type": "stat-list", "label": "编号要点(标题/描述)", "required": true, "maxItems": 4, "statValueMaxChars": 36, "statLabelMaxChars": 100 },
+    "heading": { "type": "text", "label": "右侧标题", "required": true, "maxChars": 30 },
+    "paragraph": { "type": "multiline", "label": "右侧段落", "maxChars": 200 },
+    "image": { "type": "image", "label": "中间配图" }
+  },
+  "defaultData": {
+    "bullets": [
+      { "value": "战略执行", "label": "明确目标并高效落地，确保每一步稳健推进。" },
+      { "value": "打造团队", "label": "汇聚优秀人才，建立协同高效的组织能力。" },
+      { "value": "市场拓展", "label": "持续开拓新市场，扩大业务覆盖与影响力。" }
+    ],
+    "heading": "我们的历程",
+    "paragraph": "从初创到成长，我们始终坚持以客户为中心，不断打磨产品与服务，稳步迈向更高的目标。",
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "bulletCards", "field": "bullets", "pos": { "x": 80, "y": 90, "w": 360, "h": 540 }, "titleSize": 18, "descSize": 13, "cols": 1 },
+    { "kind": "image", "field": "image", "pos": { "x": 470, "y": 0, "w": 340, "h": 720 } },
+    { "kind": "heading", "field": "heading", "level": 1, "pos": { "x": 850, "y": 140, "w": 350 }, "size": 40 },
+    { "kind": "bar", "pos": { "x": 850, "y": 230, "w": 64, "h": 6 } },
+    { "kind": "paragraph", "field": "paragraph", "pos": { "x": 850, "y": 270, "w": 350 }, "size": 16 }
+  ]
+}

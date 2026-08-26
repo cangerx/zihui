@@ -1,0 +1,25 @@
+{
+  "id": "comparison-status-table-slide",
+  "name": "状态对比表",
+  "category": "ProductOverview",
+  "description": "标题 + 副标题 + 按行展示功能项及其对比结论的对照表(以卡片承载)。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 42 },
+    "subtitle": { "type": "multiline", "label": "副标题", "maxChars": 120 },
+    "rows": { "type": "stat-list", "label": "对比项(名称/结论)", "required": true, "maxItems": 3, "statValueMaxChars": 18, "statLabelMaxChars": 80 }
+  },
+  "defaultData": {
+    "title": "功能对比",
+    "subtitle": "从核心能力维度横向比较各方案，帮助快速识别最契合需求的选项。",
+    "rows": [
+      { "value": "实时数据同步", "label": "本方案全面支持，竞品仅部分覆盖。" },
+      { "value": "可扩展架构", "label": "支持弹性扩容，应对业务高速增长。" },
+      { "value": "一体化集成", "label": "无缝对接主流工具，免除二次开发。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 54 },
+    { "kind": "paragraph", "field": "subtitle", "pos": { "x": 80, "y": 168, "w": 900 }, "size": 20 },
+    { "kind": "bulletCards", "field": "rows", "pos": { "x": 80, "y": 256, "w": 1120, "h": 384 }, "titleSize": 22, "descSize": 17, "cols": 1 }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "neostd-title-description-bullet-list",
+  "name": "标题描述加要点列表",
+  "category": "neo-standard",
+  "description": "左侧标题与描述，右侧最多 5 条带小标题和说明的要点卡片，适合要点总结、特性亮点。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 300 },
+    "bullets": { "type": "stat-list", "label": "要点(小标题/说明)", "required": true, "maxItems": 5, "statValueMaxChars": 40, "statLabelMaxChars": 120 }
+  },
+  "defaultData": {
+    "title": "关键要点",
+    "description": "聚焦员工规模 500 人以上、处于金融服务、医疗健康与科技行业的企业，通过基于客户的精准营销与内容驱动策略，争取新增管线规模并控制获客成本。",
+    "bullets": [
+      { "value": "市场扩张", "label": "优先布局高增长垂直领域与需求旺盛的地理区域。" },
+      { "value": "客户留存", "label": "通过主动支持与定制化成功计划降低客户流失。" },
+      { "value": "产品创新", "label": "围绕高频客户诉求与使用数据持续打磨功能。" },
+      { "value": "运营提效", "label": "自动化重复流程，释放团队投入战略性工作。" },
+      { "value": "团队赋能", "label": "投入培训与工具，让团队规模化高效执行。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "bar", "pos": { "x": 80, "y": 150, "w": 116, "h": 3 } },
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 178, "w": 520 }, "size": 43 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 268, "w": 500 }, "size": 16, "merge": true },
+    { "kind": "bulletCards", "field": "bullets", "pos": { "x": 660, "y": 110, "w": 540, "h": 500 }, "titleSize": 21, "descSize": 15, "cols": 1 }
+  ]
+}

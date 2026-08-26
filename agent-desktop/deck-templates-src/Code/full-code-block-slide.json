@@ -1,0 +1,32 @@
+{
+  "id": "full-code-block-slide",
+  "name": "整页代码块",
+  "category": "Code",
+  "description": "标题 + 描述 + 占据主区的整页代码块（逐行列表承载）。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 40 },
+    "description": { "type": "multiline", "label": "描述", "required": true, "maxChars": 180 },
+    "fileName": { "type": "text", "label": "文件名", "maxChars": 42 },
+    "code": { "type": "list", "label": "代码(每行一项)", "required": true, "maxItems": 16, "itemMaxChars": 96 }
+  },
+  "defaultData": {
+    "title": "核心实现",
+    "description": "本页展示主要实现代码块，并按语法高亮规则进行格式化呈现。",
+    "fileName": "src/services/renderSlide.ts",
+    "code": [
+      "import { validateSchema } from '@/lib/validation';",
+      "import { renderTemplate } from '@/lib/render';",
+      "",
+      "export function renderSlide(data) {",
+      "  const cleaned = validateSchema(data);",
+      "  return renderTemplate(cleaned);",
+      "}"
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 60, "w": 1120 }, "size": 48 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 138, "w": 980 }, "size": 18, "color": "muted" },
+    { "kind": "kicker", "field": "fileName", "pos": { "x": 80, "y": 196, "w": 1120 }, "size": 13, "color": "accent" },
+    { "kind": "list", "field": "code", "pos": { "x": 80, "y": 228, "w": 1120 }, "itemSize": 16, "gap": 4, "color": "fg" }
+  ]
+}

@@ -1,0 +1,8 @@
+# sqlite-vec 扩展二进制文件（运维按需下载到本目录，不入版本库）
+vec0.dll
+vec0.so
+vec0.dylib
+
+# 但保留 README 和本文件，让目录在 git 里存在
+!README.md
+!.gitignore

@@ -1,0 +1,19 @@
+{
+  "id": "neoswift-title-centered-chart",
+  "name": "居中标题大图表",
+  "category": "neo-swift",
+  "description": "居中大标题搭配一张居中的大图表占位，适合展示分布数据、单一指标趋势或分类拆解。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 20 },
+    "chart": { "type": "image", "label": "图表/数据图" }
+  },
+  "defaultData": {
+    "title": "支出与回报",
+    "chart": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 44 },
+    { "kind": "bar", "pos": { "x": 80, "y": 168, "w": 64, "h": 6 } },
+    { "kind": "image", "field": "chart", "pos": { "x": 160, "y": 210, "w": 960, "h": 430 } }
+  ]
+}

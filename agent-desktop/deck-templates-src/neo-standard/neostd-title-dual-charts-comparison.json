@@ -1,0 +1,34 @@
+{
+  "id": "neostd-title-dual-charts-comparison",
+  "name": "标题加双图表对比",
+  "category": "neo-standard",
+  "description": "居中标题与左右并排的两个图表面板(图表以配图承载)，适合数据对比展示。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 40 },
+    "leftHeading": { "type": "text", "label": "左侧小标题", "required": true, "maxChars": 10 },
+    "leftChart": { "type": "image", "label": "左侧图表" },
+    "leftFooter": { "type": "text", "label": "左侧底部标签", "maxChars": 15 },
+    "rightHeading": { "type": "text", "label": "右侧小标题", "required": true, "maxChars": 10 },
+    "rightChart": { "type": "image", "label": "右侧图表" },
+    "rightFooter": { "type": "text", "label": "右侧底部标签", "maxChars": 15 }
+  },
+  "defaultData": {
+    "title": "竞争对比",
+    "leftHeading": "活动 A",
+    "leftChart": "",
+    "leftFooter": "互动率",
+    "rightHeading": "活动 B",
+    "rightChart": "",
+    "rightFooter": "互动率"
+  },
+  "blocks": [
+    { "kind": "bar", "pos": { "x": 582, "y": 70, "w": 116, "h": 3 } },
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 100, "w": 1120 }, "size": 40 },
+    { "kind": "kicker", "field": "leftHeading", "pos": { "x": 80, "y": 196, "w": 540 }, "size": 20, "color": "accent" },
+    { "kind": "image", "field": "leftChart", "pos": { "x": 80, "y": 240, "w": 540, "h": 360 } },
+    { "kind": "paragraph", "field": "leftFooter", "pos": { "x": 80, "y": 612, "w": 540 }, "size": 16, "color": "muted" },
+    { "kind": "kicker", "field": "rightHeading", "pos": { "x": 660, "y": 196, "w": 540 }, "size": 20, "color": "accent" },
+    { "kind": "image", "field": "rightChart", "pos": { "x": 660, "y": 240, "w": 540, "h": 360 } },
+    { "kind": "paragraph", "field": "rightFooter", "pos": { "x": 660, "y": 612, "w": 540 }, "size": 16, "color": "muted" }
+  ]
+}

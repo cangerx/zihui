@@ -1,0 +1,93 @@
+{
+  "id": "product-table-of-content-slide",
+  "name": "目录页",
+  "category": "ProductOverview",
+  "description": "左侧章节列表(标题/简述) + 右侧标题与描述段落的两栏目录版式。",
+  "schema": {
+    "title": {
+      "type": "text",
+      "label": "右侧标题",
+      "required": true,
+      "maxChars": 18
+    },
+    "description": {
+      "type": "multiline",
+      "label": "右侧描述",
+      "maxChars": 160
+    },
+    "sections": {
+      "type": "stat-list",
+      "label": "章节(标题/简述)",
+      "required": true,
+      "maxItems": 6,
+      "statValueMaxChars": 25,
+      "statLabelMaxChars": 60
+    }
+  },
+  "defaultData": {
+    "title": "目录",
+    "description": "本次演示将依次展开以下章节，带你完整了解产品的背景、能力与规划。",
+    "sections": [
+      {
+        "value": "市场背景与机会",
+        "label": "行业趋势与切入时机。"
+      },
+      {
+        "value": "产品与解决方案",
+        "label": "核心能力与价值主张。"
+      },
+      {
+        "value": "商业模式",
+        "label": "盈利路径与定价策略。"
+      },
+      {
+        "value": "团队介绍",
+        "label": "核心成员与专业背景。"
+      },
+      {
+        "value": "发展规划",
+        "label": "阶段目标与里程碑。"
+      },
+      {
+        "value": "合作展望",
+        "label": "下一步行动与邀约。"
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "kind": "heading",
+      "field": "title",
+      "level": 2,
+      "pos": {
+        "x": 660,
+        "y": 96,
+        "w": 540
+      },
+      "size": 56
+    },
+    {
+      "kind": "paragraph",
+      "field": "description",
+      "pos": {
+        "x": 660,
+        "y": 200,
+        "w": 540
+      },
+      "size": 20
+    },
+    {
+      "kind": "bulletCards",
+      "field": "sections",
+      "pos": {
+        "x": 80,
+        "y": 80,
+        "w": 500,
+        "h": 560
+      },
+      "titleSize": 18,
+      "descSize": 15,
+      "cols": 1
+    }
+  ]
+}

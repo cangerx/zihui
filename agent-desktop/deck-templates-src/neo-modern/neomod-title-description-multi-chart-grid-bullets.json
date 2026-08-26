@@ -1,0 +1,32 @@
+{
+  "id": "neomod-title-description-multi-chart-grid-bullets",
+  "name": "标题描述多图表网格加要点",
+  "category": "neo-modern",
+  "description": "新现代风看板：标题、描述、最多 6 条要点，以及 1 至 4 个自动排布的图表(以配图占位呈现图表区)。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 50 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 200 },
+    "bullets": { "type": "list", "label": "要点", "required": true, "maxItems": 6, "itemMaxChars": 80 },
+    "image": { "type": "image", "label": "图表区配图" }
+  },
+  "defaultData": {
+    "title": "数据分析看板",
+    "description": "全面概览多个数据维度下的关键指标与绩效表现，帮助快速洞察业务全貌并支撑决策。",
+    "bullets": [
+      "管道覆盖率超过目标值 3 倍。",
+      "获客成本回收周期短于 6 个月。",
+      "企业客户转化率环比提升。",
+      "增购收入持续驱动增长。",
+      "各客群留存率均高于 95%。",
+      "预测准确度本季度显著改善。"
+    ],
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 40 },
+    { "kind": "bar", "pos": { "x": 80, "y": 154, "w": 64, "h": 6 } },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 188, "w": 1120 }, "size": 16 },
+    { "kind": "list", "field": "bullets", "pos": { "x": 80, "y": 260, "w": 440 }, "itemSize": 15, "gap": 8 },
+    { "kind": "image", "field": "image", "pos": { "x": 560, "y": 260, "w": 640, "h": 380 } }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "neomod-title-description-image-right",
+  "name": "标题描述配图右侧",
+  "category": "neo-modern",
+  "description": "左侧标题与描述，右侧大幅配图。文字与视觉均衡呈现的两栏版式。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 50 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 350 },
+    "image": { "type": "image", "label": "配图" }
+  },
+  "defaultData": {
+    "title": "图文并茂",
+    "description": "聚焦金融服务、医疗健康与科技行业中员工规模 500 人以上的企业，通过基于客户的营销与内容驱动策略，目标实现 350 万元新增管道，并将获客成本控制在 150 元以内。",
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 200, "w": 520 }, "size": 44 },
+    { "kind": "bar", "pos": { "x": 80, "y": 290, "w": 64, "h": 6 } },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 326, "w": 520 }, "size": 16, "merge": true },
+    { "kind": "image", "field": "image", "pos": { "x": 668, "y": 80, "w": 532, "h": 560 } }
+  ]
+}

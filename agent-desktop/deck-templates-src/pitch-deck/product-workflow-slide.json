@@ -1,0 +1,28 @@
+{
+  "id": "product-workflow-slide",
+  "name": "产品工作流",
+  "category": "pitch-deck",
+  "description": "标题 + 概述 + 左侧产品配图 + 右侧步骤说明。用于讲解产品运作方式。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 26 },
+    "summary": { "type": "multiline", "label": "概述", "required": true, "maxChars": 90 },
+    "image": { "type": "image", "label": "产品配图" },
+    "steps": { "type": "stat-list", "label": "步骤(标题/描述)", "required": true, "maxItems": 4, "statValueMaxChars": 26, "statLabelMaxChars": 64 }
+  },
+  "defaultData": {
+    "title": "如何运作",
+    "summary": "工作流从源头输入出发，转化为优先级清晰的决策与可见的进展。",
+    "image": "",
+    "steps": [
+      { "value": "采集", "label": "将更新、请求与活动信号汇入工作空间。" },
+      { "value": "排序", "label": "按紧急度、归属与预期影响对工作排序。" },
+      { "value": "执行", "label": "在同一协同流中跟踪进展、阻塞与决策。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 72, "w": 1120 }, "size": 52 },
+    { "kind": "paragraph", "field": "summary", "pos": { "x": 80, "y": 150, "w": 1120 }, "size": 19, "color": "muted" },
+    { "kind": "image", "field": "image", "pos": { "x": 80, "y": 230, "w": 560, "h": 400 } },
+    { "kind": "bulletCards", "field": "steps", "pos": { "x": 680, "y": 230, "w": 520, "h": 400 }, "titleSize": 24, "descSize": 16, "cols": 1 }
+  ]
+}

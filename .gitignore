@@ -1,0 +1,52 @@
+# Operating system and editor state
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+
+# Dependencies and generated caches
+node_modules/
+vendor/
+*.tsbuildinfo
+*.log
+*.tmp
+*.cache
+*.bak
+*.bak-*
+.cache/
+coverage/
+
+# Build and packaged artifacts
+agent-desktop/out/
+agent-desktop/dist/
+agent-desktop/dist-win/
+*.zip
+*.tar
+*.tar.gz
+*.dmg
+*.exe
+*.blockmap
+
+# Local configuration and secrets (examples remain versioned)
+.env
+.env.*
+!.env.example
+!.env.*.example
+deploy.local
+!deploy.local.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.cer
+*.crt
+*.provisionprofile
+*.mobileprovision
+证书/
+
+# Local databases and runtime state
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3

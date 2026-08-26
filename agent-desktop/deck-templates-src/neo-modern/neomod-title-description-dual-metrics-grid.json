@@ -1,0 +1,33 @@
+{
+  "id": "neomod-title-description-dual-metrics-grid",
+  "name": "标题描述双列指标",
+  "category": "neo-modern",
+  "description": "左侧标题与描述，右侧两列指标卡片：主指标采用强调样式，次指标采用柔和样式，最多支持 6 项(每列 3 项)。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 250 },
+    "primaryMetrics": { "type": "stat-list", "label": "主指标(数值/说明)", "required": true, "maxItems": 3, "statValueMaxChars": 8, "statLabelMaxChars": 25 },
+    "secondaryMetrics": { "type": "stat-list", "label": "次指标(数值/说明)", "required": true, "maxItems": 3, "statValueMaxChars": 8, "statLabelMaxChars": 25 }
+  },
+  "defaultData": {
+    "title": "描述与指标",
+    "description": "聚焦金融服务、医疗健康与科技行业中员工规模 500 人以上的企业，通过基于客户的营销与内容驱动策略，目标实现 350 万元新增管道。",
+    "primaryMetrics": [
+      { "value": "85%", "label": "客户响应延迟" },
+      { "value": "92%", "label": "目标达成率" },
+      { "value": "3.2x", "label": "营收增长" }
+    ],
+    "secondaryMetrics": [
+      { "value": "5亿+", "label": "注册用户总数" },
+      { "value": "98%", "label": "客户留存率" },
+      { "value": "24/7", "label": "技术支持" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 200, "w": 480 }, "size": 42 },
+    { "kind": "bar", "pos": { "x": 80, "y": 286, "w": 64, "h": 6 } },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 322, "w": 480 }, "size": 16, "merge": true },
+    { "kind": "statGrid", "field": "primaryMetrics", "pos": { "x": 620, "y": 80, "w": 270, "h": 160 }, "valueSize": 38, "labelSize": 15, "cols": 1 },
+    { "kind": "statGrid", "field": "secondaryMetrics", "pos": { "x": 910, "y": 80, "w": 270, "h": 160 }, "valueSize": 38, "labelSize": 15, "cols": 1 }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "chart-with-metrics",
+  "name": "图表配指标",
+  "category": "modern",
+  "description": "左侧标题与增长图表，右侧描述与增长指标卡片，适合展示业务发展势头。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 200 },
+    "chart": { "type": "image", "label": "增长图表" },
+    "metrics": { "type": "stat-list", "label": "指标(名称/说明)", "required": true, "maxItems": 3, "statValueMaxChars": 40, "statLabelMaxChars": 60 }
+  },
+  "defaultData": {
+    "title": "业务增长",
+    "description": "增长期是企业在发展阶段感受到势能的时期。若未能把握增长势头，销售数据可能回落、客户规模可能收缩。营收与新增客户是衡量成功的核心指标。",
+    "chart": "",
+    "metrics": [
+      { "value": "人工智能 +180% 增长", "label": "该业务线在周期内增长强劲。" },
+      { "value": "物联网 +150% 增长", "label": "该业务线在周期内持续上升。" },
+      { "value": "其他业务 +120% 增长", "label": "该业务线在周期内稳步扩张。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 100, "w": 500 }, "size": 42 },
+    { "kind": "image", "field": "chart", "pos": { "x": 80, "y": 190, "w": 500, "h": 400 } },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 640, "y": 100, "w": 560 }, "size": 16, "merge": true },
+    { "kind": "bulletCards", "field": "metrics", "pos": { "x": 640, "y": 290, "w": 560, "h": 300 }, "titleSize": 18, "descSize": 14, "cols": 1 }
+  ]
+}

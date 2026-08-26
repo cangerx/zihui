@@ -1,0 +1,27 @@
+{
+  "id": "neogen-title-description-team-grid",
+  "name": "标题描述配人物照片排",
+  "category": "neo-general",
+  "description": "顶部标题与描述，下方一排最多 4 张人物卡片，每张含姓名、职位、方形照片与简介。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "description": { "type": "multiline", "label": "描述正文", "maxChars": 400 },
+    "teamMembers": { "type": "stat-list", "label": "成员(姓名/职位简介)", "required": true, "maxItems": 4, "statValueMaxChars": 40, "statLabelMaxChars": 100 }
+  },
+  "defaultData": {
+    "title": "我们的团队",
+    "description": "聚焦金融服务、医疗健康与科技行业中员工规模 500 人以上的企业，由经验丰富的核心团队带领增长。",
+    "teamMembers": [
+      { "value": "汉娜 · 莫拉莱斯", "label": "创始人兼 CEO · 专注服务大型企业客户。" },
+      { "value": "詹姆斯 · 威尔逊", "label": "销售负责人 · 深耕企业级市场拓展。" },
+      { "value": "海伦 · 帕克特", "label": "首席技术官 · 主导技术架构与创新。" },
+      { "value": "马库斯 · 陈", "label": "创意总监 · 负责品牌与视觉表达。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 520 }, "size": 40 },
+    { "kind": "bar", "pos": { "x": 80, "y": 152, "w": 116, "h": 6 } },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 660, "y": 90, "w": 540 }, "size": 16 },
+    { "kind": "bulletCards", "field": "teamMembers", "pos": { "x": 80, "y": 260, "w": 1120, "h": 360 }, "titleSize": 20, "descSize": 14, "cols": 4 }
+  ]
+}

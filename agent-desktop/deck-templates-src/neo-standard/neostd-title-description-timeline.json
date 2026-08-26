@@ -1,0 +1,28 @@
+{
+  "id": "neostd-title-description-timeline",
+  "name": "标题描述加时间线",
+  "category": "neo-standard",
+  "description": "左侧标题与描述，右侧带年份标记的纵向时间线，适合里程碑或发展历程。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 20 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 300 },
+    "timelineItems": { "type": "stat-list", "label": "时间线(年份/事件)", "required": true, "maxItems": 5, "statValueMaxChars": 4, "statLabelMaxChars": 100 }
+  },
+  "defaultData": {
+    "title": "发展历程",
+    "description": "聚焦员工规模 500 人以上、处于金融服务、医疗健康与科技行业的企业，通过基于客户的精准营销与内容驱动策略推进增长。",
+    "timelineItems": [
+      { "value": "2021", "label": "简要说明此节点的关键进展。" },
+      { "value": "2020", "label": "简要说明此节点的关键进展。" },
+      { "value": "2019", "label": "简要说明此节点的关键进展。" },
+      { "value": "2018", "label": "简要说明此节点的关键进展。" },
+      { "value": "2017", "label": "简要说明此节点的关键进展。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "bar", "pos": { "x": 80, "y": 150, "w": 116, "h": 3 } },
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 178, "w": 520 }, "size": 43 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 268, "w": 500 }, "size": 16, "merge": true },
+    { "kind": "bulletCards", "field": "timelineItems", "pos": { "x": 660, "y": 110, "w": 540, "h": 500 }, "titleSize": 21, "descSize": 15, "cols": 1 }
+  ]
+}

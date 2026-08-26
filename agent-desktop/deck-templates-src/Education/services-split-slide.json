@@ -1,0 +1,24 @@
+{
+  "id": "services-split-slide",
+  "name": "服务分栏",
+  "category": "Education",
+  "description": "左侧标题，右侧堆叠的服务说明卡片(标题与描述)。",
+  "schema": {
+    "title": { "type": "text", "label": "标题", "required": true, "maxChars": 16 },
+    "sections": { "type": "stat-list", "label": "服务(标题/描述)", "required": true, "maxItems": 4, "statValueMaxChars": 18, "statLabelMaxChars": 40 }
+  },
+  "defaultData": {
+    "title": "服务项目",
+    "sections": [
+      { "value": "服务一", "label": "简要描述这项服务的内容与价值。" },
+      { "value": "服务二", "label": "简要描述这项服务的内容与价值。" },
+      { "value": "服务三", "label": "简要描述这项服务的内容与价值。" },
+      { "value": "服务四", "label": "简要描述这项服务的内容与价值。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 110, "w": 320 }, "size": 56 },
+    { "kind": "bar", "pos": { "x": 80, "y": 240, "w": 64, "h": 6 } },
+    { "kind": "bulletCards", "field": "sections", "pos": { "x": 460, "y": 96, "w": 740, "h": 528 }, "titleSize": 22, "descSize": 16, "cols": 1 }
+  ]
+}

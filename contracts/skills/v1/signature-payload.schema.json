@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local-agent.example/contracts/skills/v1/signature-payload.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["key_id", "manifest_schema_version", "published_at", "sha256", "signature_algorithm", "skill_id", "version", "version_id"],
+  "properties": {
+    "key_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$" },
+    "manifest_schema_version": { "const": 1 },
+    "published_at": { "type": "string", "format": "date-time" },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "signature_algorithm": { "const": "ed25519" },
+    "skill_id": { "type": "string", "format": "uuid" },
+    "version": { "type": "string" },
+    "version_id": { "type": "string", "format": "uuid" }
+  }
+}
+

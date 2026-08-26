@@ -1,0 +1,28 @@
+{
+  "id": "neogen-chart-with-bullets-slide",
+  "name": "图表加要点卡片",
+  "category": "neo-general",
+  "description": "左侧标题、描述与图表（占位），右侧 1-3 项带描述的彩色要点卡片。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 40 },
+    "description": { "type": "multiline", "label": "描述正文", "maxChars": 150 },
+    "chartImage": { "type": "image", "label": "图表配图" },
+    "bulletPoints": { "type": "stat-list", "label": "要点(标题/描述)", "required": true, "maxItems": 3, "statValueMaxChars": 80, "statLabelMaxChars": 150 }
+  },
+  "defaultData": {
+    "title": "市场规模",
+    "description": "企业普遍受困于陈旧的技术与不断上升的成本，在竞争激烈的市场中难以兼顾效率与增长。",
+    "chartImage": "",
+    "bulletPoints": [
+      { "value": "总体可达市场", "label": "企业可借助 TAM 规划未来扩张与投资。" },
+      { "value": "可服务市场", "label": "标示出更可衡量的细分市场，便于销售发力。" },
+      { "value": "可获得市场", "label": "帮助企业依据市场制定发展策略。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 760 }, "size": 40 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 150, "w": 760 }, "size": 16 },
+    { "kind": "image", "field": "chartImage", "pos": { "x": 80, "y": 250, "w": 760, "h": 390 } },
+    { "kind": "bulletCards", "field": "bulletPoints", "pos": { "x": 880, "y": 130, "w": 320, "h": 460 }, "titleSize": 18, "descSize": 14, "cols": 1 }
+  ]
+}

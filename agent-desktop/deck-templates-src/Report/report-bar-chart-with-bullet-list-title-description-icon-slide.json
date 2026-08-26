@@ -1,0 +1,28 @@
+{
+  "id": "report-bar-chart-with-bullet-list-title-description-icon-slide",
+  "name": "柱状图加要点列表",
+  "category": "Report",
+  "description": "顶部标题，左侧为带标题与描述的要点列表，右侧为柱状图。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 80 },
+    "items": { "type": "stat-list", "label": "要点(标题/描述)", "required": true, "maxItems": 3, "statValueMaxChars": 80, "statLabelMaxChars": 120 },
+    "chart": { "type": "image", "label": "柱状图/数据图" },
+    "legendLabel": { "type": "text", "label": "图例说明", "required": true, "maxChars": 50 }
+  },
+  "defaultData": {
+    "title": "数据分析",
+    "items": [
+      { "value": "整体增长", "label": "周期内多数指标稳步上行，增长动能持续。" },
+      { "value": "结构优化", "label": "高价值环节占比提升，资源配置更趋合理。" },
+      { "value": "波动可控", "label": "异常波动集中在少数节点，风险整体可控。" }
+    ],
+    "chart": "",
+    "legendLabel": "传统工作流"
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 64, "w": 1120 }, "size": 64 },
+    { "kind": "bulletCards", "field": "items", "pos": { "x": 80, "y": 220, "w": 520, "h": 380 }, "titleSize": 21, "descSize": 16, "cols": 1, "rowH": 116 },
+    { "kind": "image", "field": "chart", "pos": { "x": 660, "y": 220, "w": 540, "h": 346 } },
+    { "kind": "paragraph", "field": "legendLabel", "pos": { "x": 660, "y": 580, "w": 540 }, "size": 20, "color": "accent" }
+  ]
+}

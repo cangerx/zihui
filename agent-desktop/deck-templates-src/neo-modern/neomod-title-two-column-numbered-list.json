@@ -1,0 +1,28 @@
+{
+  "id": "neomod-title-two-column-numbered-list",
+  "name": "标题编号列表",
+  "category": "neo-modern",
+  "description": "左侧大标题，右侧带编号的条目列表。每条以序号引导，呈现先后顺序与递进关系。适合目录、流程或步骤。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 20 },
+    "items": { "type": "list", "label": "条目(序号引导)", "required": true, "maxItems": 8, "itemMaxChars": 80 }
+  },
+  "defaultData": {
+    "title": "目录",
+    "items": [
+      "下单：客户在线选购商品并确认购买。",
+      "支付：通过银行卡、转账或电子钱包完成付款。",
+      "核验：系统在处理前校验交易明细。",
+      "打包：商品被安全包装以准备发货。",
+      "发货：快递取件并安排配送。",
+      "在途：客户可实时追踪配送状态。",
+      "签收：包裹送达客户并完成签收确认。",
+      "回访：收集客户反馈以持续优化体验。"
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 120, "w": 380 }, "size": 48 },
+    { "kind": "bar", "pos": { "x": 80, "y": 220, "w": 64, "h": 6 } },
+    { "kind": "numberedList", "field": "items", "pos": { "x": 540, "y": 80, "w": 660 }, "itemSize": 17, "gap": 10 }
+  ]
+}

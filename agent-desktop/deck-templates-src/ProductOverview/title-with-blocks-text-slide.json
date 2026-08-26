@@ -1,0 +1,23 @@
+{
+  "id": "title-with-blocks-text-slide",
+  "name": "标题配文字块网格",
+  "category": "ProductOverview",
+  "description": "顶部标题 + 下方 2x2 文字块网格(每块小标题与正文)。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 24 },
+    "blocks": { "type": "stat-list", "label": "文字块(标题/正文)", "required": true, "maxItems": 4, "statValueMaxChars": 30, "statLabelMaxChars": 80 }
+  },
+  "defaultData": {
+    "title": "业务面临的挑战",
+    "blocks": [
+      { "value": "市场竞争加剧", "label": "同质化产品涌入，差异化优势难以维持。" },
+      { "value": "客户需求多变", "label": "需求迭代加快，传统响应机制跟不上节奏。" },
+      { "value": "运营成本上升", "label": "人力与基础设施投入持续增加，利润承压。" },
+      { "value": "数据价值未释放", "label": "海量数据缺乏统一治理，决策支撑不足。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 60 },
+    { "kind": "bulletCards", "field": "blocks", "pos": { "x": 80, "y": 230, "w": 1120, "h": 410 }, "titleSize": 22, "descSize": 17, "cols": 2 }
+  ]
+}

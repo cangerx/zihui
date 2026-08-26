@@ -1,0 +1,28 @@
+{
+  "id": "chart-with-bullets-slide",
+  "name": "图表加要点",
+  "category": "general",
+  "description": "标题 + 描述 + 左侧图表占位 + 右侧要点卡片。图表区由配图承载(可放数据图)。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 40 },
+    "body": { "type": "multiline", "label": "描述正文", "maxChars": 150 },
+    "chart": { "type": "image", "label": "图表/数据图" },
+    "points": { "type": "stat-list", "label": "要点(标题/描述)", "required": true, "maxItems": 4, "statValueMaxChars": 80, "statLabelMaxChars": 150 }
+  },
+  "defaultData": {
+    "title": "市场规模",
+    "body": "目标市场持续扩大，增长动能来自数字化转型与降本增效的双重需求。",
+    "chart": "",
+    "points": [
+      { "value": "高速增长", "label": "近三年复合增长率保持两位数。" },
+      { "value": "需求明确", "label": "客户对效率与成本改善诉求强烈。" },
+      { "value": "空间广阔", "label": "渗透率仍处低位，存量替换机会大。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 72, "w": 1120 }, "size": 38 },
+    { "kind": "paragraph", "field": "body", "pos": { "x": 80, "y": 140, "w": 1120 }, "size": 17 },
+    { "kind": "image", "field": "chart", "pos": { "x": 80, "y": 210, "w": 540, "h": 430 } },
+    { "kind": "bulletCards", "field": "points", "pos": { "x": 680, "y": 210, "w": 520, "h": 430 }, "titleSize": 20, "descSize": 15, "cols": 1 }
+  ]
+}

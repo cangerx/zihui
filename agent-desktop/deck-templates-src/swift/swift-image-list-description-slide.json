@@ -1,0 +1,42 @@
+{
+  "id": "swift-image-list-description-slide",
+  "name": "图文列表",
+  "category": "swift",
+  "description": "左侧标题与说明 + 右侧三张配图及其标题、描述卡片。",
+  "schema": {
+    "titleLine1": { "type": "text", "label": "标题第一行", "required": true, "maxChars": 24 },
+    "titleLine2": { "type": "text", "label": "标题第二行", "maxChars": 24 },
+    "description": { "type": "multiline", "label": "说明正文", "required": true, "maxChars": 200 },
+    "items": { "type": "stat-list", "label": "条目(标题/描述)", "required": true, "maxItems": 3, "statValueMaxChars": 40, "statLabelMaxChars": 140 },
+    "image1": { "type": "image", "label": "配图一" },
+    "image2": { "type": "image", "label": "配图二" },
+    "image3": { "type": "image", "label": "配图三" },
+    "website": { "type": "text", "label": "网址", "maxChars": 60 }
+  },
+  "defaultData": {
+    "titleLine1": "认识",
+    "titleLine2": "我们的团队",
+    "description": "一支兼具专业能力与协作精神的团队，致力于把每一个想法转化为可落地的成果。",
+    "items": [
+      { "value": "示例标题", "label": "为该图片或条目补充一句简短说明。" },
+      { "value": "另一条目", "label": "简洁的支撑性描述文本。" },
+      { "value": "第三条目", "label": "简洁的支撑性描述文本。" }
+    ],
+    "image1": "",
+    "image2": "",
+    "image3": "",
+    "website": "www.yourwebsite.com"
+  },
+  "blocks": [
+    { "kind": "heading", "field": "titleLine1", "level": 1, "pos": { "x": 80, "y": 120, "w": 360 }, "size": 50 },
+    { "kind": "heading", "field": "titleLine2", "level": 1, "pos": { "x": 80, "y": 184, "w": 360 }, "size": 50 },
+    { "kind": "bar", "pos": { "x": 80, "y": 272, "w": 64, "h": 6 } },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 308, "w": 360 }, "size": 16 },
+    { "kind": "image", "field": "image1", "pos": { "x": 480, "y": 120, "w": 220, "h": 180 } },
+    { "kind": "image", "field": "image2", "pos": { "x": 730, "y": 120, "w": 220, "h": 180 } },
+    { "kind": "image", "field": "image3", "pos": { "x": 980, "y": 120, "w": 220, "h": 180 } },
+    { "kind": "bulletCards", "field": "items", "pos": { "x": 480, "y": 320, "w": 720, "h": 280 }, "titleSize": 18, "descSize": 13, "cols": 3 },
+    { "kind": "rule", "pos": { "x": 80, "y": 650, "w": 1120, "h": 2 } },
+    { "kind": "paragraph", "field": "website", "pos": { "x": 80, "y": 628, "w": 600 }, "size": 14, "color": "muted" }
+  ]
+}

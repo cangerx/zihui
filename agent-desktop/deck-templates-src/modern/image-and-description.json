@@ -1,0 +1,22 @@
+{
+  "id": "image-and-description",
+  "name": "配图加说明",
+  "category": "modern",
+  "description": "左侧配图，右侧主标题与说明正文，适合主题概述与背景介绍。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "content": { "type": "multiline", "label": "说明正文", "required": true, "maxChars": 300 },
+    "image": { "type": "image", "label": "配图" }
+  },
+  "defaultData": {
+    "title": "背景介绍",
+    "content": "在演讲开场，背景介绍部分可以围绕一个有吸引力的主题，系统而有效地组织信息。引言为听众提供整体概览，并在此环节中突出主题的关键词，帮助听众快速进入讨论语境。",
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "image", "field": "image", "pos": { "x": 80, "y": 130, "w": 520, "h": 460 } },
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 660, "y": 200, "w": 540 }, "size": 46 },
+    { "kind": "bar", "pos": { "x": 660, "y": 288, "w": 64, "h": 6 } },
+    { "kind": "paragraph", "field": "content", "pos": { "x": 660, "y": 324, "w": 540 }, "size": 18, "merge": true }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "neogen-bullet-icons-only-slide",
+  "name": "图标要点网格配图",
+  "category": "neo-general",
+  "description": "左侧大标题加 2-3 项带描述的图标要点卡片，右侧配图。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 40 },
+    "bulletPoints": { "type": "stat-list", "label": "要点(标题/描述)", "required": true, "maxItems": 3, "statValueMaxChars": 80, "statLabelMaxChars": 150 },
+    "image": { "type": "image", "label": "配图" }
+  },
+  "defaultData": {
+    "title": "解决方案",
+    "bulletPoints": [
+      { "value": "定制软件", "label": "为客户量身打造软件，优化流程并提升效率。" },
+      { "value": "数字咨询", "label": "我们的顾问帮助组织充分利用最新技术。" },
+      { "value": "支持服务", "label": "提供持续支持，助力企业适应变化并保持表现。" }
+    ],
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 96, "w": 540 }, "size": 42 },
+    { "kind": "bar", "pos": { "x": 80, "y": 170, "w": 64, "h": 6 } },
+    { "kind": "bulletCards", "field": "bulletPoints", "pos": { "x": 80, "y": 230, "w": 540, "h": 410 }, "titleSize": 20, "descSize": 15, "cols": 1 },
+    { "kind": "image", "field": "image", "pos": { "x": 700, "y": 130, "w": 500, "h": 460 } }
+  ]
+}

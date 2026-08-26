@@ -1,0 +1,37 @@
+{
+  "id": "swift-intro-slide-layout",
+  "name": "开篇页",
+  "category": "swift",
+  "description": "标题 + 副标题 + 描述 + 演讲者信息卡 + 右侧配图的开场版式。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 68 },
+    "subtitlePrefix": { "type": "text", "label": "副标题前缀", "maxChars": 40 },
+    "subtitleAccent": { "type": "text", "label": "副标题强调", "maxChars": 40 },
+    "paragraph": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 200 },
+    "presenter": { "type": "text", "label": "演讲者", "maxChars": 40 },
+    "date": { "type": "text", "label": "日期", "maxChars": 40 },
+    "website": { "type": "text", "label": "网址", "maxChars": 60 },
+    "image": { "type": "image", "label": "配图" }
+  },
+  "defaultData": {
+    "title": "演示文稿",
+    "subtitlePrefix": "演示",
+    "subtitleAccent": "模板",
+    "paragraph": "用一段话概括本次演示的核心主题与价值，帮助观众快速建立整体认知与期待。",
+    "presenter": "张三",
+    "date": "2025 年 1 月 1 日",
+    "website": "www.yourwebsite.com",
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "image", "field": "image", "pos": { "x": 740, "y": 0, "w": 540, "h": 520 } },
+    { "kind": "kicker", "field": "subtitlePrefix", "pos": { "x": 80, "y": 96, "w": 600 }, "size": 16 },
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 150, "w": 620 }, "size": 60 },
+    { "kind": "paragraph", "field": "paragraph", "pos": { "x": 80, "y": 320, "w": 600 }, "size": 17 },
+    { "kind": "bar", "pos": { "x": 80, "y": 470, "w": 8, "h": 28 } },
+    { "kind": "paragraph", "field": "presenter", "pos": { "x": 104, "y": 470, "w": 400 }, "size": 17, "color": "fg" },
+    { "kind": "paragraph", "field": "date", "pos": { "x": 104, "y": 500, "w": 400 }, "size": 15, "color": "muted" },
+    { "kind": "rule", "pos": { "x": 80, "y": 650, "w": 1120, "h": 2 } },
+    { "kind": "paragraph", "field": "website", "pos": { "x": 80, "y": 628, "w": 600 }, "size": 14, "color": "muted" }
+  ]
+}

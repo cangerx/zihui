@@ -1,0 +1,26 @@
+{
+  "id": "segment-cards-slide",
+  "name": "客群细分卡片",
+  "category": "ProductOverview",
+  "description": "标题副标题 + 客群细分卡片(名称/画像)，用于目标受众展示。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 42 },
+    "subtitle": { "type": "multiline", "label": "副标题", "maxChars": 140 },
+    "segments": { "type": "stat-list", "label": "客群(名称/画像)", "required": true, "maxItems": 4, "statValueMaxChars": 28, "statLabelMaxChars": 60 }
+  },
+  "defaultData": {
+    "title": "目标客群",
+    "subtitle": "分组呈现重要客群及其所处情境、核心需求与优先关注点。",
+    "segments": [
+      { "value": "产品负责人", "label": "需要可信赖的优先级、依赖与交付风险视图。" },
+      { "value": "创业团队", "label": "需要轻量结构，又不拖慢产品迭代速度。" },
+      { "value": "运营团队", "label": "需要更少的手工更新与割裂的状态会议。" },
+      { "value": "客户成功", "label": "需要让客户声音持续影响产品规划。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 52 },
+    { "kind": "paragraph", "field": "subtitle", "pos": { "x": 80, "y": 160, "w": 900 }, "size": 19 },
+    { "kind": "bulletCards", "field": "segments", "pos": { "x": 80, "y": 250, "w": 1120, "h": 390 }, "titleSize": 22, "descSize": 16, "cols": 4 }
+  ]
+}

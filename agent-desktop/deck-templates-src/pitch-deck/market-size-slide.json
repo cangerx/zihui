@@ -1,0 +1,28 @@
+{
+  "id": "market-size-slide",
+  "name": "市场规模",
+  "category": "pitch-deck",
+  "description": "标题 + 副标题 + 市场分层(TAM/SAM/SOM 数值块) + 切入段说明。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 28 },
+    "subtitle": { "type": "multiline", "label": "副标题", "required": true, "maxChars": 95 },
+    "layers": { "type": "stat-list", "label": "市场分层(数值/说明)", "required": true, "maxItems": 3, "statValueMaxChars": 14, "statLabelMaxChars": 56 },
+    "segmentNote": { "type": "multiline", "label": "切入段说明", "required": true, "maxChars": 105 }
+  },
+  "defaultData": {
+    "title": "市场规模",
+    "subtitle": "聚焦呈现可触达市场、可服务细分以及初期可获取的机会规模。",
+    "layers": [
+      { "value": "480 亿", "label": "品类整体可寻址机会(TAM)。" },
+      { "value": "120 亿", "label": "与当前产品范围契合的可触达细分(SAM)。" },
+      { "value": "14 亿", "label": "通过进入策略瞄准的初期份额(SOM)。" }
+    ],
+    "segmentNote": "切入细分因痛点清晰、预算自主、销售可复制而被选定。"
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 72, "w": 1120 }, "size": 54 },
+    { "kind": "paragraph", "field": "subtitle", "pos": { "x": 80, "y": 150, "w": 840 }, "size": 20, "color": "muted" },
+    { "kind": "statGrid", "field": "layers", "pos": { "x": 80, "y": 240, "w": 1120, "h": 260 }, "valueSize": 54, "labelSize": 17, "cols": 3 },
+    { "kind": "paragraph", "field": "segmentNote", "pos": { "x": 80, "y": 540, "w": 1120 }, "size": 20, "color": "fg" }
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "id": "edu-closing-contact-slide",
+  "name": "结束联系页",
+  "category": "Education",
+  "description": "结束版式：大标题、致谢信息、联系人详情与可选配图。",
+  "schema": {
+    "kicker": {
+      "type": "text",
+      "label": "眉题",
+      "maxChars": 20
+    },
+    "title": {
+      "type": "text",
+      "label": "主标题",
+      "required": true,
+      "maxChars": 28
+    },
+    "message": {
+      "type": "multiline",
+      "label": "致谢信息",
+      "maxChars": 180
+    },
+    "presenterName": {
+      "type": "text",
+      "label": "联系人姓名",
+      "maxChars": 40
+    },
+    "presenterRole": {
+      "type": "text",
+      "label": "职务/单位",
+      "maxChars": 50
+    },
+    "contactItems": {
+      "type": "stat-list",
+      "label": "联系方式(标签/内容)",
+      "required": true,
+      "maxItems": 5,
+      "statValueMaxChars": 16,
+      "statLabelMaxChars": 60
+    },
+    "image": {
+      "type": "image",
+      "label": "二维码/配图"
+    }
+  },
+  "defaultData": {
+    "kicker": "致谢",
+    "title": "提问与交流",
+    "message": "感谢您的参与。如需课程资料、报名详情或后续交流，欢迎随时与我们联系。",
+    "presenterName": "玛雅·夏尔马博士",
+    "presenterRole": "项目协调员",
+    "contactItems": [
+      {
+        "value": "邮箱",
+        "label": "maya@example.edu"
+      },
+      {
+        "value": "网站",
+        "label": "www.example.edu"
+      },
+      {
+        "value": "办公室",
+        "label": "教学楼 204 室"
+      }
+    ],
+    "image": ""
+  },
+  "blocks": [
+    {
+      "kind": "kicker",
+      "field": "kicker",
+      "pos": {
+        "x": 80,
+        "y": 100,
+        "w": 720
+      },
+      "size": 18
+    },
+    {
+      "kind": "heading",
+      "field": "title",
+      "level": 2,
+      "pos": {
+        "x": 80,
+        "y": 140,
+        "w": 720
+      },
+      "size": 72
+    },
+    {
+      "kind": "paragraph",
+      "field": "message",
+      "pos": {
+        "x": 80,
+        "y": 270,
+        "w": 720
+      },
+      "size": 22,
+      "merge": true
+    },
+    {
+      "kind": "paragraph",
+      "field": "presenterName",
+      "pos": {
+        "x": 80,
+        "y": 440,
+        "w": 360
+      },
+      "size": 24,
+      "color": "fg"
+    },
+    {
+      "kind": "paragraph",
+      "field": "presenterRole",
+      "pos": {
+        "x": 80,
+        "y": 480,
+        "w": 360
+      },
+      "size": 18,
+      "color": "muted"
+    },
+    {
+      "kind": "bulletCards",
+      "field": "contactItems",
+      "pos": {
+        "x": 80,
+        "y": 530,
+        "w": 720,
+        "h": 110
+      },
+      "titleSize": 14,
+      "descSize": 14,
+      "cols": 3
+    },
+    {
+      "kind": "image",
+      "field": "image",
+      "pos": {
+        "x": 860,
+        "y": 210,
+        "w": 300,
+        "h": 300
+      }
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "id": "neogen-timeline-alternating-cards-slide",
+  "name": "横向时间线卡片",
+  "category": "neo-general",
+  "description": "居中标题加 2-6 个时间节点卡片，每张含日期标签与描述。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 20 },
+    "milestones": { "type": "stat-list", "label": "节点(日期/描述)", "required": true, "maxItems": 6, "statValueMaxChars": 4, "statLabelMaxChars": 100 }
+  },
+  "defaultData": {
+    "title": "发展历程",
+    "milestones": [
+      { "value": "2020", "label": "公司成立，确立技术驱动的产品方向。" },
+      { "value": "2021", "label": "推出首款核心产品，完成首轮融资。" },
+      { "value": "2022", "label": "用户规模突破百万，团队快速扩张。" },
+      { "value": "2023", "label": "拓展海外市场，建立全球合作网络。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 40 },
+    { "kind": "bar", "pos": { "x": 600, "y": 160, "w": 80, "h": 6 } },
+    { "kind": "bulletCards", "field": "milestones", "pos": { "x": 80, "y": 250, "w": 1120, "h": 360 }, "titleSize": 28, "descSize": 15, "cols": 4 }
+  ]
+}

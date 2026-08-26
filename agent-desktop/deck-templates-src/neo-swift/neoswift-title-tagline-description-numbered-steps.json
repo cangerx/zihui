@@ -1,0 +1,29 @@
+{
+  "id": "neoswift-title-tagline-description-numbered-steps",
+  "name": "标题标语描述编号步骤",
+  "category": "neo-swift",
+  "description": "左侧主标题、标语与描述段落，右侧竖排编号步骤列表，每步含标题与描述。适合流程、工作流或方法论。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "tagline": { "type": "text", "label": "标语", "maxChars": 15 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 300 },
+    "steps": { "type": "stat-list", "label": "步骤(标题/描述)", "required": true, "maxItems": 4, "statValueMaxChars": 30, "statLabelMaxChars": 100 }
+  },
+  "defaultData": {
+    "title": "简明要点",
+    "tagline": "流程",
+    "description": "聚焦金融服务、医疗健康与科技行业中员工数 500 人以上的企业。通过基于客户的营销与内容驱动策略，力争达成 350 万元新增销售线索，并将获客成本控制在 150 元以内。",
+    "steps": [
+      { "value": "下单环节", "label": "客户在线选购产品并确认订单。" },
+      { "value": "支付环节", "label": "通过银行卡、转账或电子钱包完成付款。" },
+      { "value": "订单校验", "label": "系统在处理前校验交易明细。" },
+      { "value": "打包环节", "label": "商品安全打包，准备发运。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 120, "w": 460 }, "size": 42 },
+    { "kind": "kicker", "field": "tagline", "pos": { "x": 80, "y": 210, "w": 460 }, "size": 16 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 250, "w": 460 }, "size": 16, "merge": true },
+    { "kind": "bulletCards", "field": "steps", "pos": { "x": 620, "y": 96, "w": 580, "h": 528 }, "titleSize": 20, "descSize": 13, "cols": 1 }
+  ]
+}

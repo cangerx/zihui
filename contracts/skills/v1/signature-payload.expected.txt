@@ -1,0 +1,2 @@
+{"key_id":"registry-2026-01","manifest_schema_version":1,"published_at":"2026-08-22T08:00:00Z","sha256":"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef","signature_algorithm":"ed25519","skill_id":"11111111-1111-4111-8111-111111111111","version":"1.2.3","version_id":"22222222-2222-4222-8222-222222222222"}
+f398d55a0a759247d334f6979ef0285b3149971c4dab8dfba4a8675356bfd720

@@ -1,0 +1,25 @@
+{
+  "id": "report-title-image-bullet-cards-slide",
+  "name": "配图加要点卡",
+  "category": "Report",
+  "description": "左侧可选配图，右侧为带编号的要点卡片。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "image": { "type": "image", "label": "配图" },
+    "cards": { "type": "stat-list", "label": "卡片(编号/描述)", "required": true, "maxItems": 3, "statValueMaxChars": 4, "statLabelMaxChars": 80 }
+  },
+  "defaultData": {
+    "title": "解决方案",
+    "image": "",
+    "cards": [
+      { "value": "01", "label": "梳理核心问题与目标，明确解决方案的方向。" },
+      { "value": "02", "label": "设计可落地的实施路径，分阶段稳步推进。" },
+      { "value": "03", "label": "建立反馈与复盘机制，持续优化交付效果。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 64, "w": 1120 }, "size": 64 },
+    { "kind": "image", "field": "image", "pos": { "x": 80, "y": 220, "w": 480, "h": 396 } },
+    { "kind": "bulletCards", "field": "cards", "pos": { "x": 620, "y": 220, "w": 580, "h": 396 }, "titleSize": 28, "descSize": 17, "cols": 1, "rowH": 116 }
+  ]
+}

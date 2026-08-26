@@ -1,0 +1,23 @@
+{
+  "id": "report-title-metrics-slide",
+  "name": "标题指标卡",
+  "category": "Report",
+  "description": "顶部标题，下方横向排列高指标卡，每张含主数值、标签与支撑说明。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 80 },
+    "metrics": { "type": "stat-list", "label": "指标(数值/标签与说明)", "required": true, "maxItems": 4, "statValueMaxChars": 6, "statLabelMaxChars": 50 }
+  },
+  "defaultData": {
+    "title": "业绩快照",
+    "metrics": [
+      { "value": "25K", "label": "覆盖用户 · 较上期稳步增长" },
+      { "value": "98%", "label": "完成率 · 多数目标顺利达成" },
+      { "value": "3.2x", "label": "同比增长 · 增长动能持续强劲" },
+      { "value": "12", "label": "关键节点 · 按计划稳步推进" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 64, "w": 1120 }, "size": 64 },
+    { "kind": "statGrid", "field": "metrics", "pos": { "x": 80, "y": 240, "w": 1120, "h": 300 }, "valueSize": 52, "labelSize": 18, "cols": 4 }
+  ]
+}

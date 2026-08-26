@@ -1,0 +1,33 @@
+{
+  "id": "neogen-title-description-multi-chart-grid-metrics",
+  "name": "标题描述配多图表与指标",
+  "category": "neo-general",
+  "description": "标题、描述加最多 4 项 KPI 指标，配 1-6 个自动排布的图表（占位）。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 50 },
+    "description": { "type": "multiline", "label": "描述正文", "maxChars": 200 },
+    "metrics": { "type": "stat-list", "label": "指标(数值/标签)", "required": true, "maxItems": 4, "statValueMaxChars": 12, "statLabelMaxChars": 24 },
+    "chartImage1": { "type": "image", "label": "图表一" },
+    "chartImage2": { "type": "image", "label": "图表二" }
+  },
+  "defaultData": {
+    "title": "数据分析仪表盘",
+    "description": "全面呈现跨多个数据维度的关键指标与绩效表现。",
+    "metrics": [
+      { "value": "¥350万", "label": "管线" },
+      { "value": "28%", "label": "转化率" },
+      { "value": "1.9倍", "label": "投资回报" },
+      { "value": "42", "label": "账户数" }
+    ],
+    "chartImage1": "",
+    "chartImage2": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 72, "w": 1120 }, "size": 38 },
+    { "kind": "bar", "pos": { "x": 80, "y": 132, "w": 64, "h": 6 } },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 152, "w": 1120 }, "size": 16 },
+    { "kind": "statGrid", "field": "metrics", "pos": { "x": 80, "y": 220, "w": 480, "h": 180 }, "valueSize": 32, "labelSize": 14, "cols": 2 },
+    { "kind": "image", "field": "chartImage1", "pos": { "x": 620, "y": 220, "w": 580, "h": 195 } },
+    { "kind": "image", "field": "chartImage2", "pos": { "x": 620, "y": 435, "w": 580, "h": 195 } }
+  ]
+}

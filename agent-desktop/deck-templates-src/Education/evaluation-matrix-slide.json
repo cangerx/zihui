@@ -1,0 +1,25 @@
+{
+  "id": "evaluation-matrix-slide",
+  "name": "评估矩阵",
+  "category": "Education",
+  "description": "标题与副标题，配合按评估标准与等级组织的评估矩阵卡片。",
+  "schema": {
+    "title": { "type": "text", "label": "标题", "required": true, "maxChars": 32 },
+    "subtitle": { "type": "multiline", "label": "副标题", "maxChars": 130 },
+    "criteria": { "type": "stat-list", "label": "评估项(标准/各等级描述)", "required": true, "maxItems": 5, "statValueMaxChars": 24, "statLabelMaxChars": 260 }
+  },
+  "defaultData": {
+    "title": "评估矩阵",
+    "subtitle": "用于在不同等级之间比较各项评估标准的紧凑矩阵，帮助统一评分依据。",
+    "criteria": [
+      { "value": "资料检索", "label": "初级：来源有限或不清晰；发展：使用部分相关来源；熟练：清晰运用可靠证据；优秀：深入综合有力证据。" },
+      { "value": "分析能力", "label": "初级：多为信息描述；发展：体现基本推理；熟练：解释规律与成因；优秀：形成原创见解。" },
+      { "value": "表达呈现", "label": "初级：信息难以理解；发展：具备基本结构；熟练：观点清晰有条理；优秀：表达精炼且有说服力。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 2, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 50 },
+    { "kind": "paragraph", "field": "subtitle", "pos": { "x": 80, "y": 160, "w": 1000 }, "size": 19 },
+    { "kind": "bulletCards", "field": "criteria", "pos": { "x": 80, "y": 240, "w": 1120, "h": 396 }, "titleSize": 20, "descSize": 15, "cols": 1 }
+  ]
+}

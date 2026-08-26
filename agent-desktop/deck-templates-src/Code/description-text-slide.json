@@ -1,0 +1,22 @@
+{
+  "id": "description-text-slide",
+  "name": "纯文字说明",
+  "category": "Code",
+  "description": "纯文字说明页：主标题 + 副标题 + 长段说明正文。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 30 },
+    "descriptionTitle": { "type": "text", "label": "副标题", "maxChars": 20 },
+    "description": { "type": "multiline", "label": "说明正文", "maxChars": 360 }
+  },
+  "defaultData": {
+    "title": "代码与说明",
+    "descriptionTitle": "说明",
+    "description": "本页用于对一段实现思路或设计决策展开详细说明。可以介绍背景、目标、关键约束，以及为何选择当前方案。保持语言简洁、逻辑清晰，让读者无需阅读代码即可理解核心意图。"
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 80, "w": 1120 }, "size": 56 },
+    { "kind": "bar", "pos": { "x": 80, "y": 178, "w": 64, "h": 6 } },
+    { "kind": "heading", "field": "descriptionTitle", "level": 2, "pos": { "x": 80, "y": 224, "w": 760 }, "size": 24 },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 274, "w": 760 }, "size": 22, "color": "muted" }
+  ]
+}

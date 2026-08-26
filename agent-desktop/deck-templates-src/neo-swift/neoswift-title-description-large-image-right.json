@@ -1,0 +1,22 @@
+{
+  "id": "neoswift-title-description-large-image-right",
+  "name": "标题描述右侧大图",
+  "category": "neo-swift",
+  "description": "左侧标题与描述，右侧一张大幅配图的均衡两栏版式。适合引入主题或以图像强化叙事。",
+  "schema": {
+    "title": { "type": "text", "label": "主标题", "required": true, "maxChars": 20 },
+    "description": { "type": "multiline", "label": "描述正文", "required": true, "maxChars": 250 },
+    "image": { "type": "image", "label": "配图" }
+  },
+  "defaultData": {
+    "title": "执行摘要",
+    "description": "聚焦金融服务、医疗健康与科技行业中员工数 500 人以上的企业。通过基于客户的营销与内容驱动策略，力争达成 350 万元新增销售线索，并将获客成本控制在 150 元以内。",
+    "image": ""
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 200, "w": 480 }, "size": 42 },
+    { "kind": "bar", "pos": { "x": 80, "y": 288, "w": 64, "h": 6 } },
+    { "kind": "paragraph", "field": "description", "pos": { "x": 80, "y": 324, "w": 480 }, "size": 16, "merge": true },
+    { "kind": "image", "field": "image", "pos": { "x": 620, "y": 76, "w": 580, "h": 568 } }
+  ]
+}

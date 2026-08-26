@@ -1,0 +1,21 @@
+{
+  "id": "headline-with-detail-columns",
+  "name": "大标题加明细栏",
+  "category": "pitch-deck",
+  "description": "左侧大标题 + 右侧明细栏(标题与描述卡片)。适合重点领域分栏说明。",
+  "schema": {
+    "title": { "type": "text", "label": "左侧大标题", "required": true, "maxChars": 24 },
+    "sections": { "type": "stat-list", "label": "明细栏(标题/描述)", "required": true, "maxItems": 2, "statValueMaxChars": 16, "statLabelMaxChars": 150 }
+  },
+  "defaultData": {
+    "title": "重点领域",
+    "sections": [
+      { "value": "栏目一", "label": "对该重点领域的简要说明，阐明其价值、目标与关键举措，帮助受众快速理解。" },
+      { "value": "栏目二", "label": "对该重点领域的简要说明，阐明其价值、目标与关键举措，帮助受众快速理解。" }
+    ]
+  },
+  "blocks": [
+    { "kind": "heading", "field": "title", "level": 1, "pos": { "x": 80, "y": 110, "w": 380 }, "size": 72 },
+    { "kind": "bulletCards", "field": "sections", "pos": { "x": 500, "y": 110, "w": 700, "h": 460 }, "titleSize": 26, "descSize": 18, "cols": 2 }
+  ]
+}
