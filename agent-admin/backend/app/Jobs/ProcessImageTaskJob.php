@@ -98,20 +98,30 @@ class ProcessImageTaskJob implements ShouldQueue
 
         // 优先从 Cache 读完整 body（含 base64 图片），Cache 失效时 fallback 到 DB 元数据。
         // Cache key：itask:body:{taskId}，由 GatewayController::handleImage 写入，TTL 30min。
-        $body = Cache::pull("itask:body:{$task->id}") ?? $task->request_body;
+        $bodyCacheKey = "itask:body:{$task->id}";
+        // Keep the request body until the task reaches a terminal state so a queue retry
+        // can still access inline images (the DB copy intentionally strips base64 fields).
+        $body = Cache::get($bodyCacheKey) ?? $task->request_body;
 
         $route = $router->route($cloudModel);
 
         try {
             // 新链路：桌面端云端生图改为只传 image_urls / mask_url（本站临时素材 URL），不再内联
             // base64。这里读回裸 base64 填入上游适配器认识的 images / mask 字段；向后兼容老链路。
-            $body = $this->materializeReferenceUrls($body, (int) $task->user_id);
+            $this->renewAssetLeasesOnce($task->id);
+            $body = $this->materializeReferenceUrls($body, (int) $task->user_id, $task->id);
             $resp = $route->adapter->image($task->endpoint, $body, $route->provider, $route->apiKey);
         } catch (Throwable $e) {
             $router->markCredentialFailure($route->credential, $e->getMessage());
-            $task->update(['status' => 'failed', 'error' => $e->getMessage()]);
-            $this->recordUsage($task, $cloudModel, 0, 'failed', $e->getMessage());
-            $this->releaseAssetLeases($task->id);
+            if ($this->shouldRetry()) {
+                // Queue will re-run this job; leave it claimable and retain the body/leases.
+                $task->update(['status' => 'pending', 'error' => 'Retry scheduled: ' . $e->getMessage()]);
+            } else {
+                $task->update(['status' => 'failed', 'error' => $e->getMessage()]);
+                $this->recordUsage($task, $cloudModel, 0, 'failed', $e->getMessage());
+                $this->releaseAssetLeases($task->id);
+                Cache::forget($bodyCacheKey);
+            }
             // 抛出给 Queue 让其按 tries 决定是否重试
             throw $e;
         }
@@ -126,6 +136,7 @@ class ProcessImageTaskJob implements ShouldQueue
             $task->update(['status' => 'failed', 'error' => $errorMsg]);
             $this->recordUsage($task, $cloudModel, 0, 'failed', $errorMsg);
             $this->releaseAssetLeases($task->id);
+            Cache::forget($bodyCacheKey);
             // 上游业务错误不应重试（比如 prompt 违规、quota 用尽），直接结束。
             return;
         }
@@ -149,6 +160,7 @@ class ProcessImageTaskJob implements ShouldQueue
             'result' => $this->stripBase64FromResult($data),
             'cost'   => $creditsUsed,
         ]);
+        Cache::forget($bodyCacheKey);
         $this->releaseAssetLeases($task->id);
         $this->recordUsage($task, $cloudModel, $creditsUsed, 'success', '', $deduction['source_plan_id']);
     }
@@ -164,6 +176,7 @@ class ProcessImageTaskJob implements ShouldQueue
             $task->update(['status' => 'failed', 'error' => 'Job failed: ' . $e->getMessage()]);
         }
         $this->releaseAssetLeases($this->taskId);
+        Cache::forget("itask:body:{$this->taskId}");
         Log::error("[ProcessImageTaskJob] {$this->taskId} permanently failed: {$e->getMessage()}");
     }
 
@@ -199,13 +212,28 @@ class ProcessImageTaskJob implements ShouldQueue
      * 表内 storage_url + user_id 命中），其余 URL 一律忽略，绝不去下载任意外部 / 内网地址。
      * 读取走 StorageService::readBytes，自动兼容 cos / oss / local 三种存储后端。
      */
-    private function materializeReferenceUrls(array $body, int $userId): array
+    private function materializeReferenceUrls(array $body, int $userId, string $taskId = ''): array
     {
         if (isset($body['_app_asset_ids']) && is_array($body['_app_asset_ids']) && Schema::hasTable('app_assets')) {
+            if (!Schema::hasTable('app_asset_task_leases')) {
+                throw new \RuntimeException('参考图租约表不可用');
+            }
             $ids = array_values(array_filter($body['_app_asset_ids'], 'is_string'));
-            $resolved = AppAsset::where('user_id', $userId)->where('kind', 'image')
-                ->whereIn('id', $ids)->whereIn('status', ['ready', 'uploaded'])
-                ->get(['storage_url'])->pluck('storage_url')->all();
+            $ids = array_map(static fn (string $id) => strtolower(trim($id)), $ids);
+            $resolvedAssets = AppAsset::where('user_id', $userId)->where('kind', 'image')
+                ->whereIn('id', $ids)->where('status', 'ready')
+                ->whereNotNull('storage_url')->where('storage_url', '<>', '')
+                ->whereExists(function ($q) use ($taskId) {
+                    $q->selectRaw('1')->from('app_asset_task_leases')
+                        ->whereColumn('app_asset_task_leases.asset_id', 'app_assets.id')
+                        ->where('app_asset_task_leases.task_id', $taskId)
+                        ->whereNull('released_at')->where('lease_until', '>', now());
+                })
+                ->get(['id', 'storage_url'])->keyBy('id');
+            if ($resolvedAssets->count() !== count($ids)) {
+                throw new \RuntimeException('参考图租约无效或已过期');
+            }
+            $resolved = collect($ids)->map(fn ($id) => $resolvedAssets[(string) $id]->storage_url)->all();
             $body['image_urls'] = $resolved;
         }
         unset($body['_app_asset_ids']);
@@ -230,21 +258,26 @@ class ProcessImageTaskJob implements ShouldQueue
             ->keyBy('storage_url');
         $appAssets = collect();
         if (Schema::hasTable('app_assets')) {
-            $appAssets = AppAsset::where('user_id', $userId)
+            $appAssetQuery = AppAsset::where('user_id', $userId)
                 ->where('kind', 'image')->whereIn('storage_url', $lookup)
-                ->whereIn('status', ['ready', 'uploaded'])
-                ->where(function ($q) {
-                    $q->where('expires_at', '>', now());
-                    if (Schema::hasTable('app_asset_task_leases')) {
-                        $q->orWhereExists(function ($sq) {
+                ->where('status', 'ready')
+                ->where('expires_at', '>', now());
+            // Legacy deployments may have app_assets without the lease migration yet. Keep
+            // TemporaryReferenceAsset URL tasks working there; new asset_ids tasks fail closed
+            // above when the lease table is unavailable.
+            if (Schema::hasTable('app_asset_task_leases')) {
+                $appAssetQuery->orWhere(function ($q) use ($taskId, $userId, $lookup) {
+                    $q->where('user_id', $userId)->where('kind', 'image')->whereIn('storage_url', $lookup)
+                        ->where('status', 'ready')
+                        ->whereExists(function ($sq) use ($taskId) {
                             $sq->selectRaw('1')->from('app_asset_task_leases')
                                 ->whereColumn('app_asset_task_leases.asset_id', 'app_assets.id')
+                                ->where('app_asset_task_leases.task_id', $taskId)
                                 ->whereNull('released_at')->where('lease_until', '>', now());
                         });
-                    }
-                })
-                ->get(['storage_url', 'storage_driver'])
-                ->keyBy('storage_url');
+                });
+            }
+            $appAssets = $appAssetQuery->get(['storage_url', 'storage_driver'])->keyBy('storage_url');
         }
         $assets = $assets->union($appAssets);
 
@@ -321,5 +354,35 @@ class ProcessImageTaskJob implements ShouldQueue
         \Illuminate\Support\Facades\DB::table('app_asset_task_leases')
             ->where('task_id', $taskId)->whereNull('released_at')
             ->update(['released_at' => now(), 'updated_at' => now()]);
+    }
+
+    /** Queue attempts() is zero for the sync/terminating path, which is terminal by definition. */
+    private function shouldRetry(): bool
+    {
+        try {
+            $attempts = $this->attempts();
+        } catch (Throwable) {
+            return false;
+        }
+        return $attempts > 0 && $attempts < $this->tries;
+    }
+
+    /** Extend each task lease at most once when a long-running job approaches expiry. */
+    private function renewAssetLeasesOnce(string $taskId): void
+    {
+        if (!Schema::hasTable('app_asset_task_leases')) return;
+        $query = \Illuminate\Support\Facades\DB::table('app_asset_task_leases')
+            ->where('task_id', $taskId)->whereNull('released_at')
+            ->where('lease_until', '<=', now()->addMinutes(5));
+        if (Schema::hasColumn('app_asset_task_leases', 'extension_count')) {
+            $query->where('extension_count', 0);
+            $query->update([
+                'lease_until' => now()->addHours(2), 'extension_count' => 1,
+                'updated_at' => now(),
+            ]);
+            return;
+        }
+        // Compatibility with installations created before extension_count was added.
+        $query->update(['lease_until' => now()->addHours(2), 'updated_at' => now()]);
     }
 }

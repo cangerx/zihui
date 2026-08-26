@@ -11,7 +11,7 @@ use App\Support\AppV1Response;
 use App\Support\AppV1TaskPresenter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class TaskController
 {
@@ -35,38 +35,46 @@ class TaskController
         }
 
         $assetIds = array_values((array) $request->input('asset_ids', []));
+        $assetIds = array_map(static fn ($id) => is_string($id) ? strtolower(trim($id)) : $id, $assetIds);
         if (count($assetIds) !== count(array_unique($assetIds)) || count($assetIds) > 4) {
             return AppV1Response::error('invalid_asset_ids', '参考图数量或 ID 无效', 422);
         }
-        $assets = collect();
         if ($assetIds !== []) {
             if (!config('app_v1.features.assets', false)) return AppV1Response::error('feature_disabled', '素材功能暂未开放', 503);
+            if (!Schema::hasTable('app_assets')) return AppV1Response::error('storage_unavailable', '素材存储未就绪', 503);
             if (count(array_filter($assetIds, fn ($id) => is_string($id) && preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i', $id) === 1)) !== count($assetIds)) {
                 return AppV1Response::error('invalid_asset_ids', '参考图 ID 无效', 422);
             }
-            $assets = DB::transaction(function () use ($request, $assetIds) {
-                return AppAsset::query()->where('user_id', $request->user()->id)->where('kind', 'image')
-                    ->where('status', 'ready')->where('expires_at', '>', now())->whereIn('id', $assetIds)
-                    ->lockForUpdate()->get();
-            });
-            if ($assets->count() !== count($assetIds)) return AppV1Response::error('invalid_asset_ids', '参考图不可用', 422);
-            $assets = $assets->keyBy('id');
+            $readyIds = AppAsset::query()->where('user_id', $request->user()->id)->where('kind', 'image')
+                ->where('status', 'ready')->where('expires_at', '>', now())->whereIn('id', $assetIds)
+                ->pluck('id')->all();
+            if (count($readyIds) !== count($assetIds)) {
+                $known = AppAsset::query()->whereIn('id', $assetIds)->pluck('id')->all();
+                if (count($known) !== count($assetIds)) {
+                    return AppV1Response::error('asset_not_found', 'Asset not found', 404);
+                }
+                return AppV1Response::error('invalid_asset_ids', '参考图不可用', 422);
+            }
         }
 
         $model = $this->resolveImageModel($request->user(), $request->input('model'), $request->input('cloud_model_id'));
         if ($model instanceof \Illuminate\Http\JsonResponse) return $model;
 
         $payload = $request->only(['model', 'prompt', 'cloud_model_id', 'n', 'size', 'quality', 'ratio']);
-        if ($assetIds !== []) {
-            $payload['image_urls'] = collect($assetIds)->map(fn ($id) => $assets[(string) $id]->storage_url)->values()->all();
-            $payload['app_asset_ids'] = $assetIds;
-        }
+        // Internal asset IDs are injected as trusted request attributes. They are never
+        // part of the user-controlled gateway body and are not exposed in task request data.
         $payload['model'] = $model->model_id;
         $payload['cloud_model_id'] = $model->id;
         $gatewayRequest = Request::create('/api/gateway/images/generations', 'POST', $payload);
+        if ($assetIds !== []) $gatewayRequest->attributes->set('_trusted_app_asset_ids', $assetIds);
         $response = app(GatewayController::class)->imageGenerations($gatewayRequest);
         if ($response->getStatusCode() >= 400) {
-            return AppV1Response::error('gateway_error', $this->gatewayError($response->getData(true)), $response->getStatusCode());
+            $gatewayPayload = $response->getData(true);
+            $gatewayCode = is_string($gatewayPayload['error'] ?? null) ? $gatewayPayload['error'] : null;
+            if (in_array($gatewayCode, ['invalid_asset_ids', 'storage_unavailable'], true)) {
+                return AppV1Response::error($gatewayCode, (string) ($gatewayPayload['message'] ?? '参考图不可用'), $response->getStatusCode());
+            }
+            return AppV1Response::error('gateway_error', $this->gatewayError($gatewayPayload), $response->getStatusCode());
         }
         $data = $response->getData(true);
         $id = (string) ($data['task_id'] ?? '');

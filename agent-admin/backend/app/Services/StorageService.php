@@ -163,9 +163,14 @@ class StorageService
             if (!@rename($tmp, $path)) { @unlink($tmp); return null; }
             return ['driver' => 'local', 'key' => trim($subdir, '/') . '/' . $filename, 'url' => '/' . trim($subdir, '/') . '/' . $filename];
         }
-        $url = self::putBytes($bytes, $contentType, $subdir, $filename);
+        $url = $driver === 'cos'
+            ? self::putPrivateBytesToCos($bytes, $contentType, $subdir, $filename)
+            : self::putPrivateBytesToOss($bytes, $contentType, $subdir, $filename);
         if ($url === null) return null;
-        return ['driver' => $driver, 'key' => trim($subdir, '/') . '/' . $filename, 'url' => $url];
+        // Keep only the opaque object key in AppAsset. The API creates short-lived
+        // signed display URLs and never returns a raw provider URL.
+        $key = trim($subdir, '/') . '/' . $filename;
+        return ['driver' => $driver, 'key' => $key, 'url' => $key];
     }
 
     public static function getStorageType(): string
@@ -293,7 +298,7 @@ class StorageService
         return self::putBytesToCos($body, $contentType, $subdir, $filename);
     }
 
-    private static function putBytesToCos(string $bytes, string $contentType, string $subdir, string $filename): ?string
+    private static function putBytesToCos(string $bytes, string $contentType, string $subdir, string $filename, bool $private = false): ?string
     {
         $cfg = self::loadCosConfig();
         if ($cfg === null) return null;
@@ -310,8 +315,8 @@ class StorageService
             'Host' => $host,
             'Content-Type' => $contentType,
             'Content-Length' => (string) strlen($bytes),
-            'x-cos-acl' => 'private',
         ];
+        if ($private) $headers['x-cos-acl'] = 'private';
         $auth = self::buildCosAuthorization('put', '/' . self::encodeKey($key), [], $headers, $cfg);
         $headers['Authorization'] = $auth;
 
@@ -336,6 +341,12 @@ class StorageService
             return rtrim($cfg['domain'], '/') . '/' . self::encodeKey($key);
         }
         return 'https://' . $host . '/' . self::encodeKey($key);
+    }
+
+    /** Dedicated private AppAsset COS boundary (kept separate from public uploads). */
+    private static function putPrivateBytesToCos(string $bytes, string $contentType, string $subdir, string $filename): ?string
+    {
+        return self::putBytesToCos($bytes, $contentType, $subdir, $filename, true);
     }
 
     /**
@@ -909,7 +920,7 @@ class StorageService
         return self::putBytesToOss($body, $contentType, $subdir, $filename);
     }
 
-    private static function putBytesToOss(string $bytes, string $contentType, string $subdir, string $filename): ?string
+    private static function putBytesToOss(string $bytes, string $contentType, string $subdir, string $filename, bool $private = false): ?string
     {
         $cfg = self::loadOssConfig();
         if ($cfg === null) return null;
@@ -919,10 +930,9 @@ class StorageService
 
         try {
             $client = self::makeOssClient($cfg);
-            $client->putObject($cfg['bucket'], $key, $bytes, [
-                OssClient::OSS_CONTENT_TYPE => $contentType,
-                OssClient::OSS_HEADERS => [OssClient::OSS_OBJECT_ACL => OssClient::OSS_ACL_TYPE_PRIVATE],
-            ]);
+            $options = [OssClient::OSS_CONTENT_TYPE => $contentType];
+            if ($private) $options[OssClient::OSS_HEADERS] = [OssClient::OSS_OBJECT_ACL => OssClient::OSS_ACL_TYPE_PRIVATE];
+            $client->putObject($cfg['bucket'], $key, $bytes, $options);
         } catch (\Throwable $e) {
             Log::warning('[Storage] oss put failed', ['key' => $key, 'err' => $e->getMessage()]);
             return null;
@@ -933,6 +943,12 @@ class StorageService
             return rtrim($cfg['domain'], '/') . '/' . self::encodeKey($key);
         }
         return 'https://' . $cfg['bucket'] . '.' . $cfg['endpoint'] . '/' . self::encodeKey($key);
+    }
+
+    /** Dedicated private AppAsset OSS boundary (kept separate from public uploads). */
+    private static function putPrivateBytesToOss(string $bytes, string $contentType, string $subdir, string $filename): ?string
+    {
+        return self::putBytesToOss($bytes, $contentType, $subdir, $filename, true);
     }
 
     private static function deleteFromOss(string $key): bool

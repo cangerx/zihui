@@ -14,6 +14,7 @@ return new class extends Migration
             $table->uuid('asset_id');
             $table->string('task_id', 36);
             $table->timestamp('lease_until');
+            $table->unsignedTinyInteger('extension_count')->default(0);
             $table->timestamp('released_at')->nullable();
             $table->timestamps();
             $table->foreign('asset_id')->references('id')->on('app_assets')->onDelete('cascade');

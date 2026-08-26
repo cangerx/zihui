@@ -24,6 +24,8 @@ class AppV1TaskPresenter
             $result = null;
         }
 
+        $request = self::publicRequest((array) $task->request_body);
+
         return [
             'id' => (string) $task->id,
             'type' => 'image',
@@ -35,7 +37,7 @@ class AppV1TaskPresenter
                 'failed', 'cancelled' => 0,
                 default => 0,
             },
-            'request' => (array) $task->request_body,
+            'request' => $request,
             'result' => $result,
             'error' => $status === 'failed' ? [
                 'code' => 'task_failed',
@@ -44,5 +46,21 @@ class AppV1TaskPresenter
             'created_at' => optional($task->created_at)->toISOString(),
             'updated_at' => optional($task->updated_at)->toISOString(),
         ];
+    }
+
+    /** Remove internal routing/storage fields defensively before serializing App v1 tasks. */
+    private static function publicRequest(array $request): array
+    {
+        foreach (array_keys($request) as $key) {
+            $normalized = strtolower((string) $key);
+            if ($normalized === '_app_asset_ids' || $normalized === 'app_asset_ids'
+                || str_contains($normalized, 'storage_url') || str_contains($normalized, 'object_key')
+                || str_contains($normalized, 'storage_key')) {
+                unset($request[$key]);
+                continue;
+            }
+            if (is_array($request[$key])) $request[$key] = self::publicRequest($request[$key]);
+        }
+        return $request;
     }
 }

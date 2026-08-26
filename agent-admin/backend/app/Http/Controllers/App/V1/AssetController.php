@@ -117,14 +117,23 @@ class AssetController
             $asset->update(['status' => 'failed']);
             return AppV1Response::error('storage_error', '文件保存失败', 503);
         }
-        $asset->update([
-            'storage_driver' => $written['driver'],
-            'storage_url' => $written['url'],
-            'actual_size' => strlen($bytes),
-            'detected_mime' => $declared,
-            'sha256' => $hash,
-            'status' => 'uploaded',
-        ]);
+        try {
+            $asset->update([
+                'storage_driver' => $written['driver'],
+                'object_key' => $written['key'],
+                'storage_url' => $written['url'],
+                'actual_size' => strlen($bytes),
+                'detected_mime' => $declared,
+                'sha256' => $hash,
+                'status' => 'uploaded',
+            ]);
+        } catch (\Throwable $e) {
+            // Keep the failed asset for audit/retry, but remove an object that was
+            // successfully written before the database update failed.
+            StorageService::deleteWithDriver((string) ($written['url'] ?? ''), (string) ($written['driver'] ?? ''));
+            $asset->update(['status' => 'failed']);
+            return AppV1Response::error('storage_error', '文件保存失败', 503);
+        }
         return AppV1Response::ok($this->present($asset));
     }
 
@@ -133,7 +142,7 @@ class AssetController
         if (($gate = $this->guard($request)) !== null) return $gate;
         $asset = AppAsset::whereKey($id)->where('user_id', $request->user()->id)->first();
         if (!$asset) return AppV1Response::error('asset_not_found', 'Asset not found', 404);
-        if ($asset->expires_at && $asset->expires_at->isPast() && $asset->status !== 'ready') return AppV1Response::error('asset_not_found', 'Asset not found', 404);
+        if ($asset->expires_at && $asset->expires_at->isPast()) return AppV1Response::error('asset_not_found', 'Asset not found', 404);
         if ($asset->status === 'ready') return AppV1Response::ok($this->present($asset));
         if ($asset->status !== 'uploaded') return AppV1Response::error('asset_not_ready', '资产尚未上传完成', 409);
         $bytes = StorageService::readBytes($asset->storage_url, $asset->storage_driver);
