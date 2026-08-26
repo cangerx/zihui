@@ -1,0 +1,80 @@
+{
+  "round": 4,
+  "decision": "pass",
+  "status": "implemented_with_expiring_security_exceptions",
+  "date": "2026-08-26",
+  "summary": "现有 PHP 8.0/Laravel 9 兼容线内的 Composer 高危补丁已应用，统一 high/critical 安全门禁已建立；Laravel/Symfony 与 DCloud 上游剩余风险仍由最晚 2026-09-30 到期的精确例外阻止静默新增。",
+  "scores": {
+    "feature_completeness": 9,
+    "functionality": 9,
+    "ux_or_design_quality": 8,
+    "code_quality": 9
+  },
+  "hardFailures": [],
+  "completed": [
+    "Laravel 9.52.22、Guzzle 7.15.2、Promises 2.5.3、PSR-7 2.13.1、CommonMark 2.10.0、OSS SDK 2.7.3 与兼容测试依赖升级",
+    "Composer 审计从 32 条/10 包降到 12 条/6 包；Guzzle、PSR-7 和 CommonMark high 已清除",
+    "验证 DCloud 最小 overrides 未改变实际解析版本且未降低 11 high，因此全部撤回并保持 package/lock 无无效 override",
+    "新增精确到 ecosystem/scope/GHSA/package/severity 的安全策略、检查器和离线单测",
+    "CI 在 Composer 与根 npm workspace 执行统一安全门禁，并要求两个既有干净独立 Node 范围保持 0 high/critical",
+    "所有例外包含 reason、owner、expires 与 exit_criteria，且不得晚于 2026-09-30",
+    "App v1 多端生产资产、微信登录、手机号绑定、订单/支付入口和 Web Mock 支付开关保持关闭"
+  ],
+  "verification": {
+    "composerValidateStrict": "passed",
+    "composerInstallDryRun": "passed",
+    "composerAuditPolicy": "passed: 4 high/critical advisories matched 4 exact active exceptions",
+    "npmRootAuditPolicy": "passed: 9 independent high GHSA records matched 9 exact active exceptions; npm aggregate remains 11 high/0 critical",
+    "securityPolicyTests": "passed 12/12, including new advisory, expired, stale, wildcard, missing governance field, aggregate-via, numeric Composer key, endpoint failure, missing npm metadata, and metadata/detail mismatch cases",
+    "appV1FeatureTests": "passed 20/20",
+    "namedThrottleUnitTests": "passed 2/2",
+    "appV1Routes": "passed 25 routes",
+    "typeCheck": "passed for contracts, api-client, domain, Web, and mobile workspaces",
+    "contractAndProductionScans": "passed App v1, mobile real API, mobile production entrypoints, mobile production assets, and UI import checks",
+    "lint": "passed with 0 errors and 289 pre-existing Web UI warnings",
+    "phpSyntax": "passed for app, config, and routes",
+    "buildWeb": "passed, 48 routes generated",
+    "buildMobileH5": "passed",
+    "buildMobileMpWeixin": "passed",
+    "productionFlagScan": "passed: assets, WeChat login, phone binding, order/payment and mock payment remain disabled",
+    "gitDiffCheck": "passed",
+    "independentReviewer": "passed by isolated read-only evaluator session 01a03e38-1324-7c02-b52a-df886aeb53f2: no P0/P1/P2 findings, CI paths and fail-closed behavior verified, importApproved=true"
+  },
+  "findings": [
+    {
+      "severity": "high",
+      "criterion": "Laravel/Symfony high advisories must have a bounded exit",
+      "evidence": "Laravel 12.60 requires PHP 8.2 and coordinated Sanctum/Ignition/Monolog/Carbon/Termwind/Symfony changes; Symfony 6.4 fixes require PHP 8.1 while composer platform is 8.0.28.",
+      "repro": [
+        "composer prohibits laravel/framework 12.60.0 --locked",
+        "composer prohibits symfony/http-foundation 6.4.29 --locked",
+        "composer prohibits symfony/mime 6.4.40 --locked",
+        "composer prohibits symfony/process 6.4.14 --locked"
+      ],
+      "suggestedFix": "执行独立 PHP 8.2/Laravel 12 迁移合同，并在 2026-09-30 前删除对应例外。"
+    },
+    {
+      "severity": "high",
+      "criterion": "DCloud high advisories must not be hidden by ineffective overrides",
+      "evidence": "当前 DCloud 依赖仍解析 Intlify 9.1.9、adm-zip 0.5.16、jpeg-js 0.3.7、嵌套 PostCSS 8.5.6、Vite 5.2.8 与 ws 8.18.0；overrides 实验未改变 lock 或 11 high 数量。",
+      "repro": [
+        "npm audit --omit=dev --json",
+        "inspect resolved versions in package-lock.json"
+      ],
+      "suggestedFix": "采用能真实解析到安全传递依赖的 DCloud 版本，使用 Node 22/npm 10 干净安装并重跑 H5/mp-weixin 构建和生产扫描。"
+    }
+  ],
+  "knownGaps": [
+    "Composer 仍有 12 条公告/6 包，其中 4 条显式 high；本轮没有把它们描述为已修复。",
+    "根生产 npm 审计仍为 1 low、33 moderate、11 high、0 critical；9 条独立 high GHSA 通过精确临时例外治理。",
+    "agent-admin/docs-frontend、agent-build/frontend 与 agent-desktop 的独立 lock 有范围外新公告，需要后续独立 P0 合同，不能复用本轮例外。",
+    "本地 Node 26/PHP 8.5 与固定运行时不同；最终可信矩阵还需 GitHub Actions Node 22/npm 10 与 CI PHP 8.2 验证。",
+    "真实 COS/OSS、HTTPS CORS、微信合法域名、微信登录、手机号绑定、订单和支付仍未联调。"
+  ],
+  "nextActions": [
+    "在 GitHub Actions Node 22/npm 10/PHP 8.2 矩阵重新获取在线公告并确认门禁绿灯",
+    "分别执行 PHP 8.2/Laravel 12、DCloud 工具链和 Electron 安全迁移合同",
+    "真实 COS/OSS、HTTPS CORS 与微信合法域名联调前继续关闭 App v1 多端生产资产和微信/支付入口"
+  ],
+  "importApproved": true
+}

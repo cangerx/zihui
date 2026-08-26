@@ -285,12 +285,14 @@ GitHub Actions 建议拆为：
 ## 10. 首个开发迭代的可执行清单
 
 1. 合并调整后的规划、产品规格、首轮契约和 UI 迁移矩阵。
-2. 修复 admin frontend lock，确定 Node 22 + npm 10/PHP 8.0 CI 镜像和根 npm workspace。
+2. 修复 admin frontend lock，确定 Node 22 + npm 10/PHP 8.0 生产兼容目标和根 npm workspace；CI 当前使用 PHP 8.2 执行兼容回归，不能据此直接切换生产运行时。
 3. 按固定 SHA 和复制白名单抽离 `agent-web`、`agent-mobile`，生成来源清单，不复制依赖、产物、环境文件和源 lock。
 4. 先保持 Mock 构建通过并完成截图基线，再实现 contracts、错误模型、认证 client 和 `/api/app/v1/auth/*`、`/bootstrap`。
 5. 用 fake provider 打通 Web 登录、对话、图片任务，以及移动端登录、工具运行、生图和任务链路，再接真实供应商。
 6. 同步补齐 PHPUnit、Playwright、移动端构建验收和 IDOR 测试；测试未通过不得开始微信支付开发。
 
-截至 2026-08-26：清单 1-3 已完成；清单 4 的核心 API/UI 部分已完成共享 contracts/api-client、Laravel `/api/app/v1` 认证/模型/套餐/余额、会话与图片任务适配、Web SSE 对话流、会话消息持久化、跨用户 IDOR Feature Test，以及 Web/H5/mp-weixin 构建门禁。移动端生产环境已用 `/bootstrap.features.image` 控制工具入口，并打通密码登录、授权图片模型、文生图任务提交、五状态轮询和任务历史；参考图已完成 presign、签名二进制 PUT、complete、owner-scoped 内容访问和 `asset_ids` 任务租约，包含同键同参 10 分钟幂等、同键异参冲突、每日 100 个资产配额、按 IP/用户分档限流、脱敏审计和清理任务，但生产开关要等 COS/OSS、HTTPS CORS 与微信合法域名联调后开启。依赖审计仍命中 Laravel 9/Symfony 6.0 和 uni-app 工具链的高危公告，资产 signed URL 已加 user 绑定与规范原始路径校验作为纵深防护，全仓依赖升级仍是生产发布前 P0。首页只展示 bootstrap 明确启用的 AI 生图，模板页在模板 API 尚未提供时显示不可用空态，VIP 页读取 `/billing/plans` 与登录用户的 `/billing/balance`，支付方式和 CTA 保持关闭。开发 Mock 仍仅用于源 UI 验收；商品套图、工具、我的和任务历史等后续页面仍待迁移，订单/支付接口和微信资质也未启用，因此不能视为阶段 4 完成。小程序微信登录、支付和手机号绑定仍关闭。
+截至 2026-08-26：清单 1-3 已完成；清单 4 的核心 API/UI 部分已完成共享 contracts/api-client、Laravel `/api/app/v1` 认证/模型/套餐/余额、会话与图片任务适配、Web SSE 对话流、会话消息持久化、跨用户 IDOR Feature Test，以及 Web/H5/mp-weixin 构建门禁。移动端生产环境已用 `/bootstrap.features.image` 控制工具入口，并打通密码登录、授权图片模型、文生图任务提交、五状态轮询和任务历史；参考图已完成 presign、签名二进制 PUT、complete、owner-scoped 内容访问和 `asset_ids` 任务租约，包含同键同参 10 分钟幂等、同键异参冲突、每日 100 个资产配额、按 IP/用户分档限流、脱敏审计和清理任务，但生产开关要等 COS/OSS、HTTPS CORS 与微信合法域名联调后开启。Round-04 已在 PHP 8.0/Laravel 9 兼容线内将 Composer 审计从 32 条/10 包降至 12 条/6 包，Guzzle、PSR-7 与 CommonMark high 已清除；Laravel 9/Symfony 6.0 仍有 4 条显式 high，只能随 PHP 8.2/Laravel 12 独立迁移解决。根 workspace 的 DCloud 工具链仍为 11 high/0 critical，无效 overrides 已撤回；9 条独立 high GHSA 与 Composer 剩余 high 已进入最晚 2026-09-30 到期的精确安全门禁，不能描述为全部风险已解决。首页只展示 bootstrap 明确启用的 AI 生图，模板页在模板 API 尚未提供时显示不可用空态，VIP 页读取 `/billing/plans` 与登录用户的 `/billing/balance`，支付方式和 CTA 保持关闭。开发 Mock 仍仅用于源 UI 验收；商品套图、工具、我的和任务历史等后续页面仍待迁移，订单/支付接口和微信资质也未启用，因此不能视为阶段 4 完成。小程序微信登录、支付和手机号绑定仍关闭。
+
+下一安全切片必须拆成三个独立合同：PHP 8.2 + Laravel 12 后端迁移、DCloud/uni-app 安全依赖线升级、Electron 与桌面文件解析链升级。每个合同都要有自己的构建和回归面，不能用根 workspace 例外覆盖其他独立 lock。生产 `APP_V1_ENABLE_ASSETS` 继续默认关闭；真实 COS/OSS、HTTPS CORS 与微信合法域名联调完成前不得打开。
 
 首轮完成的判断标准不是页面数量，而是：普通浏览器脱离 Electron 可以登录并完成一次对话和生图，任务状态可恢复，两个用户之间不能越权，CI 能阻止契约和依赖漂移。

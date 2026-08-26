@@ -2,6 +2,7 @@
     "name": "agent-admin/backend",
     "type": "project",
     "description": "Agent Admin Cloud Backend",
+    "license": "proprietary",
     "require": {
         "php": "^8.0",
         "alibabacloud/darabonba-openapi": "^0.2",

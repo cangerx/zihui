@@ -1,0 +1,70 @@
+{
+  "round": 4,
+  "goal": "降低多端生产依赖的已知高危风险，并建立可审计、会过期、阻止新增风险的依赖安全门禁。",
+  "ownedTasks": [
+    "task_composer_security_updates_017",
+    "task_uniapp_transitive_overrides_018",
+    "task_security_audit_policy_019",
+    "task_dependency_upgrade_verification_020"
+  ],
+  "deliverables": [
+    "在 PHP 8.0 / Laravel 9 兼容线内升级 Laravel、Guzzle、PSR-7、CommonMark、OSS SDK 和测试依赖到当前可安装的安全补丁版本。",
+    "在不更换已导入 uni-app UI 技术栈的前提下，验证 DCloud 高危传递依赖能否通过最小 overrides 修复；只有实际解析版本和审计高危数量下降，且 H5、mp-weixin、类型检查和生产扫描全通过时才能保留，否则撤回并登记精确到期例外。",
+    "新增机器可读依赖安全策略和检查脚本：未登记的 high/critical、已过期例外、已无对应公告的陈旧例外均失败。",
+    "GitHub Actions 在 PHP 和 Node 作业中执行统一安全门禁；安全检查输出不得包含凭据或环境变量。",
+    "记录 Laravel/PHP 和 DCloud 上游仍不可原地修复的公告、责任、到期日和退出条件；生产发布继续 fail closed。"
+  ],
+  "verificationPlan": [
+    {
+      "criterion": "所有可在现有 PHP 8.0 / Laravel 9 约束内修复的 Composer high/critical 公告已消除。",
+      "howToCheck": "composer update 后运行 composer validate、composer install dry-run、composer audit JSON 与安全策略检查；Guzzle/PSR-7/CommonMark 不得仍出现在 high/critical 未豁免结果中。",
+      "hardFail": true
+    },
+    {
+      "criterion": "任何保留的 npm overrides 都必须实际减少 DCloud 工具链 high/critical；无可验证收益的 overrides 必须撤回并由精确、到期的例外门禁覆盖。",
+      "howToCheck": "比较变更前基线 11 high/0 critical；从干净 lock 检查实际解析版本并运行 npm audit JSON、workspace type-check、Web/H5/mp-weixin 构建和生产静态扫描。若 override 未改变解析版本、未降低 high/critical 或导致任一契约失败则不得保留。",
+      "hardFail": true
+    },
+    {
+      "criterion": "依赖安全例外是精确、可追责和会过期的，不能静默放宽。",
+      "howToCheck": "策略文件逐条包含 ecosystem、advisory/package、severity、reason、owner、expires、exit_criteria；测试脚本验证新增公告、过期例外和陈旧例外均返回非零。",
+      "hardFail": true
+    },
+    {
+      "criterion": "App v1 资产签名、幂等、限流和用户隔离行为在依赖升级后不回归。",
+      "howToCheck": "运行全部 App v1 Feature Test、命名限流单测、PHP syntax、route:list 和 App v1 静态契约检查。",
+      "hardFail": true
+    },
+    {
+      "criterion": "开发与部署文档准确反映 PHP 8.0 当前兼容目标和 PHP/Laravel 升级的生产阻断关系。",
+      "howToCheck": "检查开发说明、部署说明、多端计划和 round-04 evaluation；不得声称 Laravel 9/Symfony 风险已完全解决，APP_V1_ENABLE_ASSETS 仍默认关闭。",
+      "hardFail": true
+    }
+  ],
+  "nonGoals": [
+    "不在本轮直接跨 Laravel 9 到 Laravel 12；该迁移要求 PHP 8.2、Sanctum、Ignition、Monolog、Carbon 和应用生命周期的独立合同。",
+    "不把 npm audit --force 或 Composer 全量大版本更新作为自动修复手段。",
+    "不通过删除依赖审计、降低 audit-level、忽略所有传递依赖或把构建依赖改名来隐藏公告。",
+    "不在本轮开启素材、微信登录、手机号绑定、订单或支付生产开关。",
+    "不在本轮升级 agent-desktop、agent-build 或管理/文档前端依赖；本轮安全变更范围是 agent-admin/backend 和根多端 workspace，其他独立锁审计结果单独登记排期。",
+    "不在本轮执行真实 COS/OSS、MySQL 并发或微信合法域名联调；这些保持为下一切片。"
+  ],
+  "handoffPaths": [
+    "agent-admin/backend/composer.json",
+    "agent-admin/backend/composer.lock",
+    "package.json",
+    "package-lock.json",
+    "scripts/check-security-audit.mjs",
+    "scripts/security-audit-policy.json",
+    "scripts/tests/security-audit-policy.test.mjs",
+    ".github/workflows/quality.yml",
+    "docs/multichannel-development.md",
+    ".agents/runtime/harness/2026-08-26-multichannel-platform/round-04-evaluation.json"
+  ],
+  "notes": [
+    "当前基线：npm audit --omit=dev 为 11 high、0 critical；Composer 审计包含 Guzzle、PSR-7、Laravel、CommonMark 和 Symfony 相关公告。",
+    "CI 已使用 PHP 8.2，但 composer platform 和正式部署文档仍为 PHP 8.0.28；不得仅凭 CI 版本宣称可切换生产 PHP。",
+    "DCloud 2026-08-24 vue3 tag 仍固定 Babel 7.25.2、Intlify 9.1.9、adm-zip 0.5.16、esbuild 0.20.2、Jimp 0.10.3 和 ws 8.18.0；上游升级本身不能作为已修复证据。",
+    "例外截止日期不得晚于 2026-09-30；到期前必须完成 Laravel 12/PHP 8.2 迁移合同或获得新版 DCloud 依赖线并重新验证。"
+  ]
+}

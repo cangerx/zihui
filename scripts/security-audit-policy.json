@@ -1,0 +1,149 @@
+{
+  "version": 1,
+  "maximum_exception_expiry": "2026-09-30",
+  "exceptions": [
+    {
+      "ecosystem": "composer",
+      "scope": "agent-admin/backend",
+      "advisory": "GHSA-5VG9-5847-VVMQ",
+      "package": "laravel/framework",
+      "severity": "high",
+      "reason": "The patched Laravel line requires PHP 8.2 and a coordinated framework, Sanctum, Ignition, Monolog, Carbon, Termwind, and Symfony migration; production remains pinned to PHP 8.0.28.",
+      "owner": "Zihui backend platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Complete the PHP 8.2 and Laravel 12 migration contract, install Laravel 12.60.0 or newer, and pass the App v1 regression suite and deployment rehearsal."
+    },
+    {
+      "ecosystem": "composer",
+      "scope": "agent-admin/backend",
+      "advisory": "GHSA-3RG7-WF37-54RM",
+      "package": "symfony/http-foundation",
+      "severity": "high",
+      "reason": "The first maintained Symfony 6 fix is on the 6.4 line, which requires PHP 8.1 while the production Composer platform is PHP 8.0.28.",
+      "owner": "Zihui backend platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Move production to PHP 8.2 with the Laravel migration and resolve symfony/http-foundation to 6.4.29 or a newer unaffected supported release."
+    },
+    {
+      "ecosystem": "composer",
+      "scope": "agent-admin/backend",
+      "advisory": "GHSA-QPMX-3RFJ-7RHV",
+      "package": "symfony/mime",
+      "severity": "high",
+      "reason": "The Symfony MIME fix is available only on maintained branches that require a newer PHP runtime than the current PHP 8.0.28 production target.",
+      "owner": "Zihui backend platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Move production to PHP 8.2 with the Laravel migration and resolve symfony/mime to 6.4.40 or a newer unaffected supported release."
+    },
+    {
+      "ecosystem": "composer",
+      "scope": "agent-admin/backend",
+      "advisory": "GHSA-QQ5C-677P-737Q",
+      "package": "symfony/process",
+      "severity": "high",
+      "reason": "The Symfony Process fix is available only on the 6.4 maintained line requiring PHP 8.1; the production platform remains PHP 8.0.28 and is deployed on Linux.",
+      "owner": "Zihui backend platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Move production to PHP 8.2 with the Laravel migration and resolve symfony/process to 6.4.14 or a newer unaffected supported release."
+    },
+    {
+      "ecosystem": "npm",
+      "scope": "root",
+      "advisory": "GHSA-P2PH-7G93-HW3M",
+      "package": "@intlify/core-base",
+      "severity": "high",
+      "reason": "The supported DCloud release pins Intlify 9.1.9; an attempted root override did not change the clean lock resolution and was removed.",
+      "owner": "Zihui mobile platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Adopt a DCloud release that resolves @intlify/core-base to 9.1.11 or newer, then pass clean npm ci, H5, mp-weixin, and production-entry scans."
+    },
+    {
+      "ecosystem": "npm",
+      "scope": "root",
+      "advisory": "GHSA-P2PH-7G93-HW3M",
+      "package": "@intlify/message-resolver",
+      "severity": "high",
+      "reason": "The supported DCloud release pins Intlify 9.1.9; an attempted root override did not change the clean lock resolution and was removed.",
+      "owner": "Zihui mobile platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Adopt a DCloud release that resolves @intlify/message-resolver to 9.1.11 or newer, then pass clean npm ci, H5, mp-weixin, and production-entry scans."
+    },
+    {
+      "ecosystem": "npm",
+      "scope": "root",
+      "advisory": "GHSA-XCPC-8H2W-3J85",
+      "package": "adm-zip",
+      "severity": "high",
+      "reason": "DCloud uni-cli-shared pins adm-zip 0.5.16 and the attempted override did not alter the resolved dependency graph.",
+      "owner": "Zihui mobile platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Adopt a DCloud release resolving adm-zip to 0.6.0 or newer and verify both mobile targets from a clean Node 22/npm 10 install."
+    },
+    {
+      "ecosystem": "npm",
+      "scope": "root",
+      "advisory": "GHSA-XVF7-4V9Q-58W6",
+      "package": "jpeg-js",
+      "severity": "high",
+      "reason": "The DCloud mp-weixin image toolchain resolves jpeg-js 0.3.7 and no verified compatible override reduced the audit result.",
+      "owner": "Zihui mobile platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Adopt a DCloud toolchain resolving jpeg-js to 0.4.4 or newer and pass H5/mp-weixin builds plus image asset production scans."
+    },
+    {
+      "ecosystem": "npm",
+      "scope": "root",
+      "advisory": "GHSA-6G55-P6WH-862Q",
+      "package": "postcss",
+      "severity": "high",
+      "reason": "DCloud uni-nvue-styler installs a nested PostCSS 8.5.6 and the root override experiment did not change that nested resolution.",
+      "owner": "Zihui mobile platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Adopt a DCloud release whose nested PostCSS is newer than 8.5.17 and verify generated H5 and mp-weixin CSS from a clean install."
+    },
+    {
+      "ecosystem": "npm",
+      "scope": "root",
+      "advisory": "GHSA-R28C-9Q8G-F849",
+      "package": "postcss",
+      "severity": "high",
+      "reason": "DCloud uni-nvue-styler installs a nested PostCSS 8.5.6 and the root override experiment did not change that nested resolution.",
+      "owner": "Zihui mobile platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Adopt a DCloud release whose nested PostCSS is newer than 8.5.17 and verify generated H5 and mp-weixin CSS from a clean install."
+    },
+    {
+      "ecosystem": "npm",
+      "scope": "root",
+      "advisory": "GHSA-C27G-Q93R-2CWF",
+      "package": "vite",
+      "severity": "high",
+      "reason": "The DCloud compiler line resolves Vite 5.2.8; replacing the transitive compiler package without a DCloud-supported release was not verifiably safe.",
+      "owner": "Zihui mobile platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Upgrade to a DCloud-supported compiler with an unaffected Vite/launch-editor chain and pass clean H5/mp-weixin production builds on Node 22."
+    },
+    {
+      "ecosystem": "npm",
+      "scope": "root",
+      "advisory": "GHSA-FX2H-PF6J-XCFF",
+      "package": "vite",
+      "severity": "high",
+      "reason": "The DCloud compiler line resolves Vite 5.2.8; replacing the transitive compiler package without a DCloud-supported release was not verifiably safe.",
+      "owner": "Zihui mobile platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Upgrade to a DCloud-supported compiler with an unaffected Vite chain and pass clean H5/mp-weixin production builds on Node 22."
+    },
+    {
+      "ecosystem": "npm",
+      "scope": "root",
+      "advisory": "GHSA-96HV-2XVQ-FX4P",
+      "package": "ws",
+      "severity": "high",
+      "reason": "The DCloud mp-weixin development toolchain pins ws 8.18.0 and no clean-lock override produced a verified dependency change.",
+      "owner": "Zihui mobile platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Adopt a DCloud release resolving ws to 8.21.0 or newer and pass clean H5/mp-weixin builds and production bundle scans."
+    }
+  ]
+}

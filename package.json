@@ -18,6 +18,8 @@
     "check:mobile-real-api": "node scripts/check-mobile-real-api.mjs",
     "check:mobile-production-entrypoints": "node scripts/check-mobile-production-entrypoints.mjs",
     "check:mobile-production-assets": "node scripts/check-mobile-production-assets.mjs",
+    "check:security-audit": "node scripts/check-security-audit.mjs",
+    "test:security-audit": "node --test scripts/tests/security-audit-policy.test.mjs",
     "type-check": "npm run type-check --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "build:web": "npm run build --workspace=@zihui/web",

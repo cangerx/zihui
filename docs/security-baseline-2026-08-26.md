@@ -24,13 +24,24 @@
 | `agent-admin/frontend` | 1 | 0 | 1 | 0 | 直接依赖高危已清理；剩余为间接工具链公告 |
 | `agent-build/backend` | 1 | 1 | 1 | 0 | Vite 4 和 Laravel Vite Plugin 需跨主版本升级，独立排期 |
 
-审计数会随公告数据库变化。CI 当前阻止 production critical，新高危需在合并评审中判断可达性与升级方案。
+上述表格是 UI 抽离时的初始快照，审计数会随公告数据库变化。Round-04 已将主开发范围改为逐条 high/critical 门禁：根 workspace 和 `agent-admin/backend` 的既有高危必须在 `scripts/security-audit-policy.json` 中精确匹配生态、锁文件范围、GHSA、包名和严重级别，并具有 owner、到期日与退出条件；新增、过期、陈旧或通配例外都会使 CI 失败。`agent-admin/frontend` 与 `agent-build/backend` 当前生产审计为 0 high/critical，不允许例外。
+
+2026-08-26 Round-04 复核结果：
+
+| 范围 | 修复前 | 修复后 | 当前结论 |
+| --- | --- | --- | --- |
+| `agent-admin/backend` Composer | 32 条 / 10 包 | 12 条 / 6 包，其中 4 条显式 high、0 critical | Guzzle、PSR-7、CommonMark high 已消除；Laravel 9 与 Symfony 6.0 的 4 条 high 需要 PHP 8.2/Laravel 12 独立迁移，例外最晚 2026-09-30 到期 |
+| 根 workspace `--omit=dev` | 45 条：1 low / 33 moderate / 11 high / 0 critical | 数量未下降 | DCloud 固定传递依赖的 9 条独立 high GHSA 已精确登记；无效 overrides 已撤回，不得声称已修复 |
+| `agent-admin/frontend` `--omit=dev` | 0 high / 0 critical | 0 high / 0 critical | CI 必须保持为零 |
+| `agent-build/backend` `--omit=dev` | 0 high / 0 critical | 0 high / 0 critical | CI 必须保持为零 |
+
+本轮范围外复核还发现 `agent-admin/docs-frontend`、`agent-build/frontend` 和 `agent-desktop` 的独立 lock 存在新公告。它们不能复用根 workspace 的例外，也不在本轮悄悄升级：文档前端和构建前端先做可兼容的 Axios/React Router 补丁升级；桌面端 Electron 31、updater、xlsx 与文件解析链需要单独 P0 合同、桌面构建和打包回归。
 
 ## 上线前硬阻塞
 
 - Web 仍使用源 UI 的 localStorage Bearer token；必须随 `packages/api-client` 和 `/api/app/v1` 认证接入改为 HttpOnly Cookie 或短期 token + refresh 机制。
-- Web/H5/小程序仍未接通 `/api/app/v1`，Mock 与旧 facade 不能作为业务完成证据。
+- Web、H5 和小程序的登录、bootstrap、套餐/余额、对话或生图任务等核心链路已接通 `/api/app/v1`；尚未迁移的页面仍需逐页移除 Mock 与旧 facade，不能用核心链路通过代替全页面验收。
 - 小程序 AppID 为空且 `urlCheck` 为开发设置；需配置真实 AppID、合法域名、隐私声明与支付资质。
 - Web 导入的头像、WebP 和品牌 Logo 需要肖像权、商标和产品素材授权复核；移动端源码与资产需要所有者确认许可。
 - 当前来源记录只证明固定提交、目标快照和内部开发用途，不等同于公开分发或生产使用授权；未完成确认前不得用于商业发布。
-- PHP 8.0、Laravel 9、DCloud 旧平台依赖和 Electron TLS 放宽配置均为既有安全债务，需分阶段升级或收紧。
+- PHP 8.0、Laravel 9、DCloud 旧平台依赖和 Electron TLS 放宽配置均为既有安全债务。PHP 8.2/Laravel 12、DCloud 安全版本线与 Electron 升级必须分别立项并在 2026-09-30 前清除对应例外，不能通过延长通配豁免上线。

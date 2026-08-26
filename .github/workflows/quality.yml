@@ -23,9 +23,27 @@ jobs:
           extensions: mbstring, bcmath, curl, fileinfo, gd, pdo_mysql
           tools: composer:v2
 
+      - name: Setup Node for security policy
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate Composer definition
+        working-directory: agent-admin/backend
+        run: composer validate --strict
+
       - name: Install Laravel dependencies
         working-directory: agent-admin/backend
         run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Enforce Composer security policy
+        working-directory: agent-admin/backend
+        run: |
+          composer audit --locked --format=json > "$RUNNER_TEMP/composer-audit.json" || true
+          node ../../scripts/check-security-audit.mjs \
+            --ecosystem composer \
+            --scope agent-admin/backend \
+            --audit "$RUNNER_TEMP/composer-audit.json"
 
       - name: Prepare Laravel environment
         working-directory: agent-admin/backend
@@ -91,6 +109,17 @@ jobs:
       - name: Install workspace
         run: npm ci
 
+      - name: Test security policy
+        run: npm run test:security-audit
+
+      - name: Enforce workspace security policy
+        run: |
+          npm audit --omit=dev --json > "$RUNNER_TEMP/npm-root-audit.json" || true
+          node scripts/check-security-audit.mjs \
+            --ecosystem npm \
+            --scope root \
+            --audit "$RUNNER_TEMP/npm-root-audit.json"
+
       - name: Verify imported UI
         run: npm run check:ui-import
 
@@ -121,8 +150,15 @@ jobs:
           npm ci --prefix agent-desktop --ignore-scripts
           git diff --exit-code -- package-lock.json agent-admin/frontend/package-lock.json agent-admin/docs-frontend/package-lock.json agent-build/backend/package-lock.json agent-build/frontend/package-lock.json agent-desktop/package-lock.json
 
-      - name: Block critical production advisories
+      - name: Enforce clean independent production scopes
         run: |
-          npm audit --omit=dev --audit-level=critical
-          npm audit --prefix agent-admin/frontend --omit=dev --audit-level=critical
-          npm audit --prefix agent-build/backend --omit=dev --audit-level=critical
+          npm audit --prefix agent-admin/frontend --omit=dev --json > "$RUNNER_TEMP/npm-admin-frontend-audit.json" || true
+          node scripts/check-security-audit.mjs \
+            --ecosystem npm \
+            --scope agent-admin/frontend \
+            --audit "$RUNNER_TEMP/npm-admin-frontend-audit.json"
+          npm audit --prefix agent-build/backend --omit=dev --json > "$RUNNER_TEMP/npm-build-backend-audit.json" || true
+          node scripts/check-security-audit.mjs \
+            --ecosystem npm \
+            --scope agent-build/backend \
+            --audit "$RUNNER_TEMP/npm-build-backend-audit.json"
