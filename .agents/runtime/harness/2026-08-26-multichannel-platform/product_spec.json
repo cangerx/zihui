@@ -10,6 +10,9 @@
   ],
   "scope": {
     "mustHave": [
+      "从 /Volumes/mac1/code/aiwebb/lingmi-ai/web 抽离 Next.js 16 + React 19 Web UI，固定源提交 3548ca66d69cc699e8119d860f4fb689cc866e9d。",
+      "从 /Volumes/mac1/code/ai-sc-xcx 抽离 uni-app Vue 3 小程序/H5 UI，固定源提交 ed65fabfdf1c6cb89ebb43cff44ec02095fe2bdf。",
+      "抽离过程只导入源码、静态资源和必要配置，不导入源仓库 Git 历史、依赖、构建产物、真实环境变量和旧品牌专属配置。",
       "建立 packages/contracts、packages/api-client、packages/domain 的共享边界。",
       "新增版本化 /api/app/v1 客户端 API，不破坏现有 Electron API。",
       "Web MVP：登录、账号信息、对话、数字员工、AI 生图、任务记录、余额和套餐。",
@@ -20,14 +23,17 @@
       "建立 CI：类型检查、PHP 测试、前端构建、契约校验和依赖审计。"
     ],
     "shouldHave": [
-      "uni-app Vue 3 客户端同时输出 H5 和微信小程序。",
-      "Web 与小程序共享 API client、类型和领域状态，不共享所有页面。",
+      "保留现有 Next.js Web 和 uni-app 小程序的设计系统、页面布局、交互和静态资源，优先做协议适配而不是重做 UI。",
+      "uni-app Vue 3 客户端继续同时输出 H5 和微信小程序。",
+      "React Web 与 Vue 小程序共享 API client、类型和领域状态，不共享框架组件和页面。",
       "SSE 用于 Web/H5 流式对话，WebSocket 或轮询用于小程序任务进度。",
       "云端会话历史、云端图库和云端上传能力。",
       "渠道级功能开关和后台运营配置。",
       "微信 OAuth / wx.login、微信支付和小程序订阅消息。"
     ],
     "outOfScope": [
+      "第一轮迁移 lingmi-ai 的代理商分站、插件 SDK、返佣提现和自定义域名业务。",
+      "不在第一轮承诺小程序具备独立通用对话页或数字员工页；现有 ai-sc-xcx UI 尚无这两个页面。",
       "第一阶段迁移 Electron 本地 SQLite 和 local-file 协议。",
       "第一阶段迁移本地知识库扫描、MCP 本地进程和浏览器自动化。",
       "第一阶段迁移 FFmpeg、本地视频剪辑、ClawBot 和电商连接器。",
@@ -47,12 +53,19 @@
   "constraints": [
     "现有后端为 Laravel 9 + PHP 8.0 + MySQL 8.0。",
     "现有桌面端为 Electron 31 + Vue 3 + TypeScript，页面约 67 个，多个页面直接依赖 window.api。",
+    "Web UI 源项目为 Next.js 16 + React 19 + Zustand，并非 Vue；迁移后保留该技术栈。",
+    "小程序 UI 源项目为 uni-app Vue 3 + Pinia，已有 13 个页面入口、Mock 接口层和任务轮询能力。",
+    "Web UI 源项目当前使用 localStorage Bearer token、旧 /api/v1 契约和 lingmi.ai 品牌/OEM逻辑，必须经适配层替换后才能上线。",
+    "小程序 UI 源项目当前使用旧 take 风格接口、客户端请求签名和 Mock 数据，客户端 VITE 变量不能作为服务端秘密。",
     "云控端已有客户端 API，但接口命名和返回结构不是为多端版本化设计的。",
     "Web 和小程序不能依赖本地 SQLite、Electron IPC 或绝对文件路径。",
     "支付、微信登录、对象存储和流式任务必须由服务端持有密钥并审计。",
     "兼容现有桌面客户端，新增 API 不应立即删除旧路由。"
   ],
   "risks": [
+    "源 UI 页面数量多于首发后端能力，若不使用功能开关会出现可点击但不可用的入口。",
+    "Web 的 /agent 页面语义是代理商管理而非数字员工，直接复用会造成产品概念错误。",
+    "源 Web 同时存在 npm/pnpm 锁文件，抽离时必须统一为目标仓库的 npm workspace 锁文件。",
     "桌面端本地数据与云端数据模型不一致，直接复用页面会产生大量条件分支。",
     "SSE、WebSocket、小程序网络限制和代理配置可能导致流式体验不一致。",
     "小程序审核、业务域名、合法域名、支付资质和隐私合规会影响上线时间。",

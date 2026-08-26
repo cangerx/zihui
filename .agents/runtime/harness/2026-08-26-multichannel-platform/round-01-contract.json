@@ -1,23 +1,39 @@
 {
   "round": 1,
-  "goal": "建立 Web/H5/小程序可持续开发的跨端底座，并交付可运行的 Web MVP 骨架。",
+  "goal": "固定并白名单抽离既有 Web/小程序 UI，建立跨端契约与 API v1 适配底座，并交付可运行的 Web MVP。",
   "ownedTasks": [
-    "task_contracts_001",
-    "task_api_v1_002",
-    "task_web_shell_003",
-    "task_auth_channel_004",
-    "task_ci_baseline_005"
+    "task_ui_source_freeze_000",
+    "task_ui_extraction_001",
+    "task_contracts_002",
+    "task_api_v1_003",
+    "task_web_adapter_004",
+    "task_mobile_adapter_005",
+    "task_auth_channel_006",
+    "task_ci_baseline_007"
   ],
   "deliverables": [
+    "UI 来源清单：记录 lingmi-ai/web@3548ca66d69cc699e8119d860f4fb689cc866e9d 和 ai-sc-xcx@ed65fabfdf1c6cb89ebb43cff44ec02095fe2bdf 的来源、许可、复制白名单和排除项。",
     "packages/contracts：用户、认证、模型、对话、图片任务、资源、余额和套餐类型。",
     "packages/api-client：浏览器安全的请求封装、错误模型、token/cookie 策略、SSE 客户端。",
     "agent-admin/backend：/api/app/v1 的认证、me、models、permissions、chat、image task、plans、balance 接口。",
-    "agent-web：Vue 3 + Vite + Pinia + Vue Router 的登录、主布局、对话、生图、任务记录和账户页面。",
-    "agent-mobile：uni-app 工程骨架，至少能编译 H5，并完成登录页和对话页路由占位。",
+    "agent-web：从源项目白名单抽离的 Next.js 16 + React 19 UI，保留主布局、登录、对话、生图、最近任务、套餐和账户页面，并将旧 /api/v1 调用替换为共享 API 适配器。",
+    "agent-web 数字员工/专家库：按抽离后的设计系统新增独立列表、详情和发起会话链路；不得复用语义不同的 /agent/* 代理商页面。",
+    "agent-mobile：从源项目白名单抽离的 uni-app Vue 3 UI，保留首页、模板、工具、我的、登录、生图、任务、VIP 和套图页面，并将旧 take/Mock 接口替换为共享 API 适配器。",
+    "渠道功能清单：未接通的 Web 工具、OEM 代理商、插件、返佣入口默认隐藏；小程序首轮不伪造不存在的通用对话/数字员工 UI。",
     "CI：共享类型检查、Web 构建、PHP 契约测试、Skills 契约校验和锁文件一致性检查。",
     "跨端 README：本地启动、环境变量、API 版本、开发账号和验收步骤。"
   ],
   "verificationPlan": [
+    {
+      "criterion": "抽离结果可追溯且不包含源仓库元数据、依赖、构建产物、真实环境配置或旧品牌秘密。",
+      "howToCheck": "核对源提交 SHA 和迁移清单，并扫描 agent-web/agent-mobile 中的 .git、node_modules、.next、dist、lingmi.ai、test.dev.shequlefu.com、VITE_REQUEST_PASSWORD 和真实密钥模式。",
+      "hardFail": true
+    },
+    {
+      "criterion": "抽离后的 UI 视觉结构和核心交互没有因协议替换被重写。",
+      "howToCheck": "在相同 desktop/mobile viewport 对比源项目与目标项目的登录、首页、对话/工具、生图、任务和套餐截图，并执行核心点击路径。",
+      "hardFail": true
+    },
     {
       "criterion": "现有 main 分支工作树保持干净，新增代码不改变旧桌面入口契约。",
       "howToCheck": "运行 git diff、现有 Skills Node/PHP canonical 校验，并检查旧 routes/api.php 未被删除。",
@@ -34,6 +50,11 @@
       "hardFail": true
     },
     {
+      "criterion": "Web 用户可以浏览数字员工/专家列表和详情，并从详情创建带正确 agent_id 的会话。",
+      "howToCheck": "浏览器自动化分别验证有权限、无权限、空列表、详情不存在和成功发起会话；确认 /agent/* 代理商页面未被误用。",
+      "hardFail": true
+    },
+    {
       "criterion": "Web 用户可以创建图片任务、查看进度并得到资源 URL。",
       "howToCheck": "使用 fake image provider，验证 queued、processing、success、failed 和 cancel 状态。",
       "hardFail": true
@@ -44,8 +65,8 @@
       "hardFail": true
     },
     {
-      "criterion": "uni-app 工程可以编译 H5，且复用 contracts 和 api-client。",
-      "howToCheck": "运行 H5 构建，检查依赖图中没有 Electron、Node 原生模块或 better-sqlite3。",
+      "criterion": "uni-app 工程可以编译 H5 和 mp-weixin，且复用 contracts 和 api-client。",
+      "howToCheck": "运行 type-check、build:h5 和 build:mp-weixin，检查依赖图中没有 Electron、Node 原生模块或 better-sqlite3。",
       "hardFail": true
     },
     {
@@ -60,6 +81,9 @@
     }
   ],
   "nonGoals": [
+    "不把 lingmi-ai 的代理商分站、插件 SDK、返佣提现、自定义域名和所有实验性工具在第一轮全部接通。",
+    "不把 Web React 页面改写成 Vue，也不把 uni-app Vue 页面改写成 React。",
+    "不复制源仓库的 .git、node_modules、.next、dist、tsbuildinfo、真实 .env 或两套冲突的 lock 文件。",
     "不迁移 Electron 的本地图库、浏览器自动化、MCP、ClawBot、FFmpeg 和电商连接器。",
     "不在第一轮重写现有桌面端页面。",
     "不在没有微信配置的环境中伪造真实微信登录或支付成功。",
@@ -68,6 +92,8 @@
   "handoffPaths": [
     "packages/contracts/**",
     "packages/api-client/**",
+    "packages/domain/**",
+    "packages/validators/**",
     "agent-admin/backend/app/Http/Controllers/App/**",
     "agent-admin/backend/routes/app.php",
     "agent-web/**",
@@ -76,8 +102,13 @@
     "docs/multichannel-development.md"
   ],
   "notes": [
-    "第一轮先以 Web 为主验证云端 API，uni-app 只要求 H5 编译和最小可运行路由。",
+    "Web UI 来源固定为 /Volumes/mac1/code/aiwebb/lingmi-ai/web@3548ca66d69cc699e8119d860f4fb689cc866e9d；小程序 UI 来源固定为 /Volumes/mac1/code/ai-sc-xcx@ed65fabfdf1c6cb89ebb43cff44ec02095fe2bdf。",
+    "源项目基线已验证：Next.js 生产构建、uni-app type-check、H5 构建和 mp-weixin 构建均通过。",
+    "第一轮先以 Web 验证登录、对话和生图；uni-app 首轮接通登录、工具/生图、任务和会员，不把套图结果页的对话式展示误认为通用聊天页。",
+    "Web 保留 Next.js 16 + React 19 + Zustand，移动端保留 uni-app Vue 3 + Pinia；共享包必须保持框架无关。",
+    "抽离后的新前端统一进入根 npm workspace，只维护目标仓库的一套 lock，不复制源 Web 的 npm/pnpm 双 lock。",
     "认证建议 Web 使用 HttpOnly Secure Cookie；小程序使用短期 access token + refresh token；Electron 继续兼容现有 JWT。",
+    "源 Web 的 localStorage token、lingmi.ai 域名逻辑和 Mock 支付不能原样进入生产；源小程序的 VITE_REQUEST_PASSWORD 不能被视为秘密。",
     "所有异步图片/视频能力统一为 task_id 状态机，客户端不直接依赖供应商返回结构。",
     "合并门禁必须先解决 agent-admin/frontend package-lock 与 package.json 不同步问题。"
   ]
