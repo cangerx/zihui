@@ -11,9 +11,11 @@ use Illuminate\Support\Facades\Route;
  * 浏览器地址栏看着不专业、SEO 也容易出现 /admin 与 /admin/ 双 URL。
  * 用原生 Symfony RedirectResponse 构造，URL 原样进 Location header。
  */
-function redirectKeepSlash(string $path): RedirectResponse
-{
-    return new RedirectResponse($path, 302);
+if (!function_exists('redirectKeepSlash')) {
+    function redirectKeepSlash(string $path): RedirectResponse
+    {
+        return new RedirectResponse($path, 302);
+    }
 }
 
 Route::get('/', function () {

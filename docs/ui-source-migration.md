@@ -62,7 +62,7 @@ Web 源仓库顶层为 MIT License；小程序源仓库未发现独立许可证�
 
 | 页面/模块 | 处理 | 首轮要求 |
 | --- | --- | --- |
-| 根工作台 `/`、侧栏、主题、站点配置 | 适配复用 | 替换品牌和 `/app/*` 配置；已接模型与同步对话，SSE 作为下一切片；保留现有布局与交互 |
+| 根工作台 `/`、侧栏、主题、站点配置 | 适配复用 | 替换品牌和 `/app/*` 配置；已接模型、SSE 对话和断流停止；保留现有布局与交互 |
 | 登录弹窗、注册和 OAuth callback | 适配复用 | 改用 Zihui 认证；长期 refresh token 不存 `localStorage`；OAuth 未配置项隐藏 |
 | `/generate`、`/image` | 适配复用 | 接预签名上传和 `image-tasks` 状态机；保留生成参数、画布和结果交互 |
 | `/recent`、`/projects` | 适配复用 | 首轮映射任务记录；云端项目未实现前不得展示伪数据 |
@@ -107,7 +107,7 @@ Web 当前没有可直接视为“数字员工/专家库”的页面。该功能
 | `/auth/login`、`/auth/profile`、`/auth/refresh` | `/auth/password/login`、`/auth/me`、`/auth/refresh` | 改 HttpOnly Cookie 或短期 access token 策略 |
 | `/app/modules`、`/app/apps`、`/app/login-methods`、`/app/site-config` | `/bootstrap` | 返回渠道能力、品牌、登录方式和开关 |
 | `/models*` | `/models` | 用 `type/capabilities` 过滤，不暴露供应商密钥 |
-| `/conversations*` | `/conversations*` | 统一会话和消息 envelope；当前同步响应，SSE 待后续实现 |
+| `/conversations*` | `/conversations*` | 统一会话和消息 envelope；Web 使用 SSE，服务端完成后持久化 assistant，失败不重复扣费 |
 | `/image/generate` | `/image-tasks` | 同步生成响应改为异步 `task_id` |
 | `/generations*` | `/tasks*`（`type=image`） | 映射状态、进度、结果资源和失败原因 |
 | `/upload` | `/assets/presign` + 对象存储直传 + `/assets/{id}/complete` | 禁止大文件经 PHP 中转或 base64 入请求 |
@@ -137,7 +137,7 @@ Web 当前没有可直接视为“数字员工/专家库”的页面。该功能
 3. `feat(api): add app v1 bootstrap and authentication`
    接登录、会话保持、能力开关和账号信息。
 4. `feat(web): connect chat and image task workflows`
-   打通 Web 同步对话、生图和任务历史；SSE 流式输出另行验收。
+   打通 Web SSE 对话、生图和任务历史；验证断流停止、服务端持久化和同步 fallback 不重复执行。
 5. `feat(mobile): connect tools image tasks and membership`
    打通移动端登录、工具、生图、任务和会员。
 6. `test: add multichannel smoke and visual baselines`

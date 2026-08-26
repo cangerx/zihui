@@ -101,6 +101,105 @@ class ConversationController
         $conversation = $this->owned($request, $id);
         if (!$conversation) return AppV1Response::error('not_found', 'Conversation not found', 404);
 
+        $prepared = $this->prepareMessage($request, $conversation);
+        if ($prepared instanceof \Illuminate\Http\JsonResponse) return $prepared;
+
+        $model = $prepared['model'];
+        $content = $prepared['content'];
+        $requestId = $prepared['request_id'];
+        $userMessage = $prepared['user_message'];
+        $gatewayRequest = $this->gatewayRequest($prepared, false);
+        try {
+            $gatewayResponse = app(GatewayController::class)->chatCompletions($gatewayRequest);
+        } catch (\Throwable $e) {
+            $userMessage->delete();
+            report($e);
+            return AppV1Response::error('gateway_error', '模型调用失败，请稍后重试', 502);
+        }
+        if ($gatewayResponse->getStatusCode() >= 400) {
+            $userMessage->delete();
+            return AppV1Response::error(
+                'gateway_error',
+                $this->gatewayError($gatewayResponse->getData(true)),
+                $gatewayResponse->getStatusCode()
+            );
+        }
+
+        $payload = $gatewayResponse->getData(true);
+        $assistantContent = $this->assistantContentFromPayload($payload);
+        if ($assistantContent === '') {
+            $userMessage->delete();
+            return AppV1Response::error('empty_response', '模型未返回内容，请稍后重试', 502);
+        }
+
+        $assistantMessage = $this->persistAssistant($conversation, $model, $content, $assistantContent, $requestId);
+
+        return AppV1Response::ok([
+            'user_message' => $this->message($userMessage),
+            'assistant_message' => $this->message($assistantMessage),
+        ]);
+    }
+
+    public function streamMessage(Request $request, int $id)
+    {
+        if (!$this->enabled()) return $this->disabled();
+        $conversation = $this->owned($request, $id);
+        if (!$conversation) return AppV1Response::error('not_found', 'Conversation not found', 404);
+
+        $prepared = $this->prepareMessage($request, $conversation);
+        if ($prepared instanceof \Illuminate\Http\JsonResponse) return $prepared;
+
+        $model = $prepared['model'];
+        $content = $prepared['content'];
+        $requestId = $prepared['request_id'];
+        $userMessage = $prepared['user_message'];
+        $streamBuffer = '';
+        $assistantContent = '';
+
+        $gatewayRequest = $this->gatewayRequest($prepared, true);
+        $gatewayRequest->attributes->set('app_stream_listener', function (string $chunk) use (&$streamBuffer, &$assistantContent): void {
+            $this->collectStreamChunk($chunk, $streamBuffer, $assistantContent);
+        });
+        $gatewayRequest->attributes->set('app_stream_complete_listener', function (array $result) use (
+            &$streamBuffer,
+            &$assistantContent,
+            $conversation,
+            $model,
+            $content,
+            $requestId,
+            $userMessage
+        ): void {
+            if ($streamBuffer !== '') {
+                $this->collectStreamChunk("\n", $streamBuffer, $assistantContent);
+            }
+            if (($result['ok'] ?? false) && trim($assistantContent) !== '') {
+                $this->persistAssistant($conversation, $model, $content, $assistantContent, $requestId);
+                return;
+            }
+            $userMessage->delete();
+        });
+
+        try {
+            $gatewayResponse = app(GatewayController::class)->chatCompletions($gatewayRequest);
+        } catch (\Throwable $e) {
+            $userMessage->delete();
+            report($e);
+            return AppV1Response::error('gateway_error', '模型调用失败，请稍后重试', 502);
+        }
+        if ($gatewayResponse->getStatusCode() >= 400) {
+            $userMessage->delete();
+            return AppV1Response::error(
+                'gateway_error',
+                $this->gatewayError($gatewayResponse->getData(true)),
+                $gatewayResponse->getStatusCode()
+            );
+        }
+
+        return $gatewayResponse;
+    }
+
+    private function prepareMessage(Request $request, AppConversation $conversation)
+    {
         $validator = Validator::make($request->all(), [
             'content' => ['required', 'string', 'max:20000'],
             'model' => ['nullable', 'string', 'max:200'],
@@ -110,8 +209,8 @@ class ConversationController
 
         $model = $this->resolveChatModel(
             $request->user(),
-            $request->input('model', $conversation->model),
-            $request->input('cloud_model_id', $conversation->cloud_model_id)
+            $request->input('model') ?: $conversation->model,
+            $request->input('cloud_model_id') ?: $conversation->cloud_model_id
         );
         if ($model instanceof \Illuminate\Http\JsonResponse) return $model;
 
@@ -136,58 +235,76 @@ class ConversationController
                 'content' => $message->content,
             ])->values()->all();
 
-        $gatewayRequest = Request::create('/api/gateway/chat/completions', 'POST', [
-            'model' => $model->model_id,
-            'cloud_model_id' => $model->id,
+        return [
+            'model' => $model,
+            'content' => $content,
+            'request_id' => $requestId,
+            'user_message' => $userMessage,
             'messages' => $messages,
-            'stream' => false,
+        ];
+    }
+
+    private function gatewayRequest(array $prepared, bool $stream): Request
+    {
+        return Request::create('/api/gateway/chat/completions', 'POST', [
+            'model' => $prepared['model']->model_id,
+            'cloud_model_id' => $prepared['model']->id,
+            'messages' => $prepared['messages'],
+            'stream' => $stream,
         ]);
-        try {
-            $gatewayResponse = app(GatewayController::class)->chatCompletions($gatewayRequest);
-        } catch (\Throwable $e) {
-            $userMessage->delete();
-            report($e);
-            return AppV1Response::error('gateway_error', '模型调用失败，请稍后重试', 502);
-        }
-        if ($gatewayResponse->getStatusCode() >= 400) {
-            $userMessage->delete();
-            return AppV1Response::error(
-                'gateway_error',
-                $this->gatewayError($gatewayResponse->getData(true)),
-                $gatewayResponse->getStatusCode()
-            );
-        }
+    }
 
-        $payload = $gatewayResponse->getData(true);
-        $assistantContent = $payload['choices'][0]['message']['content'] ?? $payload['data']['choices'][0]['message']['content'] ?? '';
-        if (is_array($assistantContent)) {
-            $assistantContent = collect($assistantContent)->map(fn ($part) => is_array($part) ? ($part['text'] ?? '') : (string) $part)->implode('');
+    private function assistantContentFromPayload(array $payload): string
+    {
+        $content = $payload['choices'][0]['message']['content'] ?? $payload['data']['choices'][0]['message']['content'] ?? '';
+        if (is_array($content)) {
+            $content = collect($content)->map(fn ($part) => is_array($part) ? ($part['text'] ?? '') : (string) $part)->implode('');
         }
-        $assistantContent = trim((string) $assistantContent);
-        if ($assistantContent === '') {
-            $userMessage->delete();
-            return AppV1Response::error('empty_response', '模型未返回内容，请稍后重试', 502);
-        }
+        return trim((string) $content);
+    }
 
+    private function persistAssistant(AppConversation $conversation, CloudModel $model, string $userContent, string $assistantContent, string $requestId): AppMessage
+    {
         $assistantMessage = AppMessage::create([
             'conversation_id' => $conversation->id,
-            'user_id' => $request->user()->id,
+            'user_id' => $conversation->user_id,
             'role' => 'assistant',
-            'content' => $assistantContent,
+            'content' => trim($assistantContent),
             'model' => (string) $model->model_id,
             'request_id' => $requestId,
         ]);
         if ($conversation->title === '新对话') {
-            $conversation->title = Str::limit($content, 60, '');
+            $conversation->title = Str::limit($userContent, 60, '');
         }
         $conversation->model = (string) $model->model_id;
         $conversation->cloud_model_id = $model->id;
         $conversation->save();
+        return $assistantMessage;
+    }
 
-        return AppV1Response::ok([
-            'user_message' => $this->message($userMessage),
-            'assistant_message' => $this->message($assistantMessage),
-        ]);
+    private function collectStreamChunk(string $chunk, string &$buffer, string &$content): void
+    {
+        $buffer .= str_replace("\r\n", "\n", $chunk);
+        while (($newline = strpos($buffer, "\n")) !== false) {
+            $line = substr($buffer, 0, $newline);
+            $buffer = substr($buffer, $newline + 1);
+            $this->collectStreamLine($line, $content);
+        }
+    }
+
+    private function collectStreamLine(string $line, string &$content): void
+    {
+        $line = trim($line);
+        if (!str_starts_with($line, 'data:')) return;
+        $data = trim(substr($line, 5));
+        if ($data === '' || $data === '[DONE]') return;
+        $payload = json_decode($data, true);
+        if (!is_array($payload)) return;
+        $delta = $payload['choices'][0]['delta']['content'] ?? $payload['choices'][0]['message']['content'] ?? '';
+        if (is_array($delta)) {
+            $delta = collect($delta)->map(fn ($part) => is_array($part) ? ($part['text'] ?? '') : (string) $part)->implode('');
+        }
+        $content .= (string) $delta;
     }
 
     private function owned(Request $request, int $id): ?AppConversation

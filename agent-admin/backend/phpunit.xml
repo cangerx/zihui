@@ -14,5 +14,10 @@
     </testsuites>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <env name="DB_CONNECTION" value="sqlite"/>
+        <env name="DB_DATABASE" value=":memory:"/>
+        <env name="CACHE_DRIVER" value="array"/>
+        <env name="QUEUE_CONNECTION" value="sync"/>
+        <env name="JWT_SECRET" value="app-v1-test-secret-key-0123456789abcdef0123456789abcdef"/>
     </php>
 </phpunit>

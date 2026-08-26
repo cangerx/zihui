@@ -21,6 +21,16 @@ return [
             'engine' => 'InnoDB',
         ],
 
+        // PHPUnit uses an in-memory SQLite database so App v1 feature tests do
+        // not require a developer's MySQL instance or any external state.
+        'sqlite' => [
+            'driver' => 'sqlite',
+            'url' => env('DB_URL'),
+            'database' => env('DB_DATABASE', database_path('database.sqlite')),
+            'prefix' => '',
+            'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
+        ],
+
         // 文档 RAG 向量索引专用 SQLite 二级连接
         // 单文件 storage/app/docs-vectors.db，与主库完全解耦：
         //   - 主库（mysql）只存业务元数据（doc_chunks 行 + chunk_text + 元信息）

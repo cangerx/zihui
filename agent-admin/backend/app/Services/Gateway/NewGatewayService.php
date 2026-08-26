@@ -86,7 +86,7 @@ class NewGatewayService
         $body = $this->materializeMessageImageUrls($body);
 
         return $isStream
-            ? $this->handleStreamChat($route, $body, $user, $cloudModel, $billingRule, $requestId)
+            ? $this->handleStreamChat($route, $body, $user, $cloudModel, $billingRule, $requestId, $request)
             : $this->handleSyncChat($route, $body, $user, $cloudModel, $billingRule, $requestId);
     }
 
@@ -153,14 +153,17 @@ class NewGatewayService
         return response()->json($resp->data ?? []);
     }
 
-    private function handleStreamChat(RouteResult $route, array $body, $user, CloudModel $cloudModel, ?BillingRule $billingRule, string $requestId)
+    private function handleStreamChat(RouteResult $route, array $body, $user, CloudModel $cloudModel, ?BillingRule $billingRule, string $requestId, Request $request)
     {
-        return response()->stream(function () use ($route, $body, $user, $cloudModel, $billingRule, $requestId) {
+        return response()->stream(function () use ($route, $body, $user, $cloudModel, $billingRule, $requestId, $request) {
             $usage = [];
             $sawChunk = false;
+            $streamListener = $request->attributes->get('app_stream_listener');
+            $streamCompleteListener = $request->attributes->get('app_stream_complete_listener');
 
-            $onChunk = function (string $data) use (&$sawChunk) {
+            $onChunk = function (string $data) use (&$sawChunk, $streamListener) {
                 $sawChunk = true;
+                if ($streamListener instanceof \Closure) $streamListener($data);
                 echo $data;
                 if (ob_get_level() > 0) ob_flush();
                 flush();
@@ -195,6 +198,9 @@ class NewGatewayService
                     if (!$sawChunk) {
                         $this->emitStreamError($requestId, '上游模型未返回任何内容（可能限流或服务波动），请稍后重试或更换模型');
                         $this->recordUsage($user, $cloudModel, 'chat', 0, 0, 0, 0, 'failed', $requestId, 'Empty upstream stream (silent-200)');
+                        if ($streamCompleteListener instanceof \Closure) $streamCompleteListener(['ok' => false, 'error' => 'empty_stream']);
+                    } elseif ($streamCompleteListener instanceof \Closure) {
+                        $streamCompleteListener(['ok' => true, 'usage' => $usage]);
                     }
                 } else {
                     // 覆盖三类失败：
@@ -210,11 +216,13 @@ class NewGatewayService
                     // 否则客户端只见空流→误判为"模型无响应"。即便 curl 已把上游非 SSE 错误体写出，
                     // 桌面端 SSE 解析也只认 data: 行、无法识别，故统一补发一条标准 error 事件。
                     $this->emitStreamError($requestId, $this->friendlyUpstreamError($httpCode));
+                    if ($streamCompleteListener instanceof \Closure) $streamCompleteListener(['ok' => false, 'error' => $reason]);
                 }
             } catch (Throwable $e) {
                 $this->router->markCredentialFailure($route->credential, $e->getMessage());
                 $this->recordUsage($user, $cloudModel, 'chat', 0, 0, 0, 0, 'failed', $requestId, $e->getMessage());
                 $this->emitStreamError($requestId, '网关转发上游时出错，请稍后重试');
+                if ($streamCompleteListener instanceof \Closure) $streamCompleteListener(['ok' => false, 'error' => $e->getMessage()]);
             }
         }, 200, [
             'Content-Type'      => 'text/event-stream',

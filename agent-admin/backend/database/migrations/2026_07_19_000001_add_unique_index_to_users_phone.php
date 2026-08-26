@@ -17,6 +17,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (DB::connection()->getDriverName() === 'sqlite') {
+            return;
+        }
+
         // 1) 空串手机号统一转 NULL
         DB::statement("UPDATE users SET phone = NULL WHERE phone = '' OR phone IS NULL");
 

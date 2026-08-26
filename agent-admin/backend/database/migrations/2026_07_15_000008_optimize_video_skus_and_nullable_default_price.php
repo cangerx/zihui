@@ -8,6 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (DB::connection()->getDriverName() === 'sqlite') {
+            return;
+        }
         if (!Schema::hasTable('video_sku_prices') || !Schema::hasTable('video_model_specs')) {
             return;
         }
@@ -32,6 +35,9 @@ return new class extends Migration
 
     public function down(): void
     {
+        if (DB::connection()->getDriverName() === 'sqlite') {
+            return;
+        }
         if (!Schema::hasTable('video_sku_prices')) {
             return;
         }

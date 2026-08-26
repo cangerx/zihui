@@ -8,6 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (DB::connection()->getDriverName() === 'sqlite') {
+            return;
+        }
         if (!Schema::hasTable('video_sku_prices')) {
             return;
         }

@@ -7,14 +7,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Send, X, ChevronDown, ShoppingBag, FileText, Sparkles, Image as ImageIcon,
   Palette, PenLine, ArrowRight, ArrowUp, Zap, Loader2, Download, Paperclip,
-  Globe, Wand2, Copy, Check, RefreshCw, ThumbsUp, ThumbsDown,
+  Globe, Wand2, Square, Copy, Check, RefreshCw, ThumbsUp, ThumbsDown,
   Plus, Trash2, MessageSquare, Search, PanelLeftClose, PanelLeft, Pencil,
   Clock, Mail, Code, Maximize2, Edit3,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { cn } from "@/lib/utils";
-import { modelAPI, imageAPI, generationAPI, inspirationAPI, chatAPI, uploadAPI } from "@/lib/api";
+import { API_BASE_URL, modelAPI, imageAPI, generationAPI, inspirationAPI, chatAPI, uploadAPI } from "@/lib/api";
 import LazyImage from "@/components/ui/lazy-image";
 import { downloadImage } from "@/lib/download";
 import CustomRatioPopover from "@/components/ui/custom-ratio-popover";
@@ -287,6 +287,8 @@ function HomeContent() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [sending, setSending] = useState(false);
   const sendingRef = useRef(false);
+  const [streaming, setStreaming] = useState(false);
+  const [streamContent, setStreamContent] = useState("");
   const [selectedChatModel, setSelectedChatModel] = useState("gpt-4o");
   const [chatModels, setChatModels] = useState(FALLBACK_MODELS);
   const [showChatModelPicker, setShowChatModelPicker] = useState(false);
@@ -303,6 +305,7 @@ function HomeContent() {
   const [dragging, setDragging] = useState(false);
   const chatFileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
   const autoSentRef = useRef(false);
 
   const { optimizing, optimize: handleOptimizePrompt } = useOptimizePrompt();
@@ -351,14 +354,14 @@ function HomeContent() {
 
   useEffect(() => { return () => { if (pollRef.current) clearInterval(pollRef.current); }; }, []);
   useEffect(() => { if (mode) { const d: Record<string, string> = {}; mode.params.forEach((p) => { d[p.key] = p.default; }); setParamValues(d); } }, [activeMode]);
-  useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, sending]);
+  useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, sending, streamContent]);
 
   /* ── Conversation management ── */
   const selectConversation = async (conv: Conversation) => {
     setActiveConv(conv); setSelectedChatModel(conv.model); setViewMode("chatting");
     try { const res = await chatAPI.getConversation(conv.id); setMessages(res.data.messages || []); } catch { setMessages([]); }
   };
-  const createNewConv = () => { setActiveConv(null); setMessages([]); setInput(""); };
+  const createNewConv = () => { abortRef.current?.abort(); setActiveConv(null); setMessages([]); setStreamContent(""); setInput(""); };
   const deleteConv = async (id: number, e: React.MouseEvent) => {
     e.stopPropagation();
     try { await chatAPI.deleteConversation(id); setConversations((p) => p.filter((c) => c.id !== id)); if (activeConv?.id === id) { setActiveConv(null); setMessages([]); } } catch {}
@@ -438,25 +441,85 @@ function HomeContent() {
     }
     if (!conv) { sendingRef.current = false; setSending(false); return; }
 
-    setSending(true); sendingRef.current = true;
+    setSending(true); sendingRef.current = true; setStreaming(true); setStreamContent("");
     setMessages((prev) => [...prev, { id: Date.now(), role: "user", content, model: conv!.model, created_at: new Date().toISOString() }]);
 
+    const token = localStorage.getItem("token");
+    const controller = new AbortController(); abortRef.current = controller;
+    let fullContent = "";
+    let streamError = "";
+    let responseAccepted = false;
+
     try {
-      const result = await chatAPI.sendMessage(conv.id, { content, model: selectedChatModel });
-      setMessages((prev) => [...prev.slice(0, -1), result.data.user_message, result.data.assistant_message]);
-      if (extractImageGenPrompts(result.data.assistant_message.content).length > 0) {
-        requestImageGeneration(result.data.assistant_message.id, result.data.assistant_message.content);
+      const res = await fetch(`${API_BASE_URL}/conversations/${conv.id}/stream`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "text/event-stream", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ content, model: selectedChatModel }),
+        signal: controller.signal,
+      });
+      if (!res.ok) throw Object.assign(new Error("stream request failed"), { status: res.status });
+      responseAccepted = true;
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true }).replace(/\r\n/g, "\n");
+          const frames = buffer.split("\n\n");
+          buffer = frames.pop() || "";
+          for (const frame of frames) {
+            for (const line of frame.split("\n")) {
+              if (!line.startsWith("data:")) continue;
+              const raw = line.slice(5).trim();
+              if (!raw || raw === "[DONE]") continue;
+              try {
+                const payload = JSON.parse(raw);
+                if (payload.error) { streamError = payload.error.message || "模型调用失败"; continue; }
+                const delta = payload.choices?.[0]?.delta?.content || payload.choices?.[0]?.message?.content || "";
+                if (typeof delta === "string") { fullContent += delta; setStreamContent(fullContent); }
+              } catch { /* Ignore a partial/non-JSON upstream frame. */ }
+            }
+          }
+        }
       }
+      if (streamError || !fullContent.trim()) throw Object.assign(new Error(streamError || "empty stream"), { status: 502 });
+      const assistant: Message = { id: Date.now() + 1, role: "assistant", content: fullContent, model: conv.model, created_at: new Date().toISOString() };
+      setMessages((prev) => [...prev.slice(0, -1), prev[prev.length - 1], assistant]);
+      if (extractImageGenPrompts(fullContent).length > 0) requestImageGeneration(assistant.id, fullContent);
     } catch (err) {
-      const status = (err as any)?.status || (err as any)?.response?.status;
-      if (status === 402) alert("积分不足，请充值后再试");
-      else if (status === 403) alert("内容包含违规信息，请修改后重试");
-      else if (status === 503) alert("当前模型暂不可用，请切换其他模型");
-      else alert("消息发送失败，请稍后重试");
-      setMessages((prev) => prev.slice(0, -1));
-    } finally { setSending(false); sendingRef.current = false; }
+      if ((err as Error).name === "AbortError") {
+        setMessages((prev) => prev.slice(0, -1));
+        return;
+      }
+      // Once the SSE endpoint returned 2xx, the server may already have charged
+      // and persisted the turn even if the browser loses the connection. Never
+      // replay it through the synchronous endpoint; that would duplicate work.
+      if (responseAccepted || streamError || fullContent.trim()) {
+        if (streamError) alert(streamError);
+        else if (!fullContent.trim()) alert("消息流中断，请刷新会话查看结果");
+        setMessages((prev) => prev.slice(0, -1));
+        return;
+      }
+      try {
+        const result = await chatAPI.sendMessage(conv.id, { content, model: selectedChatModel });
+        setMessages((prev) => [...prev.slice(0, -1), result.data.user_message, result.data.assistant_message]);
+        if (extractImageGenPrompts(result.data.assistant_message.content).length > 0) {
+          requestImageGeneration(result.data.assistant_message.id, result.data.assistant_message.content);
+        }
+      } catch (fallbackError) {
+        const status = (fallbackError as any)?.status || (fallbackError as any)?.response?.status || (err as any)?.status;
+        if (status === 402) alert("积分不足，请充值后再试");
+        else if (status === 403) alert("内容包含违规信息，请修改后重试");
+        else if (status === 503) alert("当前模型暂不可用，请切换其他模型");
+        else alert("消息发送失败，请稍后重试");
+        setMessages((prev) => prev.slice(0, -1));
+      }
+    } finally { setSending(false); sendingRef.current = false; setStreaming(false); setStreamContent(""); abortRef.current = null; }
   }, [input, activeConv, selectedChatModel, requestImageGeneration]);
 
+  const stopStreaming = () => { abortRef.current?.abort(); };
   const regenerateLastMsg = () => {
     if (!activeConv || messages.length < 2 || sending) return;
     const idx = [...messages].reverse().findIndex((m) => m.role === "user"); if (idx === -1) return;
@@ -501,7 +564,7 @@ function HomeContent() {
     setTimeout(() => sendChatMessage(txt), 150);
   }, [input, activeMode, selModel, refImages, paramValues, router, pollGeneration, sendChatMessage]);
 
-  const backToIdle = () => { setViewMode("idle"); setActiveConv(null); setMessages([]); setHistorySidebarOpen(false); setInput(""); };
+  const backToIdle = () => { abortRef.current?.abort(); setViewMode("idle"); setActiveConv(null); setMessages([]); setStreamContent(""); setHistorySidebarOpen(false); setInput(""); };
 
   const filteredConvs = historySearch ? conversations.filter((c) => c.title.toLowerCase().includes(historySearch.toLowerCase())) : conversations;
   const convGroups = groupByDate(filteredConvs);
@@ -936,9 +999,23 @@ function HomeContent() {
                           </motion.div>
                         ))}
                       </AnimatePresence>
+                      {/* Streaming */}
+                      <AnimatePresence>
+                        {streaming && streamContent && (
+                          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex gap-3">
+                            <div className="w-7 h-7 rounded-full bg-neutral-900 flex items-center justify-center shrink-0 mt-0.5"><Sparkles size={13} className="text-white" /></div>
+                            <div className="flex-1 min-w-0">
+                              <div className="prose prose-sm prose-neutral dark:prose-invert max-w-none text-[14px] leading-relaxed [&>*:first-child]:mt-0">
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>{stripImageGenTags(streamContent)}</ReactMarkdown>
+                                <motion.span animate={{ opacity: [1, 0, 1] }} transition={{ repeat: Infinity, duration: 1 }} className="inline-block w-[2px] h-4 bg-neutral-800 dark:bg-neutral-200 ml-0.5 align-middle rounded-full" />
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                       {/* Thinking dots */}
                       <AnimatePresence>
-                        {sending && (
+                        {sending && !streamContent && (
                           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex gap-3">
                             <div className="w-7 h-7 rounded-full bg-neutral-900 flex items-center justify-center shrink-0"><Sparkles size={13} className="text-white" /></div>
                             <div className="flex items-center gap-1.5 py-3">
@@ -1056,9 +1133,9 @@ function HomeContent() {
                             </div>
                           </div>
                           <AnimatePresence mode="wait">
-                            {sending ? (
-                              <motion.button key="loading" initial={{ scale: 0.8 }} animate={{ scale: 1 }} exit={{ scale: 0.8 }} disabled
-                                className="p-1.5 rounded-lg bg-neutral-100 text-neutral-400 transition-colors"><Loader2 size={16} className="animate-spin" /></motion.button>
+                            {streaming ? (
+                              <motion.button key="stop" initial={{ scale: 0.8 }} animate={{ scale: 1 }} exit={{ scale: 0.8 }} onClick={stopStreaming}
+                                className="p-1.5 rounded-lg bg-neutral-900 text-white hover:bg-neutral-700 transition-colors"><Square size={16} /></motion.button>
                             ) : (
                               <motion.button key="send" initial={{ scale: 0.8 }} animate={{ scale: 1 }} exit={{ scale: 0.8 }} onClick={() => sendChatMessage()} disabled={!input.trim() || sending}
                                 className={cn("p-1.5 rounded-lg transition-colors", input.trim() ? "bg-neutral-900 text-white hover:bg-neutral-700" : "bg-neutral-100 text-neutral-300")}><ArrowUp size={16} /></motion.button>

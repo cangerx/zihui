@@ -11,6 +11,9 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (DB::connection()->getDriverName() === 'sqlite') {
+            return;
+        }
         if (!Schema::hasTable('video_provider_accounts')) {
             return;
         }

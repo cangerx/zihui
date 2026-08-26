@@ -34,6 +34,7 @@ Route::middleware('app.request')->group(function () {
             Route::match(['put', 'patch'], '/{id}', [ConversationController::class, 'update'])->whereNumber('id');
             Route::delete('/{id}', [ConversationController::class, 'destroy'])->whereNumber('id');
             Route::post('/{id}/messages', [ConversationController::class, 'sendMessage'])->whereNumber('id');
+            Route::post('/{id}/stream', [ConversationController::class, 'streamMessage'])->whereNumber('id');
         });
 
         Route::post('/image-tasks', [TaskController::class, 'createImage']);

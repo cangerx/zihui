@@ -62,6 +62,14 @@ return new class extends Migration
      */
     private function indexNames(string $table): array
     {
+        if (DB::connection()->getDriverName() === 'sqlite') {
+            $rows = DB::select('PRAGMA index_list(' . DB::connection()->getPdo()->quote($table) . ')');
+            return array_values(array_filter(array_map(
+                fn ($row) => (string) ($row->name ?? ''),
+                $rows
+            )));
+        }
+
         $rows = \Illuminate\Support\Facades\DB::select(
             'SELECT DISTINCT INDEX_NAME FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?',
             [$table]
