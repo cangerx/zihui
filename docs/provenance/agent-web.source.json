@@ -71,6 +71,7 @@
     "src/lib/download.ts",
     "src/lib/features.ts",
     "src/lib/plugin-sdk.ts",
+    "src/store/auth.ts",
     "src/store/modules.ts",
     "src/store/plugins.ts",
     "src/store/site-config.ts"

@@ -1,20 +1,37 @@
 import { create } from "zustand";
 import { authAPI } from "@/lib/api";
+import type { AppUser } from "@zihui/contracts";
 
 interface User {
   id: number;
+  username?: string;
   email: string;
-  phone: string;
+  phone: string | null;
   nickname: string;
-  avatar: string;
+  avatar: string | null;
   role: string;
   status: string;
-  vip_level: number;
-  vip_expires_at: string | null;
-  invite_code: string;
+  vip_level?: number;
+  vip_expires_at?: string | null;
+  invite_code?: string;
+  balances?: { type: string; amount: number }[];
 }
 
 export type { User };
+
+function toLegacyUser(user: AppUser): User {
+  return {
+    id: user.id,
+    username: user.username || undefined,
+    email: user.email || "",
+    phone: user.phone,
+    nickname: user.nickname,
+    avatar: user.avatar,
+    role: user.role,
+    status: user.status,
+    balances: user.balances,
+  };
+}
 
 interface Credits {
   balance: number;
@@ -51,7 +68,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       set({ isLoading: true });
       const res = await authAPI.getProfile();
       set({
-        user: res.data.user,
+        user: toLegacyUser(res.data.user),
         credits: res.data.credits,
         isLoading: false,
       });

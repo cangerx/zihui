@@ -1,10 +1,26 @@
 import axios from "axios";
+import { createApiClient } from "@zihui/api-client";
 import { featureFlags } from "@/lib/features";
 import { getTenantCode } from "@/lib/tenant";
 
 export const API_BASE_URL = (
   process.env.NEXT_PUBLIC_API_URL?.trim() || "/api/app/v1"
 ).replace(/\/+$/, "");
+
+const appV1Client = createApiClient({
+  baseUrl: API_BASE_URL,
+  channel: "web",
+  getAccessToken: () => (typeof window === "undefined" ? null : localStorage.getItem("token")),
+  setAccessToken: (token) => {
+    if (typeof window === "undefined") return;
+    if (token) localStorage.setItem("token", token);
+    else localStorage.removeItem("token");
+  },
+});
+
+function legacyResponse<T>(data: T): { data: T } {
+  return { data };
+}
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -50,10 +66,14 @@ export default api;
 
 // Auth API
 export const authAPI = {
-  register: (data: { email: string; password: string; nickname: string }) =>
-    api.post("/auth/register", data),
-  login: (data: { email: string; password: string }) =>
-    api.post("/auth/login", data),
+  register: async (data: { email: string; password: string; nickname: string }) => {
+    const result = await appV1Client.register(data);
+    return legacyResponse({ token: result.access_token, access_token: result.access_token, user: result.user });
+  },
+  login: async (data: { email: string; password: string }) => {
+    const result = await appV1Client.login(data.email, data.password);
+    return legacyResponse({ token: result.access_token, access_token: result.access_token, user: result.user });
+  },
   sendCode: (data: { phone: string }) => api.post("/auth/send-code", data),
   phoneLogin: (data: { phone: string; code: string; invite_code?: string }) =>
     api.post("/auth/phone-login", data),
@@ -67,8 +87,16 @@ export const authAPI = {
     api.post("/auth/forgot-password", data),
   resetPassword: (data: { email: string; code: string; new_password: string }) =>
     api.post("/auth/reset-password", data),
-  getProfile: () => api.get("/auth/profile"),
-  refreshToken: () => api.post("/auth/refresh"),
+  getProfile: async () => {
+    const user = await appV1Client.me();
+    const credit = user.balances.find((balance) => balance.type === "credit")?.amount || 0;
+    return legacyResponse({ user, credits: { balance: credit, total_recharged: 0, total_consumed: 0 } });
+  },
+  refreshToken: async () => {
+    const result = await appV1Client.refresh();
+    return legacyResponse({ token: result.access_token, access_token: result.access_token, user: result.user });
+  },
+  logout: () => appV1Client.logout(),
 };
 
 // User API
@@ -86,7 +114,28 @@ export const userAPI = {
 
 // Package API (public)
 export const packageAPI = {
-  list: () => api.get("/packages"),
+  list: async () => {
+    const plans = await appV1Client.plans();
+    return legacyResponse({
+      data: plans.map((plan) => {
+        const type = plan.duration_days >= 365 ? "yearly" : plan.duration_days >= 90 ? "quarterly" : "monthly";
+        const description = plan.description || "";
+        return {
+          ...plan,
+          type,
+          original_price: plan.price,
+          credits: plan.credit_quota,
+          daily_free_chat: 0,
+          daily_free_image: 0,
+          valid_days: plan.duration_days,
+          is_recommended: false,
+          sort: 0,
+          status: "active",
+          features: description ? description.split(",").map((item) => item.trim()).filter(Boolean) : null,
+        };
+      }),
+    });
+  },
 };
 
 // Order API
@@ -121,12 +170,34 @@ export const adAPI = {
 
 // App modules API (public)
 export const appAPI = {
-  modules: () => api.get("/app/modules"),
-  apps: () => api.get("/app/apps"),
-  loginMethods: () => api.get("/app/login-methods"),
-  siteConfig: (params?: { agent_code?: string; domain?: string }) =>
-    api.get("/app/site-config", { params }),
-  plugins: () => api.get("/app/plugins"),
+  bootstrap: async () => legacyResponse({ data: await appV1Client.bootstrap() }),
+  modules: async () => {
+    const bootstrap = await appV1Client.bootstrap();
+    return legacyResponse({ data: Object.fromEntries(Object.entries(bootstrap.features).map(([key, value]) => [key, value.enabled])) });
+  },
+  apps: async () => legacyResponse({ data: [] }),
+  loginMethods: async () => {
+    const bootstrap = await appV1Client.bootstrap();
+    return legacyResponse({ data: {
+      email_password: bootstrap.auth.password,
+      phone_sms: bootstrap.auth.phone_sms,
+      email_code: bootstrap.auth.email_code,
+      github: false,
+      google: false,
+      wechat: bootstrap.auth.wechat_mini,
+      weibo: false,
+      qq: false,
+    } });
+  },
+  siteConfig: async () => {
+    const bootstrap = await appV1Client.bootstrap();
+    return legacyResponse({ data: {
+      site_name: bootstrap.brand.name,
+      site_description: bootstrap.brand.description,
+      site_favicon: bootstrap.brand.favicon || "/logo-icon.svg",
+    } });
+  },
+  plugins: async () => legacyResponse({ data: [] }),
 };
 
 // System API
@@ -136,8 +207,25 @@ export const systemAPI = {
 
 // Model API (public)
 export const modelAPI = {
-  list: (type?: string) => api.get("/models", { params: type ? { type } : {} }),
-  imageModels: () => api.get("/models/image-models"),
+  list: async (type?: string) => {
+    const models = await appV1Client.models(type);
+    return legacyResponse({ data: models.map((model) => ({ ...model, display_name: model.name, provider: model.provider_name })) });
+  },
+  imageModels: async () => {
+    const models = await appV1Client.models("image");
+    return legacyResponse({ data: models.map((model) => ({
+      ...model,
+      display_name: model.name,
+      provider: model.provider_name,
+      price_per_call: 0,
+      icon: "",
+      description: model.provider_name,
+      badge: "",
+      tags: [],
+      vip_only: false,
+      config: {},
+    })) });
+  },
 };
 
 // Chat API

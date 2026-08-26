@@ -7,6 +7,7 @@ const imageHosts = (process.env.NEXT_PUBLIC_IMAGE_HOSTS || "")
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  transpilePackages: ["@zihui/contracts", "@zihui/api-client", "@zihui/domain"],
   images: {
     remotePatterns: [
       { protocol: "http", hostname: "localhost" },

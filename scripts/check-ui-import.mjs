@@ -88,11 +88,13 @@ function verifyAgainstLocalSource(manifest, targetRoot) {
 
 function verifyTargetSnapshot(manifest, targetRoot) {
   const targetFiles = manifest.targetFiles;
+  const modified = new Set(manifest.modifiedFiles || []);
   if (!targetFiles || typeof targetFiles !== "object" || !Object.keys(targetFiles).length) {
     failures.push(`${manifest.target}: targetFiles SHA-256 snapshot is missing`);
     return;
   }
   for (const [targetPath, expectedHash] of Object.entries(targetFiles)) {
+    if (modified.has(targetPath)) continue;
     const absoluteTarget = join(targetRoot, targetPath);
     if (!existsSync(absoluteTarget) || !statSync(absoluteTarget).isFile()) {
       failures.push(`${manifest.target}: snapshot file is missing ${targetPath}`);

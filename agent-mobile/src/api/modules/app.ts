@@ -2,6 +2,8 @@
  * AI 应用相关接口，见 docs/API开发文档.md §3.2
  */
 import { request } from '../request'
+import { appV1Client, apiErrorCode } from '../v1-client'
+import type { BootstrapPayload } from '@zihui/contracts'
 import type {
   AppCategory,
   AppDetail,
@@ -11,6 +13,15 @@ import type {
   WorkflowRunRequest,
   WorkflowRunResult,
 } from '../types'
+
+export async function getBootstrap(): Promise<BootstrapPayload | null> {
+  try {
+    return await appV1Client.bootstrap()
+  } catch (error) {
+    console.warn(`[bootstrap] failed (${apiErrorCode(error)})`)
+    return null
+  }
+}
 
 /** 分类应用列表 */
 export async function getAppListByCategory(): Promise<AppCategory[]> {

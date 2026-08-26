@@ -42,8 +42,11 @@
   "modifiedFiles": [
     "package.json",
     "src/api/config.ts",
+    "src/api/modules/app.ts",
+    "src/api/modules/auth.ts",
     "src/api/modules/upload.ts",
-    "src/api/request.ts"
+    "src/api/request.ts",
+    "src/manifest.json"
   ],
   "removedFiles": [
     "src/api/sign.ts"

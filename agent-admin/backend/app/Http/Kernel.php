@@ -36,5 +36,6 @@ class Kernel extends HttpKernel
         'admin' => \App\Http\Middleware\AdminOnly::class,
         'throttle' => \App\Http\Middleware\CacheTolerantThrottleRequests::class,
         'mirror_worker' => \App\Http\Middleware\VerifyCloudBuildMirrorWorker::class,
+        'app.request' => \App\Http\Middleware\AppRequestContext::class,
     ];
 }

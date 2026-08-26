@@ -9,6 +9,43 @@ permissions:
   contents: read
 
 jobs:
+  backend-app-v1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, bcmath, curl, fileinfo, gd, pdo_mysql
+          tools: composer:v2
+
+      - name: Install Laravel dependencies
+        working-directory: agent-admin/backend
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Prepare Laravel environment
+        working-directory: agent-admin/backend
+        run: |
+          cp .env.example .env
+          php artisan key:generate --force
+
+      - name: PHP syntax check
+        run: |
+          find agent-admin/backend/app agent-admin/backend/config agent-admin/backend/routes -name '*.php' -print0 \
+            | xargs -0 -n1 php -l
+
+      - name: Verify App v1 routes
+        working-directory: agent-admin/backend
+        run: php artisan route:list --path=api/app/v1
+
+      - name: Run backend tests
+        working-directory: agent-admin/backend
+        run: php artisan test --testsuite=Unit
+
   multichannel-ui:
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -44,6 +81,9 @@ jobs:
 
       - name: Verify imported UI
         run: npm run check:ui-import
+
+      - name: Verify App v1 contract
+        run: npm run check:api-contract
 
       - name: Type check
         run: npm run type-check

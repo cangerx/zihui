@@ -14,13 +14,15 @@
   ],
   "scripts": {
     "check:ui-import": "node scripts/check-ui-import.mjs",
+    "check:api-contract": "node scripts/check-app-v1-contract.mjs",
     "type-check": "npm run type-check --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "build:web": "npm run build --workspace=@zihui/web",
     "build:mobile:h5": "npm run build:h5 --workspace=@zihui/mobile",
     "build:mobile:mp-weixin": "npm run build:mp-weixin --workspace=@zihui/mobile",
     "test:mobile:h5": "npm run test:h5 --workspace=@zihui/mobile",
-    "test:mobile:mp": "npm run test:mp --workspace=@zihui/mobile"
+    "test:mobile:mp": "npm run test:mp --workspace=@zihui/mobile",
+    "type-check:packages": "npm run type-check --workspace=@zihui/contracts && npm run type-check --workspace=@zihui/api-client && npm run type-check --workspace=@zihui/domain"
   },
   "dependencies": {
     "ag-psd": "^28.5.1"

@@ -55,10 +55,15 @@ export const useSiteConfigStore = create<SiteConfigStore>((set, get) => ({
     if (get().loaded) return;
     try {
       const params = detectTenantParams();
-      const res = await appAPI.siteConfig(Object.keys(params).length > 0 ? params : undefined);
-      const data = res.data?.data;
-      const agentCode = res.data?.agent_code || null;
-      const agentId = res.data?.agent_id || null;
+      const res = await appAPI.bootstrap();
+      const bootstrap = res.data?.data;
+      const data = bootstrap?.brand ? {
+        site_name: bootstrap.brand.name,
+        site_description: bootstrap.brand.description,
+        site_favicon: bootstrap.brand.favicon || defaultConfig.site_favicon,
+      } : null;
+      const agentCode = params.agent_code || null;
+      const agentId = null;
 
       if (agentCode && typeof window !== "undefined") {
         localStorage.setItem("agent_code", agentCode);

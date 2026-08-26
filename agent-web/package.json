@@ -14,6 +14,9 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@zihui/api-client": "0.1.0",
+    "@zihui/contracts": "0.1.0",
+    "@zihui/domain": "0.1.0",
     "@tanstack/react-virtual": "^3.13.24",
     "@xyflow/react": "^12.10.2",
     "axios": "^1.15.2",

@@ -44,6 +44,8 @@
     "test:mp": "node scripts/mp-acceptance.js"
   },
   "dependencies": {
+    "@zihui/contracts": "0.1.0",
+    "@zihui/domain": "0.1.0",
     "@dcloudio/uni-app": "3.0.0-5010520260709002",
     "@dcloudio/uni-app-harmony": "3.0.0-5010520260709002",
     "@dcloudio/uni-app-plus": "3.0.0-5010520260709002",

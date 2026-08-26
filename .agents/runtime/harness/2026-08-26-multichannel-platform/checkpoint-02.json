@@ -1,0 +1,38 @@
+{
+  "checkpoint": "app-v1-shared-contracts-bootstrap-auth",
+  "date": "2026-08-26",
+  "status": "partial",
+  "notRoundEvaluation": true,
+  "completed": [
+    "Implemented packages/contracts with channel, auth, model, plan, balance and task contracts",
+    "Implemented packages/api-client with versioned envelope, bearer token and request-id handling",
+    "Implemented packages/domain task status transition helpers",
+    "Added Laravel /api/app/v1 bootstrap, password auth, refresh, me, logout, models, plans and balance endpoints",
+    "Added app.request request-id/channel middleware and environment-controlled feature/auth flags",
+    "Adapted Web and mobile auth/bootstrap/model/plan calls to shared v1 client while preserving legacy page facades",
+    "Added static App v1 route contract check"
+  ],
+  "verification": {
+    "typeCheckPackages": "passed",
+    "typeCheckWeb": "passed",
+    "typeCheckMobile": "passed",
+    "buildWeb": "passed",
+    "buildMobileH5": "passed",
+    "buildMobileMpWeixin": "passed",
+    "phpSyntax": "passed",
+    "appV1Contract": "passed",
+    "ciBackendJob": "configured_not_run_locally",
+    "phpunit": "not_run_backend_vendor_missing",
+    "browserVisualVerification": "not_run"
+  },
+  "knownGaps": [
+    "Conversation, image-task and generic task v1 endpoints are not implemented",
+    "Web chat/image pages still use legacy endpoints until the task adapter slice lands",
+    "Mobile tool/task pages still contain prototype Mock data",
+    "Wechat mini-program login exchange, phone binding and payment are reserved but disabled",
+    "IDOR, quota charging, resource ownership and task cancellation tests are not implemented",
+    "HttpOnly cookie migration remains pending; Web keeps localStorage Bearer compatibility",
+    "Browser visual verification and real backend integration tests require a running environment"
+  ],
+  "nextSlice": "Implement conversations, image tasks and task status adapters behind feature flags, then add ownership/quota tests"
+}
