@@ -22,15 +22,20 @@ const requiredRoutes = [
   "Route::get('/billing/balance'",
   "Route::get('/', [ConversationController::class, 'index'])",
   "Route::post('/{id}/messages', [ConversationController::class, 'sendMessage'])",
-    "Route::post('/image-tasks'",
-    "Route::post('/presign'",
-    "Route::put('/{id}/content'",
-    "Route::post('/{id}/complete'",
+  "Route::post('/image-tasks'",
+  "Route::put('/{id}/content'",
+  "Route::post('/{id}/complete'",
   "Route::get('/tasks'",
   "Route::post('/tasks/{id}/cancel'",
 ];
 
 const failures = requiredRoutes.filter((route) => !routeFile.includes(route));
+if (
+  !routeFile.includes("Route::post('/assets/presign'") &&
+  !routeFile.includes("Route::post('/presign'")
+) {
+  failures.push("POST /assets/presign route");
+}
 if (!routeFile.includes("Route::middleware('app.request')")) {
   failures.push("app.request middleware group");
 }

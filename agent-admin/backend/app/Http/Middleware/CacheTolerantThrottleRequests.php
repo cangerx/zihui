@@ -17,6 +17,10 @@ class CacheTolerantThrottleRequests extends ThrottleRequests
     public function handle($request, Closure $next, $maxAttempts = 60, $decayMinutes = 1, $prefix = '')
     {
         try {
+            if (is_string($maxAttempts) && func_num_args() === 3) {
+                return parent::handle($request, $next, $maxAttempts);
+            }
+
             return parent::handle($request, $next, $maxAttempts, $decayMinutes, $prefix);
         } catch (Throwable $e) {
             if (!self::isCacheInfrastructureFailure($e)) {

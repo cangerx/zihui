@@ -7,6 +7,7 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
+use App\Support\AppV1Response;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -45,5 +46,39 @@ class RouteServiceProvider extends ServiceProvider
             }
             return Limit::perMinute(180)->by((string) $request->ip());
         });
+
+        RateLimiter::for('app-assets-presign', function (Request $request) {
+            return Limit::perMinute(30)
+                ->by('ip:' . (string) $request->ip())
+                ->response(fn (Request $request, array $headers) => $this->rateLimited($headers));
+        });
+
+        RateLimiter::for('app-assets-write', function (Request $request) {
+            $subject = $request->user()
+                ? 'user:' . $request->user()->getAuthIdentifier()
+                : 'ip:' . (string) $request->ip();
+
+            return Limit::perMinute(60)
+                ->by($subject)
+                ->response(fn (Request $request, array $headers) => $this->rateLimited($headers));
+        });
+
+        RateLimiter::for('app-assets-read', function (Request $request) {
+            $subject = $request->user()
+                ? 'user:' . $request->user()->getAuthIdentifier()
+                : 'ip:' . (string) $request->ip();
+
+            return Limit::perMinute(120)
+                ->by($subject)
+                ->response(fn (Request $request, array $headers) => $this->rateLimited($headers));
+        });
+    }
+
+    private function rateLimited(array $headers)
+    {
+        $response = AppV1Response::error('rate_limited', '请求过于频繁，请稍后重试', 429);
+        $response->headers->add($headers);
+
+        return $response;
     }
 }

@@ -11,13 +11,20 @@
     "共享 contracts/api-client 二进制 PUT 与移动端 App v1 上传 facade",
     "bootstrap assets gate、H5/mp-weixin 生产 schema 与 asset_ids payload",
     "生产资产静态扫描、H5/mp-weixin/Web 构建与来源清单更新",
-    "任务 Job 失败重试保留请求缓存与租约，最终失败清理；兼容缺少租约迁移的旧 URL 任务；UUID asset_ids 大小写规范化"
+    "任务 Job 失败重试保留请求缓存与租约，最终失败清理；兼容缺少租约迁移的旧 URL 任务；UUID asset_ids 大小写规范化",
+    "presign 同键同参 10 分钟幂等、同键异参冲突、用户行锁和数据库唯一约束",
+    "每日 100 个资产配额，presign 每 IP 30/min、写入与任务每用户 60/min 命名限流及统一 rate_limited envelope",
+    "资产端点与带 asset_ids 任务的结构化审计，记录 request/user/channel/IP/路由/ID 摘要/error code 且隐藏敏感值",
+    "修复缓存容错 throttle 对 Laravel 命名 limiter 的参数转发兼容性"
   ],
   "verification": {
     "typeCheck": "passed",
     "phpSyntax": "passed",
-    "appV1AssetFeatureTest": "passed 6/6",
-    "appV1OwnershipAndContractTests": "passed 12/12",
+    "appV1AssetFeatureTest": "passed 16/16",
+    "appV1OwnershipAndContractTests": "passed 20/20",
+    "namedThrottleUnitTest": "passed 2/2",
+    "assetRouteMiddlewareInspection": "passed",
+    "dependencyAudit": "blocked for production: npm audit reports 11 high advisories in the uni-app toolchain; composer audit reports high advisories in the Laravel 9/Symfony/Guzzle/CommonMark dependency set. No force upgrade was applied because available fixes cross framework/toolchain major versions.",
     "jobRetryAndLeaseStaticReview": "passed",
     "buildWeb": "passed",
     "buildMobileH5": "passed",
@@ -29,9 +36,10 @@
     "gitDiffCheck": "passed"
   },
   "knownGaps": [
+    "依赖安全审计发现 Laravel 9、Symfony 6.0、Guzzle/CommonMark 与 uni-app 工具链存在 2026 年高危公告；资产 signed URL 已增加 user 绑定与规范原始路径校验作为本链路纵深防护，但全仓依赖升级仍是生产发布前 P0。",
     "尚未在真实 COS/OSS、HTTPS CORS 和微信合法域名环境执行端到端上传；已对配置缺失 fail closed。",
     "AppAsset 云端 driver 的私有 ACL 需要部署凭据与对象存储策略在联调环境确认。",
-    "完整跨用户任务 Job/provider fake、并发重放和 purge 失败重试矩阵留待下一轮扩充。",
+    "完整跨用户任务 Job/provider fake、真实数据库并发压测和 purge 存储删除失败重试矩阵留待下一轮扩充。",
     "Web 参考图 UI 仍是 non-goal；共享客户端能力已提供。"
   ],
   "nextSlice": "扩展真实后端集成与对象存储 fake 覆盖，并继续迁移下一组移动端生产能力。"

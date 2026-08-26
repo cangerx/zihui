@@ -24,6 +24,20 @@ Route::middleware('app.request')->group(function () {
 
     Route::get('/billing/plans', [BillingController::class, 'plans']);
 
+    Route::post('/image-tasks', [TaskController::class, 'createImage'])
+        ->middleware(['app.asset.audit', 'auth.jwt', 'throttle:app-assets-write']);
+
+    Route::post('/assets/presign', [AssetController::class, 'presign'])
+        ->name('app.v1.assets.presign')
+        ->middleware(['app.asset.audit', 'throttle:app-assets-presign', 'auth.jwt']);
+
+    Route::prefix('assets')->middleware(['app.asset.audit', 'auth.jwt'])->group(function () {
+        Route::put('/{id}/content', [AssetController::class, 'put'])
+            ->whereUuid('id')->name('app.v1.assets.content.put')->middleware(['signed', 'throttle:app-assets-write']);
+        Route::post('/{id}/complete', [AssetController::class, 'complete'])->whereUuid('id')->name('app.v1.assets.complete')->middleware('throttle:app-assets-write');
+        Route::get('/{id}/content', [AssetController::class, 'content'])->whereUuid('id')->name('app.v1.assets.content')->middleware(['signed', 'throttle:app-assets-read']);
+    });
+
     Route::middleware('auth.jwt')->group(function () {
         Route::get('/models', [ModelController::class, 'index']);
         Route::get('/billing/balance', [BillingController::class, 'balance']);
@@ -38,18 +52,10 @@ Route::middleware('app.request')->group(function () {
             Route::post('/{id}/stream', [ConversationController::class, 'streamMessage'])->whereNumber('id');
         });
 
-        Route::post('/image-tasks', [TaskController::class, 'createImage'])->middleware('throttle:60,1');
         Route::get('/tasks', [TaskController::class, 'index']);
         Route::post('/tasks/{id}/cancel', [TaskController::class, 'cancel']);
         Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
         Route::get('/tasks/{id}', [TaskController::class, 'show']);
 
-        Route::prefix('assets')->middleware('throttle:60,1')->group(function () {
-            Route::post('/presign', [AssetController::class, 'presign'])->name('app.v1.assets.presign');
-            Route::put('/{id}/content', [AssetController::class, 'put'])
-                ->name('app.v1.assets.content.put')->middleware('signed');
-            Route::post('/{id}/complete', [AssetController::class, 'complete'])->name('app.v1.assets.complete');
-            Route::get('/{id}/content', [AssetController::class, 'content'])->name('app.v1.assets.content')->middleware('signed');
-        });
     });
 });

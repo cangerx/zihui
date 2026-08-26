@@ -12,7 +12,7 @@ class AppAsset extends Model
     protected $fillable = [
         'id', 'user_id', 'kind', 'original_name', 'storage_driver', 'object_key', 'storage_url',
         'declared_mime', 'detected_mime', 'expected_size', 'actual_size', 'sha256', 'status',
-        'expires_at', 'upload_expires_at', 'nonce_hash', 'consumed_at', 'lease_until',
+        'expires_at', 'upload_expires_at', 'nonce_hash', 'idempotency_hash', 'consumed_at', 'lease_until',
     ];
 
     protected $casts = [
