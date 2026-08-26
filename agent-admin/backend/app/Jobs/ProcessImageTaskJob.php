@@ -103,16 +103,21 @@ class ProcessImageTaskJob implements ShouldQueue
         // can still access inline images (the DB copy intentionally strips base64 fields).
         $body = Cache::get($bodyCacheKey) ?? $task->request_body;
 
-        $route = $router->route($cloudModel);
+        $route = null;
 
         try {
+            // Include adapter/credential selection in the retry boundary. A provider or
+            // credential-pool failure must not leave the task stuck in processing.
+            $route = $router->route($cloudModel);
             // 新链路：桌面端云端生图改为只传 image_urls / mask_url（本站临时素材 URL），不再内联
             // base64。这里读回裸 base64 填入上游适配器认识的 images / mask 字段；向后兼容老链路。
             $this->renewAssetLeasesOnce($task->id);
             $body = $this->materializeReferenceUrls($body, (int) $task->user_id, $task->id);
             $resp = $route->adapter->image($task->endpoint, $body, $route->provider, $route->apiKey);
         } catch (Throwable $e) {
-            $router->markCredentialFailure($route->credential, $e->getMessage());
+            if ($route !== null) {
+                $router->markCredentialFailure($route->credential, $e->getMessage());
+            }
             if ($this->shouldRetry()) {
                 // Queue will re-run this job; leave it claimable and retain the body/leases.
                 $task->update(['status' => 'pending', 'error' => 'Retry scheduled: ' . $e->getMessage()]);

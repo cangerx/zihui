@@ -10,13 +10,15 @@
     "App v1 image task 严格 asset_ids 输入，拒绝 URL/base64/key 旁路并创建任务租约",
     "共享 contracts/api-client 二进制 PUT 与移动端 App v1 上传 facade",
     "bootstrap assets gate、H5/mp-weixin 生产 schema 与 asset_ids payload",
-    "生产资产静态扫描、H5/mp-weixin/Web 构建与来源清单更新"
+    "生产资产静态扫描、H5/mp-weixin/Web 构建与来源清单更新",
+    "任务 Job 失败重试保留请求缓存与租约，最终失败清理；兼容缺少租约迁移的旧 URL 任务；UUID asset_ids 大小写规范化"
   ],
   "verification": {
     "typeCheck": "passed",
     "phpSyntax": "passed",
-    "appV1AssetFeatureTest": "passed 3/3",
-    "appV1OwnershipAndContractTests": "passed 9/9",
+    "appV1AssetFeatureTest": "passed 6/6",
+    "appV1OwnershipAndContractTests": "passed 12/12",
+    "jobRetryAndLeaseStaticReview": "passed",
     "buildWeb": "passed",
     "buildMobileH5": "passed",
     "buildMobileMpWeixin": "passed",

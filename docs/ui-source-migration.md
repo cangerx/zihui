@@ -128,7 +128,7 @@ Web 当前没有可直接视为“数字员工/专家库”的页面。该功能
 | `/filesystem/file/PrepareUpload`、`CompleteUpload` | `/assets/presign`、`/assets/{id}/complete` | 支持小程序 `uni.uploadFile`/PUT adapter |
 | `x-request-token` 双 MD5 签名 | 删除客户端秘密 | 公开客户端无法保守固定密码；改 TLS、短 token、限流、nonce 和服务端审计 |
 
-截至 2026-08-26，移动端生产工具页已完成第一条真实链路：`/bootstrap` 控制 AI 生图可见性，`/models?type=image` 生成表单模型选项，`/image-tasks` 提交文生图，`/tasks/{id}` 轮询并在任务历史中区分排队、处理中、成功、失败和取消。旧 `GetApp`、`worker/Run`、`worker/Query` 仅保留在开发 Mock 分支。由于 `/assets/presign` 尚未实现，本轮未把参考图上传伪装成生产能力。
+截至 2026-08-26，移动端生产工具页已完成第一条真实链路：`/bootstrap` 控制 AI 生图可见性，`/models?type=image` 生成表单模型选项，`/image-tasks` 提交文生图，`/tasks/{id}` 轮询并在任务历史中区分排队、处理中、成功、失败和取消。参考图已接入 `/assets/presign` → 二进制 PUT → `/assets/{id}/complete`，任务只提交 `asset_ids`；生产资产能力默认仍由 `APP_V1_ENABLE_ASSETS=false` 关闭，需在完成 COS/OSS、HTTPS CORS 和微信合法域名联调后再打开。旧 `GetApp`、`worker/Run`、`worker/Query` 仅保留在开发 Mock 分支。
 
 ## 6. 建议提交顺序
 
