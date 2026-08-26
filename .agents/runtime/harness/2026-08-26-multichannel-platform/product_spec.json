@@ -1,0 +1,63 @@
+{
+  "title": "Zihui 多端 AI 工作台",
+  "problem": "在保留 Electron 桌面端本地能力的同时，补齐浏览器 Web、移动 H5 和微信小程序入口，让同一套云端账号、模型、计费和任务能力可以跨渠道使用。",
+  "userOutcomes": [
+    "用户可以在浏览器、手机 H5 和微信小程序登录同一账号。",
+    "用户可以在无桌面端环境下完成对话、数字员工调用和 AI 生图。",
+    "用户可以查看任务进度、历史结果、余额、套餐和消费记录。",
+    "桌面端、Web、H5、小程序共享同一套业务契约和权限口径。",
+    "平台可以按渠道控制能力、上传限制、登录方式和支付方式。"
+  ],
+  "scope": {
+    "mustHave": [
+      "建立 packages/contracts、packages/api-client、packages/domain 的共享边界。",
+      "新增版本化 /api/app/v1 客户端 API，不破坏现有 Electron API。",
+      "Web MVP：登录、账号信息、对话、数字员工、AI 生图、任务记录、余额和套餐。",
+      "统一任务模型：创建、排队、处理中、成功、失败、取消。",
+      "统一资源模型：对象存储、缩略图、签名 URL、资源归属和过期策略。",
+      "统一渠道身份：desktop、web、h5、mini_program。",
+      "为小程序预留微信登录、手机号绑定、分享和支付能力。",
+      "建立 CI：类型检查、PHP 测试、前端构建、契约校验和依赖审计。"
+    ],
+    "shouldHave": [
+      "uni-app Vue 3 客户端同时输出 H5 和微信小程序。",
+      "Web 与小程序共享 API client、类型和领域状态，不共享所有页面。",
+      "SSE 用于 Web/H5 流式对话，WebSocket 或轮询用于小程序任务进度。",
+      "云端会话历史、云端图库和云端上传能力。",
+      "渠道级功能开关和后台运营配置。",
+      "微信 OAuth / wx.login、微信支付和小程序订阅消息。"
+    ],
+    "outOfScope": [
+      "第一阶段迁移 Electron 本地 SQLite 和 local-file 协议。",
+      "第一阶段迁移本地知识库扫描、MCP 本地进程和浏览器自动化。",
+      "第一阶段迁移 FFmpeg、本地视频剪辑、ClawBot 和电商连接器。",
+      "第一阶段把 Electron 全部页面改造成浏览器兼容页面。",
+      "在没有真实微信主体、AppID、支付商户号和业务域名之前承诺小程序上线。"
+    ]
+  },
+  "acceptanceThemes": [
+    "feature_completeness",
+    "cross_channel_consistency",
+    "functionality",
+    "security",
+    "ux_or_design_quality",
+    "code_quality",
+    "operability"
+  ],
+  "constraints": [
+    "现有后端为 Laravel 9 + PHP 8.0 + MySQL 8.0。",
+    "现有桌面端为 Electron 31 + Vue 3 + TypeScript，页面约 67 个，多个页面直接依赖 window.api。",
+    "云控端已有客户端 API，但接口命名和返回结构不是为多端版本化设计的。",
+    "Web 和小程序不能依赖本地 SQLite、Electron IPC 或绝对文件路径。",
+    "支付、微信登录、对象存储和流式任务必须由服务端持有密钥并审计。",
+    "兼容现有桌面客户端，新增 API 不应立即删除旧路由。"
+  ],
+  "risks": [
+    "桌面端本地数据与云端数据模型不一致，直接复用页面会产生大量条件分支。",
+    "SSE、WebSocket、小程序网络限制和代理配置可能导致流式体验不一致。",
+    "小程序审核、业务域名、合法域名、支付资质和隐私合规会影响上线时间。",
+    "现有依赖安全债和桌面端 TLS 配置会影响多端共用 API 的上线安全。",
+    "图片、视频和文件资源若没有明确归属与生命周期，容易造成越权和存储成本失控。",
+    "多端并行开发若没有契约和验收门禁，容易出现版本漂移。"
+  ]
+}

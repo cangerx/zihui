@@ -1,0 +1,84 @@
+{
+  "round": 1,
+  "goal": "建立 Web/H5/小程序可持续开发的跨端底座，并交付可运行的 Web MVP 骨架。",
+  "ownedTasks": [
+    "task_contracts_001",
+    "task_api_v1_002",
+    "task_web_shell_003",
+    "task_auth_channel_004",
+    "task_ci_baseline_005"
+  ],
+  "deliverables": [
+    "packages/contracts：用户、认证、模型、对话、图片任务、资源、余额和套餐类型。",
+    "packages/api-client：浏览器安全的请求封装、错误模型、token/cookie 策略、SSE 客户端。",
+    "agent-admin/backend：/api/app/v1 的认证、me、models、permissions、chat、image task、plans、balance 接口。",
+    "agent-web：Vue 3 + Vite + Pinia + Vue Router 的登录、主布局、对话、生图、任务记录和账户页面。",
+    "agent-mobile：uni-app 工程骨架，至少能编译 H5，并完成登录页和对话页路由占位。",
+    "CI：共享类型检查、Web 构建、PHP 契约测试、Skills 契约校验和锁文件一致性检查。",
+    "跨端 README：本地启动、环境变量、API 版本、开发账号和验收步骤。"
+  ],
+  "verificationPlan": [
+    {
+      "criterion": "现有 main 分支工作树保持干净，新增代码不改变旧桌面入口契约。",
+      "howToCheck": "运行 git diff、现有 Skills Node/PHP canonical 校验，并检查旧 routes/api.php 未被删除。",
+      "hardFail": true
+    },
+    {
+      "criterion": "Web 用户可以登录、刷新页面后保持登录、退出并被导向登录页。",
+      "howToCheck": "浏览器自动化执行登录、刷新、访问受保护路由、退出和再次访问。",
+      "hardFail": true
+    },
+    {
+      "criterion": "Web 用户可以发起一次对话并看到完整响应，失败时显示可读错误。",
+      "howToCheck": "使用测试模型或 fake gateway，验证成功、401、402、429 和 5xx 五种响应。",
+      "hardFail": true
+    },
+    {
+      "criterion": "Web 用户可以创建图片任务、查看进度并得到资源 URL。",
+      "howToCheck": "使用 fake image provider，验证 queued、processing、success、failed 和 cancel 状态。",
+      "hardFail": true
+    },
+    {
+      "criterion": "浏览器端不需要 Electron preload、SQLite 或 local-file 协议即可运行。",
+      "howToCheck": "在没有 window.api 的普通浏览器环境运行 Web 构建，并扫描 agent-web 依赖和产物。",
+      "hardFail": true
+    },
+    {
+      "criterion": "uni-app 工程可以编译 H5，且复用 contracts 和 api-client。",
+      "howToCheck": "运行 H5 构建，检查依赖图中没有 Electron、Node 原生模块或 better-sqlite3。",
+      "hardFail": true
+    },
+    {
+      "criterion": "CI 可以阻止 manifest/lock 不同步和类型错误。",
+      "howToCheck": "在干净 runner 执行 npm ci、typecheck、build、PHP tests 和契约校验。",
+      "hardFail": true
+    },
+    {
+      "criterion": "API 按用户和渠道隔离资源，不能通过修改 ID 读取其他用户数据。",
+      "howToCheck": "使用两个测试用户执行对话、图片任务、资产和余额接口的 IDOR 测试。",
+      "hardFail": true
+    }
+  ],
+  "nonGoals": [
+    "不迁移 Electron 的本地图库、浏览器自动化、MCP、ClawBot、FFmpeg 和电商连接器。",
+    "不在第一轮重写现有桌面端页面。",
+    "不在没有微信配置的环境中伪造真实微信登录或支付成功。",
+    "不通过前端直连上游 AI 供应商。"
+  ],
+  "handoffPaths": [
+    "packages/contracts/**",
+    "packages/api-client/**",
+    "agent-admin/backend/app/Http/Controllers/App/**",
+    "agent-admin/backend/routes/app.php",
+    "agent-web/**",
+    "agent-mobile/**",
+    ".github/workflows/**",
+    "docs/multichannel-development.md"
+  ],
+  "notes": [
+    "第一轮先以 Web 为主验证云端 API，uni-app 只要求 H5 编译和最小可运行路由。",
+    "认证建议 Web 使用 HttpOnly Secure Cookie；小程序使用短期 access token + refresh token；Electron 继续兼容现有 JWT。",
+    "所有异步图片/视频能力统一为 task_id 状态机，客户端不直接依赖供应商返回结构。",
+    "合并门禁必须先解决 agent-admin/frontend package-lock 与 package.json 不同步问题。"
+  ]
+}
