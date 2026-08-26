@@ -110,6 +110,6 @@
     "认证建议 Web 使用 HttpOnly Secure Cookie；小程序使用短期 access token + refresh token；Electron 继续兼容现有 JWT。",
     "源 Web 的 localStorage token、lingmi.ai 域名逻辑和 Mock 支付不能原样进入生产；源小程序的 VITE_REQUEST_PASSWORD 不能被视为秘密。",
     "所有异步图片/视频能力统一为 task_id 状态机，客户端不直接依赖供应商返回结构。",
-    "合并门禁必须先解决 agent-admin/frontend package-lock 与 package.json 不同步问题。"
+    "合并门禁必须先解决 agent-admin/frontend package-lock 依赖图不完整问题。"
   ]
 }

@@ -1,4 +1,27 @@
 {
+  "name": "zihui",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "npm@10.9.2",
+  "engines": {
+    "node": ">=22 <23",
+    "npm": ">=10 <11"
+  },
+  "workspaces": [
+    "packages/*",
+    "agent-web",
+    "agent-mobile"
+  ],
+  "scripts": {
+    "check:ui-import": "node scripts/check-ui-import.mjs",
+    "type-check": "npm run type-check --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "build:web": "npm run build --workspace=@zihui/web",
+    "build:mobile:h5": "npm run build:h5 --workspace=@zihui/mobile",
+    "build:mobile:mp-weixin": "npm run build:mp-weixin --workspace=@zihui/mobile",
+    "test:mobile:h5": "npm run test:h5 --workspace=@zihui/mobile",
+    "test:mobile:mp": "npm run test:mp --workspace=@zihui/mobile"
+  },
   "dependencies": {
     "ag-psd": "^28.5.1"
   }

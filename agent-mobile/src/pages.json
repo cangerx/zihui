@@ -1,0 +1,147 @@
+{
+  "pages": [
+    {
+      "path": "pages/home/home",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "首页"
+      }
+    },
+    {
+      "path": "pages/template/template",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "模板"
+      }
+    },
+    {
+      "path": "pages/tools/tools",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "全部工具"
+      }
+    },
+    {
+      "path": "pages/mine/mine",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "我的"
+      }
+    }
+  ],
+  "subPackages": [
+    {
+      "root": "pages-sub",
+      "pages": [
+        {
+          "path": "tool-intro/tool-intro",
+          "style": {
+            "navigationStyle": "custom",
+            "navigationBarTitleText": "工具介绍"
+          }
+        },
+        {
+          "path": "tool-run/tool-run",
+          "style": {
+            "navigationStyle": "custom",
+            "navigationBarTitleText": ""
+          }
+        },
+        {
+          "path": "ai-image/ai-image",
+          "style": {
+            "navigationStyle": "custom",
+            "navigationBarTitleText": "AI生图"
+          }
+        },
+        {
+          "path": "vip/vip",
+          "style": {
+            "navigationStyle": "custom",
+            "navigationBarTitleText": "会员",
+            "backgroundColor": "#020202"
+          }
+        },
+        {
+          "path": "canvas-create/canvas-create",
+          "style": {
+            "navigationStyle": "custom",
+            "navigationBarTitleText": "创建空白画布"
+          }
+        },
+        {
+          "path": "task-history/task-history",
+          "style": {
+            "navigationBarTitleText": "最近任务"
+          }
+        },
+        {
+          "path": "login/login",
+          "style": {
+            "navigationStyle": "custom",
+            "navigationBarTitleText": "登录"
+          }
+        },
+        {
+          "path": "suite-run/suite-run",
+          "style": {
+            "navigationStyle": "custom",
+            "navigationBarTitleText": "商品套图",
+            "backgroundColor": "#f7f8fc"
+          }
+        },
+        {
+          "path": "suite-result/suite-result",
+          "style": {
+            "navigationStyle": "custom",
+            "navigationBarTitleText": "生成结果"
+          }
+        }
+      ]
+    }
+  ],
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#111111",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "首页",
+        "iconPath": "static/tabbar/home.png",
+        "selectedIconPath": "static/tabbar/home-active.png"
+      },
+      {
+        "pagePath": "pages/template/template",
+        "text": "模板",
+        "iconPath": "static/tabbar/template.png",
+        "selectedIconPath": "static/tabbar/template-active.png"
+      },
+      {
+        "pagePath": "pages/tools/tools",
+        "text": "工具",
+        "iconPath": "static/tabbar/tools.png",
+        "selectedIconPath": "static/tabbar/tools-active.png"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的",
+        "iconPath": "static/tabbar/mine.png",
+        "selectedIconPath": "static/tabbar/mine-active.png"
+      }
+    ]
+  },
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "AI设计",
+    "navigationBarBackgroundColor": "#F6F7FB",
+    "backgroundColor": "#F6F7FB"
+  },
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^([a-z][a-z0-9]*(?:-[a-z0-9]+)+)$": "@/components/$1/$1.vue"
+    }
+  }
+}

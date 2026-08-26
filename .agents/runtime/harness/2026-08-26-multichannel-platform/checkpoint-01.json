@@ -1,0 +1,37 @@
+{
+  "checkpoint": "ui-workspace-security-baseline",
+  "date": "2026-08-26",
+  "status": "partial",
+  "notRoundEvaluation": true,
+  "completed": [
+    "Frozen Web and uni-app UI sources imported with provenance manifests and target SHA-256 snapshots",
+    "Node 22/npm 10 workspace established for agent-web, agent-mobile and future packages",
+    "Web feature gates default closed and shared by navigation, home shortcuts and Next proxy",
+    "Web API default changed to same-origin /api/app/v1; CI injects an invalid explicit API URL",
+    "Legacy LingMi markers and localhost API fallback removed from imported Web runtime",
+    "Mobile client signing secret and test gateway removed; request-layer Mock is development-only",
+    "CI expanded to verify all declared independent lockfiles and production critical advisories",
+    "Web production, H5 and mp-weixin builds passed"
+  ],
+  "verification": {
+    "checkUiImport": "passed",
+    "typeCheck": "passed",
+    "lint": "passed with 282 warnings and 0 errors",
+    "buildWeb": "passed",
+    "buildMobileH5": "passed",
+    "buildMobileMpWeixin": "passed",
+    "httpSmoke": "passed",
+    "browserVisualVerification": "not_run_browser_control_unavailable"
+  },
+  "knownGaps": [
+    "packages/contracts, packages/api-client and packages/domain are not implemented",
+    "Laravel /api/app/v1 bootstrap, authentication, chat and image task endpoints are not implemented",
+    "Web still has the imported localStorage Bearer compatibility path until shared authentication is wired",
+    "Mobile pages still contain prototype Mock data and need API adapter integration",
+    "Digital employee/experts pages are not implemented; /agent remains the disabled agency route",
+    "OAuth state/PKCE must be implemented before OAuth is enabled",
+    "Imported source and image asset rights remain pending internal confirmation",
+    "Some independent lock installs were interrupted after long native dependency silence; CI remains authoritative"
+  ],
+  "nextSlice": "Implement shared contracts/api-client/domain and bootstrap/password authentication under /api/app/v1 before opening chat or image feature flags"
+}

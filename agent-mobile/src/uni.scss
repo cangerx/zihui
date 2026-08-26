@@ -1,0 +1,77 @@
+/**
+ * 设计 tokens —— 提取自 原型图（docs/原型图分析.md §3）
+ * 设计稿宽 1260px，rpx = px * 750 / 1260
+ * 本文件由 uni-app 自动注入所有 scss，页面内禁止写死色值
+ */
+
+/* ===== 色板（取值来自原型图像素采样）===== */
+$brand: #5f5ffd;              // 主色：紫蓝（主按钮/选中描边/下划线）
+$brand-light: #eeeeff;        // 主色浅底
+$brand-disabled: #b9b9e8;     // 主色禁用态（生成中按钮）
+$ink: #16161a;                // 文字主色
+$ink-2: #6b6b75;              // 文字次色
+$ink-3: #9a9aa5;              // 文字弱色
+$bg-page: #f7f8fc;            // 页面底色
+$bg-card: #ffffff;            // 卡片底色
+$bg-fill: #f4f5fa;            // 输入框/胶囊填充底
+$line: #eeeef3;               // 分割线
+$bg-skeleton: #eeeef4;        // 骨架/占位块底
+$bg-table-head: #f1f1f8;      // 表头底
+$bg-table-row: #f9f9fd;       // 表格行底
+
+/* 首页渐变头部：#d8d8fe → #fff，700/2800 处收白 */
+$grad-home-top: #d8d8fe;
+$grad-home-bottom: #ffffff;
+
+/* AI 输入卡片描边渐变（绿→蓝） */
+$grad-ai-from: #7ed957;
+$grad-ai-to: #4a9df8;
+
+/* VIP 黑金：底色近黑 #020202，CTA 为淡金 #f3c0a1 */
+$vip-bg: #020202;
+$vip-card: #2f2a24;           // 权益卡底
+$vip-gold-from: #f7d3ae;
+$vip-gold-to: #e8a86f;
+$vip-cta: #f3c0a1;            // 底部 CTA 底色
+$vip-text: #f5e0c6;
+
+/* 工具卡浅底（原型 6 色轮换） */
+$tool-tints: #fae3eb, #fbeae2, #f7fbe2, #effbe5, #e7f3ff, #fcefe7;
+
+/* 功能色 */
+$danger: #fa5151;
+$success: #07c160;
+
+/* 对话页（电商套图结果页实测） */
+$bubble-user: #cecfff;        // 用户消息卡底（实测 (206,207,255)）
+$btn-loading: #777779;        // 进行中按钮底（实测 (119,119,121)）
+
+/* ===== 圆角 ===== */
+$radius-card: 28rpx;          // 大卡片
+$radius-card-sm: 24rpx;       // 表单区块卡（电商套图实测 41px）
+$radius-lg: 36rpx;            // AI 输入卡等超大圆角
+$radius-btn: 44rpx;           // 胶囊按钮
+$radius-sm: 20rpx;            // 小卡/输入框
+$radius-thumb: 16rpx;         // 缩略图
+$radius-sheet: 40rpx;         // 底部弹窗顶部圆角
+$radius-sheet-lg: 44rpx;      // AI 帮写弹层（实测 R74px，比常规弹窗更圆）
+$radius-bubble: 43rpx;        // 对话页消息卡（实测 R72px）
+
+/* ===== 字号（$fs-hero 实测原型 63px 字形高）===== */
+$fs-hero: 42rpx;              // 大标题
+$fs-lg: 36rpx;                // 页面主标题
+$fs-title: 32rpx;             // 区块标题
+$fs-body: 28rpx;              // 正文
+$fs-aux: 24rpx;               // 辅助
+$fs-mini: 21rpx;              // 角标
+$fs-tiny: 18rpx;              // 免责小字（对话页「内容由AI生成」实测 ink 高 29px）
+
+/* ===== 间距 ===== */
+$gap-page: 32rpx;             // 页面左右留白
+$gap-card: 24rpx;             // 卡片内边距
+$gap-item: 20rpx;             // 元素间距
+
+/* ===== 动效 ===== */
+$dur-fast: 150ms;
+$dur-base: 300ms;
+$ease-base: cubic-bezier(0.25, 0.1, 0.25, 1);

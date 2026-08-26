@@ -20,6 +20,11 @@ coverage/
 agent-desktop/out/
 agent-desktop/dist/
 agent-desktop/dist-win/
+/agent-web/.next/
+/agent-web/out/
+/agent-mobile/dist/
+/agent-mobile/unpackage/
+/packages/*/dist/
 *.zip
 *.tar
 *.tar.gz

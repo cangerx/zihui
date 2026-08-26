@@ -1,0 +1,29 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+.DS_Store
+dist
+unpackage
+*.local
+
+# Editor directories and files
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# 设计原型图：体积大且只作还原参照，不入库
+# 实测数据已固化在 docs/ 与组件注释里，缺图不影响开发
+原型图/
+
+# Playwright MCP 运行产物
+.playwright-mcp/

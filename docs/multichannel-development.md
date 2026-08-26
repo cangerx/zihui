@@ -18,7 +18,7 @@
 - H5/小程序 UI 来源：`/Volumes/mac1/code/ai-sc-xcx`，固定源提交 `ed65fabfdf1c6cb89ebb43cff44ec02095fe2bdf`，技术栈为 uni-app Vue 3 + Pinia，类型检查、H5 和 mp-weixin 构建已通过，共 13 个页面入口。
 - 已有规划契约：`.agents/runtime/harness/2026-08-26-multichannel-platform/` 下的 `product_spec.json` 和 `round-01-contract.json`。
 
-开发前必须先处理：`agent-admin/frontend/package-lock.json` 与 `package.json` 不同步、Node/PHP 版本偏离项目要求、依赖安全公告、Electron `webSecurity: false` 和全局忽略证书错误等问题。UI 抽离还必须处理源 Web 的 npm/pnpm 双 lock、`localStorage` token、`lingmi.ai` 品牌/OEM逻辑，以及源小程序的旧 take 接口、Mock 数据和客户端请求签名配置。
+开发前必须先处理：`agent-admin/frontend/package-lock.json` 依赖图不完整、Node/PHP 版本偏离项目要求、依赖安全公告、Electron `webSecurity: false` 和全局忽略证书错误等问题。UI 抽离还必须处理源 Web 的 npm/pnpm 双 lock、`localStorage` token、`lingmi.ai` 品牌/OEM逻辑，以及源小程序的旧 take 接口、Mock 数据和客户端请求签名配置。
 
 ## 3. 目标架构
 
@@ -57,7 +57,7 @@
 
 任务：
 
-1. 固定 Node 20 LTS、PHP 8.0、Composer 和 MySQL 8.0 的 CI 版本；本地使用 `nvm`/容器提供一致环境。
+1. 固定 Node 22 LTS、npm 10、PHP 8.0、Composer 和 MySQL 8.0 的 CI 版本；本地使用 `nvm`/容器提供一致环境。
 2. 修复 `agent-admin/frontend` manifest/lock 不一致，所有项目确认可重复安装。
 3. 盘点 `.env.example`，区分服务端密钥、公开配置和渠道配置；真实密钥不得进入 Git。
 4. 建立安全基线：移除生产环境全局 `ignore-certificate-errors`，评估 `webSecurity: false`，补充 CORS、CSRF、限流、上传大小和 MIME 校验。
@@ -251,7 +251,7 @@ GitHub Actions 建议拆为：
 
 1. `quality.yml`：格式、TypeScript 类型、contracts schema、依赖锁文件一致性、secret scan。
 2. `backend.yml`：PHP 8.0 + MySQL 8.0，`composer install --no-interaction`、迁移、PHPUnit Feature Test、`composer audit`。
-3. `web.yml`：Node 20，`npm ci`/workspace install、lint、typecheck、unit、build、Playwright smoke。
+3. `web.yml`：Node 22 + npm 10，`npm ci`/workspace install、lint、typecheck、unit、build、Playwright smoke。
 4. `mobile.yml`：type-check、H5 构建、mp-weixin 构建、共享包依赖扫描。
 5. `desktop.yml`：沿用现有 Electron 构建和最小回归，不因新端改动旧 preload 契约。
 
@@ -282,10 +282,12 @@ GitHub Actions 建议拆为：
 ## 10. 首个开发迭代的可执行清单
 
 1. 合并调整后的规划、产品规格、首轮契约和 UI 迁移矩阵。
-2. 修复 admin frontend lock，确定 Node 20/PHP 8.0 CI 镜像和根 npm workspace。
+2. 修复 admin frontend lock，确定 Node 22 + npm 10/PHP 8.0 CI 镜像和根 npm workspace。
 3. 按固定 SHA 和复制白名单抽离 `agent-web`、`agent-mobile`，生成来源清单，不复制依赖、产物、环境文件和源 lock。
 4. 先保持 Mock 构建通过并完成截图基线，再实现 contracts、错误模型、认证 client 和 `/api/app/v1/auth/*`、`/bootstrap`。
 5. 用 fake provider 打通 Web 登录、对话、图片任务，以及移动端登录、工具运行、生图和任务链路，再接真实供应商。
 6. 同步补齐 PHPUnit、Playwright、移动端构建验收和 IDOR 测试；测试未通过不得开始微信支付开发。
+
+截至 2026-08-26：清单 1-3 已完成；清单 4 仅完成 UI 抽离、生产安全开关和 Web/H5/mp-weixin 构建基线，contracts、API v1 与业务联调尚未开始；清单 5-6 待执行。
 
 首轮完成的判断标准不是页面数量，而是：普通浏览器脱离 Electron 可以登录并完成一次对话和生图，任务状态可恢复，两个用户之间不能越权，CI 能阻止契约和依赖漂移。

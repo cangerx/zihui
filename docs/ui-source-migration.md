@@ -20,15 +20,16 @@
 - `src/**`
 - `public/**`，但所有图片、Logo、字体和第三方资源先确认授权与产品归属
 - `package.json`
-- `next.config.ts`、`tsconfig.json`、`next-env.d.ts`
+- `next.config.ts`、`tsconfig.json`；`next-env.d.ts` 由 Next.js 在目标环境生成，不属于固定源提交
 - `postcss.config.mjs`、`eslint.config.mjs`
-- `.dockerignore`、`.gitignore` 和经过目标部署复核的 `Dockerfile`
+- `.dockerignore`、`.gitignore`
 - 源仓库 MIT 许可声明写入目标 `THIRD_PARTY_NOTICES.md`，不覆盖 Zihui 根许可证
 
 不复制：
 
 - `.git/**`、`.next/**`、`node_modules/**`、`tsconfig.tsbuildinfo`
 - 源 `package-lock.json`、`pnpm-lock.yaml`、`pnpm-workspace.yaml`
+- 源 `Dockerfile` 使用 pnpm 子 lock，与根 npm workspace 不兼容；部署阶段按仓库根构建上下文重写
 - `.env*`、本地缓存、日志和源仓库 README 模板
 - 未登记的部署密钥、域名证书和生成产物
 
@@ -37,6 +38,8 @@
 复制到 `agent-mobile/`：
 
 - `src/**`
+- `.gitignore`
+- `scripts/h5-verify.js`
 - `scripts/mp-acceptance.js`
 - `package.json`
 - `index.html`、`vite.config.ts`、`tsconfig.json`
@@ -69,7 +72,7 @@ Web 源仓库顶层为 MIT License；小程序源仓库未发现独立许可证�
 | `/collage`、`/editor`、`/resize`、`/id-photo`、`/batch-edit` | 独立验收后开放 | 浏览器本地处理能力可以复用，但要验证跨域图片、内存、移动端和下载行为 |
 | `/product-photo`、`/cutout`、`/eraser`、`/expand`、`/upscale`、`/poster`、`/video`、`/copywriting` | 按供应商逐项开放 | 统一映射 `app_tasks`，没有后端 adapter 和计费规则时隐藏入口 |
 | `/agent/*` | 第一轮隐藏 | 当前语义是代理商/OEM 分站管理，不是数字员工/专家库，不能改名复用 |
-| `/plugins/*` | 第一轮隐藏 | 依赖 `window.__LINGMI_SDK__` 和远程脚本注入，上线前需单独安全设计 |
+| `/plugins/*` | 第一轮隐藏 | 已改为默认关闭的 Zihui 功能开关；远程脚本注入上线前需单独安全设计 |
 | `/referral*` | 第一轮隐藏 | 依赖邀请、佣金和提现模型，不属于首轮用户工作台 |
 | `/music`、`/a-plus`、`/portrait`、`/coming-soon`、`/more` | 默认隐藏 | 由产品能力清单决定，不保留无功能的“即将上线”入口 |
 | `/terms`、`/privacy` | 内容替换后复用 | 必须替换为 Zihui 实际协议、主体、数据处理和联系方式 |

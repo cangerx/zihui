@@ -25,6 +25,8 @@
 /backend/public/storage
 /backend/public/hot
 /backend/public/build/
+/backend/public/admin/
+/backend/public/docs/
 /backend/public/updates/
 # Cloud-build icon uploads (user-provided PNGs, managed at runtime by
 # CloudBuildIconController; directory auto-created on first upload)
