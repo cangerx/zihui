@@ -8,6 +8,9 @@ import type {
   AppModel,
   AppPlan,
   AppTask,
+  AppAsset,
+  AssetPresignRequest,
+  AssetUploadInstruction,
   AppUser,
   AuthPayload,
   BootstrapPayload,
@@ -75,7 +78,9 @@ export class ApiClient {
   }
 
   async request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-    const rawUrl = `${this.baseUrl}${path.startsWith("/") ? path : `/${path}`}`;
+    const rawUrl = /^https?:\/\//i.test(path)
+      ? path
+      : `${this.baseUrl}${path.startsWith("/") ? path : `/${path}`}`;
     const absolute = /^https?:\/\//i.test(rawUrl);
     const url = new URL(rawUrl, "http://zihui.local");
     for (const [key, value] of Object.entries(options.query || {})) {
@@ -87,7 +92,8 @@ export class ApiClient {
     headers.set("X-Channel", this.channel);
     const token = this.getAccessToken?.();
     if (token) headers.set("Authorization", `Bearer ${token}`);
-    if (options.body !== undefined && !(options.body instanceof FormData)) {
+    const isRawBody = options.body instanceof ArrayBuffer || ArrayBuffer.isView(options.body as ArrayBufferView) || (typeof Blob !== "undefined" && options.body instanceof Blob);
+    if (options.body !== undefined && !(options.body instanceof FormData) && !isRawBody) {
       headers.set("Content-Type", "application/json");
     }
 
@@ -95,7 +101,7 @@ export class ApiClient {
     const response = await this.fetchImpl(requestUrl, {
       ...options,
       body:
-        options.body === undefined || options.body instanceof FormData
+        options.body === undefined || options.body instanceof FormData || isRawBody
           ? (options.body as BodyInit | null | undefined)
           : JSON.stringify(options.body),
       credentials: options.credentials || this.credentials,
@@ -190,6 +196,18 @@ export class ApiClient {
 
   createImageTask(payload: Record<string, unknown>): Promise<AppTask> {
     return this.request<AppTask>("/image-tasks", { method: "POST", body: payload });
+  }
+
+  presignAsset(payload: AssetPresignRequest): Promise<AssetUploadInstruction> {
+    return this.request<AssetUploadInstruction>("/assets/presign", { method: "POST", body: payload });
+  }
+
+  uploadAssetContent(url: string, bytes: ArrayBuffer, headers: Record<string, string>): Promise<void> {
+    return this.request<void>(url, { method: "PUT", body: bytes, headers });
+  }
+
+  completeAsset(id: string): Promise<AppAsset> {
+    return this.request<AppAsset>(`/assets/${encodeURIComponent(id)}/complete`, { method: "POST" });
   }
 
   tasks(query?: { type?: string; status?: string; limit?: number }): Promise<AppTask[]> {

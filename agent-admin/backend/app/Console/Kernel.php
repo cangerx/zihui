@@ -86,6 +86,9 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->runInBackground();
 
+        $schedule->command('assets:purge-expired')
+            ->hourly()->withoutOverlapping()->runInBackground();
+
         // 云同步容量对账：每小时重算 used_bytes，纠正增量维护漂移。
         $schedule->command('sync:reconcile-storage')
             ->hourly()

@@ -155,3 +155,36 @@ export interface AppTask<TRequest = Record<string, unknown>, TResult = unknown> 
   created_at: string;
   updated_at: string;
 }
+
+export type AppAssetStatus = "pending" | "uploaded" | "ready" | "failed" | "expired";
+
+export interface AppAsset {
+  id: string;
+  kind: "image" | string;
+  status: AppAssetStatus;
+  mime: string;
+  size: number;
+  sha256: string;
+  display_url: string;
+  display_url_expires_at: string;
+  expires_at: string | null;
+}
+
+export interface AssetPresignRequest {
+  filename: string;
+  mime_type: "image/jpeg" | "image/png" | "image/webp";
+  size: number;
+  sha256?: string;
+}
+
+export interface AssetUploadInstruction {
+  id: string;
+  kind: "image";
+  status: "pending";
+  method: "PUT";
+  upload_url: string;
+  headers: Record<string, string>;
+  max_size: number;
+  expires_at: string | null;
+  upload_expires_at: string;
+}

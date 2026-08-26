@@ -1,0 +1,36 @@
+{
+  "round": 3,
+  "status": "implemented_with_verified_slice",
+  "date": "2026-08-26",
+  "summary": "App v1 用户资产上传与移动端 H5/微信小程序参考图任务引用已实现；生产能力仍由 APP_V1_ENABLE_ASSETS 默认关闭。",
+  "completed": [
+    "app_assets 与 app_asset_task_leases 数据模型、私有存储写入和过期清理调度",
+    "JWT + signed nonce 一次性 PUT、MIME/magic/finfo/尺寸/哈希/Content-Length 校验",
+    "complete 二次读取校验、owner 隔离、display content 签名访问",
+    "App v1 image task 严格 asset_ids 输入，拒绝 URL/base64/key 旁路并创建任务租约",
+    "共享 contracts/api-client 二进制 PUT 与移动端 App v1 上传 facade",
+    "bootstrap assets gate、H5/mp-weixin 生产 schema 与 asset_ids payload",
+    "生产资产静态扫描、H5/mp-weixin/Web 构建与来源清单更新"
+  ],
+  "verification": {
+    "typeCheck": "passed",
+    "phpSyntax": "passed",
+    "appV1AssetFeatureTest": "passed 3/3",
+    "appV1OwnershipAndContractTests": "passed 9/9",
+    "buildWeb": "passed",
+    "buildMobileH5": "passed",
+    "buildMobileMpWeixin": "passed",
+    "mobileH5MockBehavior": "passed 10/10",
+    "mobileProductionEntrypointCheck": "passed",
+    "mobileProductionAssetCheck": "passed",
+    "uiImportCheck": "passed",
+    "gitDiffCheck": "passed"
+  },
+  "knownGaps": [
+    "尚未在真实 COS/OSS、HTTPS CORS 和微信合法域名环境执行端到端上传；已对配置缺失 fail closed。",
+    "AppAsset 云端 driver 的私有 ACL 需要部署凭据与对象存储策略在联调环境确认。",
+    "完整跨用户任务 Job/provider fake、并发重放和 purge 失败重试矩阵留待下一轮扩充。",
+    "Web 参考图 UI 仍是 non-goal；共享客户端能力已提供。"
+  ],
+  "nextSlice": "扩展真实后端集成与对象存储 fake 覆盖，并继续迁移下一组移动端生产能力。"
+}

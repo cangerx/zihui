@@ -38,6 +38,7 @@ export interface HomeDiscovery {
   entries: DiscoveryHomeEntry[]
   recommendTabs: string[]
   showcases: Record<string, DiscoveryHomeShowcase[]>
+  assetsEnabled: boolean
 }
 
 export interface TemplatePage {
@@ -50,6 +51,7 @@ const EMPTY_HOME: HomeDiscovery = {
   entries: [],
   recommendTabs: [],
   showcases: {},
+  assetsEnabled: false,
 }
 
 /**
@@ -63,6 +65,7 @@ export async function getHomeDiscovery(): Promise<HomeDiscovery> {
       entries: mock.homeEntries,
       recommendTabs: mock.homeRecommendTabs,
       showcases: mock.homeShowcases,
+      assetsEnabled: true,
     }
   }
 
@@ -81,6 +84,7 @@ export async function getHomeDiscovery(): Promise<HomeDiscovery> {
       })),
       recommendTabs: ['AI 生图'],
       showcases: {},
+      assetsEnabled: Boolean(bootstrap.features.assets?.enabled),
     }
   } catch (error) {
     console.warn(`[discovery] bootstrap failed (${apiErrorCode(error)})`)

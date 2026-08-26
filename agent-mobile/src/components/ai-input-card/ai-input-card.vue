@@ -16,8 +16,9 @@ const props = withDefaults(
     /** 是否显示收起按钮 */
     collapsible?: boolean
     maxImages?: number
+    imagesEnabled?: boolean
   }>(),
-  { images: () => [], placeholder: '输入一句话让我帮你设计', collapsible: false, maxImages: 9 },
+  { images: () => [], placeholder: '输入一句话让我帮你设计', collapsible: false, maxImages: 9, imagesEnabled: true },
 )
 
 const emit = defineEmits<{
@@ -113,11 +114,11 @@ function onBlur() {
       <view class="aic__foot">
         <view class="aic__actions">
           <!-- 原型：添加图片为描边胶囊，素材库/模板为纯文字 -->
-          <view class="aic__action aic__action--outline" @tap="pickImage">
+          <view v-if="imagesEnabled" class="aic__action aic__action--outline" @tap="pickImage">
             <ui-icon name="plus" :size="24" color="#16161a" />
             <text class="aic__action-text">添加图片</text>
           </view>
-          <text class="aic__plain" @tap="emit('material')">素材库</text>
+          <text v-if="imagesEnabled" class="aic__plain" @tap="emit('material')">素材库</text>
           <text class="aic__plain" @tap="emit('template')">模板</text>
         </view>
         <view class="aic__right">

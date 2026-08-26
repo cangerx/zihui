@@ -13,7 +13,9 @@ use App\Services\QuotaService;
 use App\Services\RateLimitService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class GatewayController extends Controller
@@ -137,6 +139,8 @@ class GatewayController extends Controller
         // 转发上游前剥掉 cloud_model_id（非上游协议字段，仅用于本网关路由）
         $body = $request->except(['_token', 'cloud_model_id']);
         $body['model'] = $cloudModel->model_id;
+        $appAssetIds = array_values(array_filter((array) ($body['app_asset_ids'] ?? []), 'is_string'));
+        unset($body['app_asset_ids']);
 
         // Create async task
         $taskId = Str::uuid()->toString();
@@ -145,15 +149,31 @@ class GatewayController extends Controller
         // 完整 body（含 base64）仅用 Cache 临时传递给 ProcessImageTask，TTL 30 分钟。
         Cache::put("itask:body:{$taskId}", $body, now()->addMinutes(30));
 
+        $persistedBody = $this->stripBase64FromRequestBody($body);
+        unset($persistedBody['image_urls']);
+        if ($appAssetIds !== []) $persistedBody['_app_asset_ids'] = $appAssetIds;
+
+        DB::transaction(function () use ($taskId, $user, $cloudModel, $endpoint, $persistedBody, $requestId, $appAssetIds) {
         ImageTask::create([
             'id' => $taskId,
             'user_id' => $user->id,
             'cloud_model_id' => $cloudModel->id,
             'endpoint' => $endpoint,
-            'request_body' => $this->stripBase64FromRequestBody($body),
+            'request_body' => $persistedBody,
             'status' => 'pending',
             'request_id' => $requestId,
         ]);
+
+        if ($appAssetIds !== [] && Schema::hasTable('app_asset_task_leases')) {
+            $leaseUntil = now()->addHours(2);
+            foreach ($appAssetIds as $assetId) {
+                DB::table('app_asset_task_leases')->updateOrInsert(
+                    ['asset_id' => $assetId, 'task_id' => $taskId],
+                    ['lease_until' => $leaseUntil, 'released_at' => null, 'updated_at' => now(), 'created_at' => now()]
+                );
+            }
+        }
+        });
 
         // 自适应 driver：保证老部署升级零配置即可用。
         //   - QUEUE_CONNECTION=sync（默认 / 未配置）→ 老兼容：response 发完后用 terminating

@@ -38,6 +38,7 @@ const entries = ref<DiscoveryHomeEntry[]>([])
 const recommendTabs = ref<string[]>([])
 const showcasesByCategory = ref<Record<string, DiscoveryHomeShowcase[]>>({})
 const templates = ref<DiscoveryTemplateItem[]>([])
+const discoveryAssetsEnabled = ref(false)
 const page = ref(1)
 const loading = ref(false)
 const hasMore = ref(true)
@@ -52,6 +53,7 @@ const isCategoryMode = computed(
 const imageEnabled = computed(() =>
   entries.value.some((entry) => entry.appUuid === AI_IMAGE_APP_ID),
 )
+const assetsEnabled = computed(() => USE_MOCK || discoveryAssetsEnabled.value)
 
 /** 头部内容整体下移：让出状态栏 */
 const headStyle = computed(() => `padding-top:${metrics.statusBarHeight + 8}px`)
@@ -60,6 +62,7 @@ onLoad(async () => {
   const discovery = await getHomeDiscovery()
   categories.value = discovery.categories
   entries.value = discovery.entries
+  discoveryAssetsEnabled.value = discovery.assetsEnabled
   recommendTabs.value = discovery.recommendTabs
   showcasesByCategory.value = discovery.showcases
   await loadTemplates(true)
@@ -113,7 +116,13 @@ function onSend() {
       return
     }
     if (images.value.length) {
-      uni.showToast({ title: '参考图功能尚未开放，请先使用文字描述', icon: 'none' })
+      if (!assetsEnabled.value) {
+        uni.showToast({ title: '参考图功能暂未开放，请先使用文字描述', icon: 'none' })
+        return
+      }
+      uni.navigateTo({
+        url: `/pages-sub/tool-run/tool-run?uuid=${AI_IMAGE_APP_ID}&prompt=${encodeURIComponent(prompt.value)}&images=${encodeURIComponent(JSON.stringify(images.value))}`,
+      })
       return
     }
     uni.navigateTo({
@@ -252,6 +261,7 @@ function openAssets() {
         <ai-input-card
           v-model="prompt"
           v-model:images="images"
+          :images-enabled="assetsEnabled"
           @send="onSend"
           @collapse="collapse"
           @material="openAssets"

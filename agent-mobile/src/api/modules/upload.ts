@@ -4,6 +4,8 @@
  */
 import { request, uploadFile } from '../request'
 import { requireApiBase, USE_MOCK } from '../config'
+import { appV1Client } from '../v1-client'
+import type { AppAsset } from '@zihui/contracts'
 import type { PrepareUploadResult, UploadedFile } from '../types'
 
 function extOf(path: string): string {
@@ -195,4 +197,45 @@ export async function uploadImages(filePaths: string[]): Promise<string[] | null
     urls.push(uploaded.url)
   }
   return urls
+}
+
+/** App v1 生产资产上传：presign -> signed binary PUT -> complete。 */
+export async function uploadAppAsset(filePath: string): Promise<AppAsset | null> {
+  if (USE_MOCK) {
+    const uploaded = await uploadImage(filePath)
+    if (!uploaded) return null
+    return {
+      id: uploaded.uuid,
+      kind: 'image',
+      status: 'ready',
+      mime: uploaded.mime,
+      size: uploaded.size,
+      sha256: '',
+      display_url: uploaded.url,
+      display_url_expires_at: new Date(Date.now() + 600000).toISOString(),
+      expires_at: new Date(Date.now() + 86400000).toISOString(),
+    }
+  }
+
+  const info = await getFileInfo(filePath)
+  const extension = extOf(filePath)
+  const mime = MIME_MAP[extension] || 'image/jpeg'
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(mime) || !info.size) return null
+  const filename = filePath.split('/').pop() || `image.${extension}`
+  const instruction = await appV1Client.presignAsset({ filename, mime_type: mime as 'image/jpeg' | 'image/png' | 'image/webp', size: info.size })
+  const buffer = await readFileBuffer(filePath)
+  if (!buffer) return null
+  await appV1Client.uploadAssetContent(instruction.upload_url, buffer, instruction.headers)
+  return appV1Client.completeAsset(instruction.id)
+}
+
+export async function uploadAppAssets(filePaths: string[]): Promise<AppAsset[] | null> {
+  const assets: AppAsset[] = []
+  for (const path of filePaths) {
+    if (/^https?:\/\//.test(path)) return null
+    const asset = await uploadAppAsset(path)
+    if (!asset) return null
+    assets.push(asset)
+  }
+  return assets
 }

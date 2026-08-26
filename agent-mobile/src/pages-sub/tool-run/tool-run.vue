@@ -15,7 +15,7 @@ import {
   queryWorkflow,
   runWorkflow,
 } from '@/api/modules/app'
-import { uploadImages } from '@/api/modules/upload'
+import { uploadAppAssets, uploadImages } from '@/api/modules/upload'
 import { AI_IMAGE_APP_ID } from '@/api/catalog'
 import { USE_MOCK } from '@/api/config'
 import { apiErrorCode } from '@/api/v1-client'
@@ -66,6 +66,15 @@ onLoad((query) => {
   const templateUuid = USE_MOCK && template ? AI_IMAGE_APP_ID : ''
   requestedUuid = (query?.uuid as string) || templateUuid || requestedUuid
   requestedPreset = query?.prompt ? decodeURIComponent(String(query.prompt)) : ''
+  let initialImages: string[] = []
+  if (query?.images) {
+    try {
+      const parsed = JSON.parse(decodeURIComponent(String(query.images)))
+      if (Array.isArray(parsed)) initialImages = parsed.filter((item): item is string => typeof item === 'string')
+    } catch {
+      initialImages = []
+    }
+  }
 
   if (!USE_MOCK && !user.isLogin) {
     loading.value = false
@@ -74,10 +83,10 @@ onLoad((query) => {
     uni.navigateTo({ url: '/pages-sub/login/login' })
     return
   }
-  loadTool(requestedUuid, requestedPreset)
+  loadTool(requestedUuid, requestedPreset, initialImages)
 })
 
-async function loadTool(uuid: string, preset: string) {
+async function loadTool(uuid: string, preset: string, initialImages: string[] = []) {
   loading.value = true
   loadError.value = ''
   try {
@@ -109,6 +118,10 @@ async function loadTool(uuid: string, preset: string) {
   if (preset) {
     const textField = detail.value.appSchema.fields.find((f) => f.type === 'textarea')
     if (textField) initial[textField.id] = preset
+  }
+  if (initialImages.length) {
+    const imageField = detail.value.appSchema.fields.find((f) => f.type === 'image')
+    if (imageField) initial[imageField.id] = initialImages
   }
   values.value = initial
 }
@@ -188,9 +201,15 @@ async function buildPayload() {
 
   for (const field of fields.value) {
     if (field.type === 'image') {
-      const urls = await uploadImages(arrayValue(field.id))
-      if (!urls) return null
-      system[field.id] = urls
+      if (!USE_MOCK) {
+        const assets = await uploadAppAssets(arrayValue(field.id))
+        if (!assets) return null
+        system.asset_ids = assets.map((asset) => asset.id)
+      } else {
+        const urls = await uploadImages(arrayValue(field.id))
+        if (!urls) return null
+        system[field.id] = urls
+      }
       continue
     }
     if (field.id === 'internal_prompt') {

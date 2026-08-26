@@ -37,5 +37,6 @@ class Kernel extends HttpKernel
         'throttle' => \App\Http\Middleware\CacheTolerantThrottleRequests::class,
         'mirror_worker' => \App\Http\Middleware\VerifyCloudBuildMirrorWorker::class,
         'app.request' => \App\Http\Middleware\AppRequestContext::class,
+        'signed' => \App\Http\Middleware\ValidateAppAssetSignature::class,
     ];
 }

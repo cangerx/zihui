@@ -6,6 +6,7 @@ use App\Models\BillingRule;
 use App\Models\CloudModel;
 use App\Models\ImageTask;
 use App\Models\TemporaryReferenceAsset;
+use App\Models\AppAsset;
 use App\Models\UsageRecord;
 use App\Services\BalanceService;
 use App\Services\Gateway\GatewayRouter;
@@ -18,6 +19,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Throwable;
 
 /**
@@ -90,6 +92,7 @@ class ProcessImageTaskJob implements ShouldQueue
         $cloudModel = CloudModel::with('provider')->find($task->cloud_model_id);
         if (!$cloudModel || !$cloudModel->provider) {
             $task->update(['status' => 'failed', 'error' => 'Model or provider not found']);
+            $this->releaseAssetLeases($task->id);
             return;
         }
 
@@ -108,6 +111,7 @@ class ProcessImageTaskJob implements ShouldQueue
             $router->markCredentialFailure($route->credential, $e->getMessage());
             $task->update(['status' => 'failed', 'error' => $e->getMessage()]);
             $this->recordUsage($task, $cloudModel, 0, 'failed', $e->getMessage());
+            $this->releaseAssetLeases($task->id);
             // 抛出给 Queue 让其按 tries 决定是否重试
             throw $e;
         }
@@ -121,6 +125,7 @@ class ProcessImageTaskJob implements ShouldQueue
             $router->markCredentialFailure($route->credential, $errorMsg);
             $task->update(['status' => 'failed', 'error' => $errorMsg]);
             $this->recordUsage($task, $cloudModel, 0, 'failed', $errorMsg);
+            $this->releaseAssetLeases($task->id);
             // 上游业务错误不应重试（比如 prompt 违规、quota 用尽），直接结束。
             return;
         }
@@ -144,6 +149,7 @@ class ProcessImageTaskJob implements ShouldQueue
             'result' => $this->stripBase64FromResult($data),
             'cost'   => $creditsUsed,
         ]);
+        $this->releaseAssetLeases($task->id);
         $this->recordUsage($task, $cloudModel, $creditsUsed, 'success', '', $deduction['source_plan_id']);
     }
 
@@ -157,6 +163,7 @@ class ProcessImageTaskJob implements ShouldQueue
         if ($task && !in_array($task->status, ['completed', 'failed'], true)) {
             $task->update(['status' => 'failed', 'error' => 'Job failed: ' . $e->getMessage()]);
         }
+        $this->releaseAssetLeases($this->taskId);
         Log::error("[ProcessImageTaskJob] {$this->taskId} permanently failed: {$e->getMessage()}");
     }
 
@@ -194,6 +201,14 @@ class ProcessImageTaskJob implements ShouldQueue
      */
     private function materializeReferenceUrls(array $body, int $userId): array
     {
+        if (isset($body['_app_asset_ids']) && is_array($body['_app_asset_ids']) && Schema::hasTable('app_assets')) {
+            $ids = array_values(array_filter($body['_app_asset_ids'], 'is_string'));
+            $resolved = AppAsset::where('user_id', $userId)->where('kind', 'image')
+                ->whereIn('id', $ids)->whereIn('status', ['ready', 'uploaded'])
+                ->get(['storage_url'])->pluck('storage_url')->all();
+            $body['image_urls'] = $resolved;
+        }
+        unset($body['_app_asset_ids']);
         $imageUrls = (isset($body['image_urls']) && is_array($body['image_urls']))
             ? array_values(array_filter($body['image_urls'], fn ($u) => is_string($u) && $u !== ''))
             : [];
@@ -213,6 +228,25 @@ class ProcessImageTaskJob implements ShouldQueue
             ->whereIn('storage_url', $lookup)
             ->get(['storage_url', 'storage_driver'])
             ->keyBy('storage_url');
+        $appAssets = collect();
+        if (Schema::hasTable('app_assets')) {
+            $appAssets = AppAsset::where('user_id', $userId)
+                ->where('kind', 'image')->whereIn('storage_url', $lookup)
+                ->whereIn('status', ['ready', 'uploaded'])
+                ->where(function ($q) {
+                    $q->where('expires_at', '>', now());
+                    if (Schema::hasTable('app_asset_task_leases')) {
+                        $q->orWhereExists(function ($sq) {
+                            $sq->selectRaw('1')->from('app_asset_task_leases')
+                                ->whereColumn('app_asset_task_leases.asset_id', 'app_assets.id')
+                                ->whereNull('released_at')->where('lease_until', '>', now());
+                        });
+                    }
+                })
+                ->get(['storage_url', 'storage_driver'])
+                ->keyBy('storage_url');
+        }
+        $assets = $assets->union($appAssets);
 
         $readBase64 = function (string $url) use ($assets): ?string {
             $asset = $assets->get($url);
@@ -279,5 +313,13 @@ class ProcessImageTaskJob implements ShouldQueue
             'request_id' => $task->request_id,
             'remark' => $remark,
         ]);
+    }
+
+    private function releaseAssetLeases(string $taskId): void
+    {
+        if (!Schema::hasTable('app_asset_task_leases')) return;
+        \Illuminate\Support\Facades\DB::table('app_asset_task_leases')
+            ->where('task_id', $taskId)->whereNull('released_at')
+            ->update(['released_at' => now(), 'updated_at' => now()]);
     }
 }

@@ -22,7 +22,10 @@ const requiredRoutes = [
   "Route::get('/billing/balance'",
   "Route::get('/', [ConversationController::class, 'index'])",
   "Route::post('/{id}/messages', [ConversationController::class, 'sendMessage'])",
-  "Route::post('/image-tasks'",
+    "Route::post('/image-tasks'",
+    "Route::post('/presign'",
+    "Route::put('/{id}/content'",
+    "Route::post('/{id}/complete'",
   "Route::get('/tasks'",
   "Route::post('/tasks/{id}/cancel'",
 ];

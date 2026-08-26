@@ -21,7 +21,9 @@ function uniFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Res
     uni.request({
       url,
       method: (init.method || 'GET') as UniApp.RequestOptions['method'],
-      data: typeof init.body === 'string' ? init.body : undefined,
+      data: init.body === undefined || init.body === null
+        ? undefined
+        : init.body as string | ArrayBuffer | Record<string, unknown>,
       header: (() => {
         const result: Record<string, string> = {}
         new Headers(init.headers).forEach((value, key) => { result[key] = value })

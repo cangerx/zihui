@@ -4,12 +4,14 @@ namespace App\Http\Controllers\App\V1;
 
 use App\Http\Controllers\GatewayController;
 use App\Models\ImageTask;
+use App\Models\AppAsset;
 use App\Models\CloudModel;
 use App\Models\ModelAssignment;
 use App\Support\AppV1Response;
 use App\Support\AppV1TaskPresenter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class TaskController
 {
@@ -24,14 +26,41 @@ class TaskController
             'size' => ['nullable', 'string', 'max:30'],
             'quality' => ['nullable', 'string', 'max:30'],
             'ratio' => ['nullable', 'string', 'max:20'],
-            'image_urls' => ['nullable', 'array', 'max:4'],
+            'asset_ids' => ['nullable', 'array', 'max:4'],
         ]);
         if ($validator->fails()) return AppV1Response::error('validation_error', $validator->errors()->first(), 422);
+        $prohibited = ['image_urls', 'images', 'image', 'mask', 'mask_url', 'object_key', 'storage_key', 'base64', 'app_asset_ids'];
+        foreach ($prohibited as $field) {
+            if ($request->exists($field)) return AppV1Response::error('invalid_asset_ids', "字段 {$field} 不允许使用", 422);
+        }
+
+        $assetIds = array_values((array) $request->input('asset_ids', []));
+        if (count($assetIds) !== count(array_unique($assetIds)) || count($assetIds) > 4) {
+            return AppV1Response::error('invalid_asset_ids', '参考图数量或 ID 无效', 422);
+        }
+        $assets = collect();
+        if ($assetIds !== []) {
+            if (!config('app_v1.features.assets', false)) return AppV1Response::error('feature_disabled', '素材功能暂未开放', 503);
+            if (count(array_filter($assetIds, fn ($id) => is_string($id) && preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i', $id) === 1)) !== count($assetIds)) {
+                return AppV1Response::error('invalid_asset_ids', '参考图 ID 无效', 422);
+            }
+            $assets = DB::transaction(function () use ($request, $assetIds) {
+                return AppAsset::query()->where('user_id', $request->user()->id)->where('kind', 'image')
+                    ->where('status', 'ready')->where('expires_at', '>', now())->whereIn('id', $assetIds)
+                    ->lockForUpdate()->get();
+            });
+            if ($assets->count() !== count($assetIds)) return AppV1Response::error('invalid_asset_ids', '参考图不可用', 422);
+            $assets = $assets->keyBy('id');
+        }
 
         $model = $this->resolveImageModel($request->user(), $request->input('model'), $request->input('cloud_model_id'));
         if ($model instanceof \Illuminate\Http\JsonResponse) return $model;
 
-        $payload = $request->except(['_token']);
+        $payload = $request->only(['model', 'prompt', 'cloud_model_id', 'n', 'size', 'quality', 'ratio']);
+        if ($assetIds !== []) {
+            $payload['image_urls'] = collect($assetIds)->map(fn ($id) => $assets[(string) $id]->storage_url)->values()->all();
+            $payload['app_asset_ids'] = $assetIds;
+        }
         $payload['model'] = $model->model_id;
         $payload['cloud_model_id'] = $model->id;
         $gatewayRequest = Request::create('/api/gateway/images/generations', 'POST', $payload);

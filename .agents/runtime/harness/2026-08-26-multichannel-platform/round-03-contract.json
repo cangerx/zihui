@@ -1,0 +1,98 @@
+{
+  "round": 3,
+  "goal": "补齐 App v1 用户资产上传契约，并将移动端 H5/微信小程序参考图安全接入 AI 生图任务。",
+  "ownedTasks": [
+    "task_app_asset_model_012",
+    "task_app_asset_upload_013",
+    "task_image_asset_ownership_014",
+    "task_mobile_reference_image_015",
+    "task_asset_contract_verification_016"
+  ],
+  "deliverables": [
+    "共享资产 contracts 与 api-client：预签名、二进制 PUT、完成确认和资产展示类型。",
+    "Laravel app_assets 用户归属模型与迁移，提供 POST /assets/presign、签名 PUT /assets/{id}/content、POST /assets/{id}/complete。",
+    "上传链路校验图片 MIME、magic bytes、finfo、像素维度、Content-Length、大小、可选 SHA-256、签名有效期和一次性写入状态；完成接口必须按当前用户隔离。",
+    "图片任务只接受唯一 asset_ids（最多 4 个），并将当前用户已完成且未过期的资产解析为内部 image_urls；拒绝 image_urls、images、mask_url、base64、对象 key、外部 URL、跨用户、待上传或过期资产。",
+    "移动端仅在 bootstrap.features.assets.enabled 时展示参考图字段，使用 App v1 上传资产并将 asset_ids 随图片任务提交。",
+    "过期临时资产有可执行的清理命令与调度入口，删除数据库记录时按记录 driver/key 同步 best-effort 删除存储对象，失败可重试。"
+  ],
+  "apiContract": {
+    "assetSchema": "app_assets: id UUID/string(36) opaque primary key; user_id indexed owner-only; kind=image; original_name metadata; storage_driver; object_key private server-generated; declared_mime; detected_mime; expected_size; actual_size; sha256; status=pending|uploaded|ready|failed|expired; expires_at; upload_expires_at; nonce_hash; consumed_at; created_at/updated_at. Separate app_asset_task_leases(asset_id, task_id, lease_until, released_at) supports concurrent tasks; purge skips any active lease. API never returns user_id, object_key or raw storage URL.",
+    "featureGate": "APP_V1_ENABLE_ASSETS=false 默认关闭；关闭时 bootstrap.features.assets.enabled=false，presign/PUT/complete 以及带 asset_ids 的 image task 均返回 AppV1Response error code feature_disabled（503），服务端按 channel 再校验，不能只信客户端。开启时仅 h5 与 mini_program 暴露该能力。",
+    "assetState": "pending -> uploaded -> ready；failed/expired 为终态，失败重试必须创建新资产（不得复活旧 nonce）。presign 创建 opaque UUID 资产，客户端不接触 user_id、storage_driver、object_key。complete 仅允许 owner 对 uploaded 资产调用，幂等返回 ready；重复 PUT、过期 PUT、并发 PUT 只能一个请求成功，其余返回 upload_consumed（409）。",
+    "presign": {
+      "request": "filename basename metadata only（服务端 UUID 生成 object key）、mime_type 仅 image/jpeg|image/png|image/webp、size 为整数且 1..20971520、sha256 可选且必须 64 位小写 hex。",
+      "response": "{id, kind:image, status:pending, method:PUT, upload_url, headers:{Content-Type,X-Asset-Upload-Nonce}, max_size:20971520, expires_at, upload_expires_at}；签名绑定 HTTP 方法、完整路径、asset_id、user、mime、size、sha256、nonce 和 expiry。",
+      "auth": "POST /assets/presign 使用 auth.jwt；未登录返回 envelope code unauthenticated（401）。"
+    },
+    "upload": "PUT /assets/{id}/content 同时要求 auth.jwt 与 Laravel signed middleware，签名必须绑定当前用户和完整代理路径；校验 nonce、pending、未过期、Content-Length 精确等于 expected_size（拒绝未知 chunked body）、Content-Type、magic bytes/finfo、像素不超过 4096x4096、sha256（未提供时服务端仍计算并记录），单请求代理内存上限 20MB。失败返回 signature_invalid/ signature_expired/ asset_not_ready/ asset_expired/ mime_mismatch/ size_mismatch/ asset_hash_mismatch/ invalid_image（均为稳定 AppV1Response code）。",
+    "complete": "POST /assets/{id}/complete 使用 auth.jwt，owner 不匹配、未知或过期 ID 统一 asset_not_found（404）；uploaded 才可完成，pending 返回 asset_not_ready（409），ready 重复调用幂等。完成时服务端必须重新读取对象并校验存在、实际字节数、finfo/magic MIME、sha256；失败转 failed 并返回稳定错误。响应只给 owner-scoped display_url 与 display_url_expires_at，不泄漏 raw key。GET /assets/{id}/content 使用 auth.jwt + signed/owner check 流式返回，local 只从 private storage 读取。",
+    "imageTask": "POST /image-tasks 只接受 asset_ids；服务端在同一事务按 user_id + kind=image + status=ready + expires_at>now() 查询并锁定资产，重复/跨用户/pending/expired/超过 4 个统一返回 invalid_asset_ids（422），未知 ID 返回 asset_not_found（404，不可枚举）。创建任务时插入 app_asset_task_leases（默认任务 TTL 2h），事务提交后 dispatch job，任务执行期间资产不得被 purge；asset_ids 不透传 Gateway。",
+    "errors": "所有 App v1 资产和任务错误都使用 {error:{code,message,details?},meta:{request_id}} envelope；JwtAuthMiddleware 需统一改为该 envelope。错误矩阵：401 unauthenticated；403 channel_not_allowed；503 feature_disabled（能力关闭）；401 signature_invalid/signature_expired；404 asset_not_found（未知/他人/过期 ID 统一，禁止枚举）；409 asset_not_ready/upload_consumed；422 invalid_mime/invalid_image/mime_mismatch/size_mismatch/asset_hash_mismatch/invalid_asset_ids；413 asset_too_large；429 quota_exceeded/rate_limited。",
+    "limits": "单资产最大 20 MiB（20971520 bytes），单次 presign 最多 4 个且总量最多 40 MiB；每用户每日 100 个资产、每 IP 每分钟 30 次 presign、每用户每分钟 60 次 PUT/complete/task（Route throttle）；PHP/Nginx/网关 body 上限至少 21 MiB。Content-Length 必须存在且等于 expected_size，chunked/超限拒绝。服务端整包内存预算 24 MiB，写入采用临时 key + 原子 rename/put-if-absent。",
+    "storage": "对象 key 仅由服务端 UUID 生成，original_name 永不参与路径；AppAsset 对象必须 private，响应 display_url 为 owner-scoped 短期 signed GET（默认 10 分钟）。记录实际 storage_driver + object_key；COS/OSS 配置不完整时 presign 失败 storage_unavailable，不静默降级为 public/local。部分写入清理对象但保留 failed 记录供重试；purge 删除对象失败则保留 DB 记录并报告可重试错误。",
+    "rateAndAudit": "所有资产端点和带 asset_ids 的任务记录 X-Request-Id、user_id、channel、IP、资产 ID 摘要与错误码到应用日志；按用户/IP throttle，配额不足返回 quota_exceeded，不泄漏余额或他人资产。",
+    "expiry": "presign upload_expires_at 默认 15 分钟；ready expires_at 默认 24 小时；任务创建事务内复制 asset_ids 快照并插入 app_asset_task_leases，lease_until=now+2h，队列执行只读有效 lease，任务终态释放租约后 purge 才可删除；lease 超时且任务仍运行由 job 延长一次（最多再延长 2h），失败后资产进入 expired。",
+    "idempotency": "presign 接受可选 Idempotency-Key（同用户 10 分钟内重试返回同一 pending 资产）；单请求只包含一个文件，最多 4 次调用由客户端编排，响应按调用顺序；complete 对 ready 幂等，PUT 不幂等且一次性。filename 仅 basename，去除控制字符并限 255 字符；Content-Type 必须是无参数的精确 allowlist 且 Content-Length 缺失一律拒绝；asset_ids 可省略表示纯文本生图。",
+    "display": "新增 GET /assets/{id}/content，要求 auth.jwt + signed middleware；签名有效期 10 分钟并绑定 user/id，跨用户与过期统一 asset_not_found（404）。响应流式读取专用 private AppAsset 存储 API；local 禁止 public_path，COS/OSS 使用记录 driver 的私有签名 GET。",
+    "dispatch": "资产租约 pivot 与 ImageTask 在同一 DB transaction 内写入，Job 通过 afterCommit/队列 dispatch，避免回滚后出现孤儿 lease。"
+  },
+  "verificationPlan": [
+    {
+      "criterion": "未登录用户不能创建或完成资产，上传地址过期或被篡改时不能写入。",
+      "howToCheck": "Laravel Feature Test 覆盖三 endpoint 401、篡改/过期签名、路径绑定、nonce 重放/并发 PUT 和正常 signed PUT。",
+      "hardFail": true
+    },
+    {
+      "criterion": "仅允许 JPEG/PNG/WebP 且文件头、声明 MIME、大小和哈希一致，单文件不超过服务端上限。",
+      "howToCheck": "Feature Test 上传有效 1x1 JPEG/PNG/WebP，并分别断言伪图片、MIME spoof、magic/finfo 不符、4096px 边界、20MB 边界、Content-Length/chunked、大小不符、sha256 缺省/正确/错误返回稳定 App v1 错误。",
+      "hardFail": true
+    },
+    {
+      "criterion": "资产完成与任务引用均按用户隔离，跨用户、pending、expired 资产不可用于生图。",
+      "howToCheck": "Feature Test 使用两个用户覆盖 complete 与 image-tasks 的 IDOR、pending/expired/重复/max+1 asset_ids；Job 测试断言上游只收到解析后的 bytes 且任意 URL 不会被下载。",
+      "hardFail": true
+    },
+    {
+      "criterion": "assets 能力关闭时移动端无参考图字段且不能发起上传；开启时本地图片按 presign -> PUT -> complete 上传并提交 asset_ids。",
+      "howToCheck": "静态契约检查共享 client/mobile facade/schema/payload gate；运行时 gate-off/gate-on Feature Test；H5 与 mp-weixin 生产构建并扫描真实 App v1 标记和 asset_ids。",
+      "hardFail": true
+    },
+    {
+      "criterion": "开发 Mock UI 行为保持可用，共享包、Web、H5、小程序和后端相关测试通过。",
+      "howToCheck": "运行 workspace 类型检查、Web/H5/mp-weixin 构建、H5 Mock 10 项验收、App v1 契约、UI 来源、PHP syntax、资产 Feature Test、purge command/scheduler 与 StorageService mock。",
+      "hardFail": true
+    }
+  ],
+  "nonGoals": [
+    "不在本轮实现云端图库列表、缩略图编辑或长期资产收藏。",
+    "不在本轮接入 Web 参考图 UI；共享 client 先提供能力。",
+    "不开放模板、商品套图、微信登录、手机号绑定、订单或支付。",
+    "不允许客户端直接提交任意 image_urls 或对象存储 key。",
+    "不把 App v1 资产接口复用为管理员素材库或 Electron 本地文件接口。",
+    "不做分片/断点续传、长期图库、缩略图编辑；首轮使用 20MB 以内的代理 PUT，不开放客户端对象存储直传或真实 COS/OSS 凭据。AppAsset 必须走专用 private storage API，不复用 StorageService public upload/putBytes 或静默 driver fallback。"
+  ],
+  "handoffPaths": [
+    "packages/contracts/src/index.ts",
+    "packages/api-client/src/index.ts",
+    "agent-admin/backend/database/migrations/*_create_app_assets_table.php",
+    "agent-admin/backend/app/Models/AppAsset.php",
+    "agent-admin/backend/app/Http/Controllers/App/V1/AssetController.php",
+    "agent-admin/backend/app/Http/Controllers/App/V1/TaskController.php",
+    "agent-admin/backend/routes/app.php",
+    "agent-admin/backend/tests/Feature/AppV1AssetTest.php",
+    "agent-mobile/src/api/modules/upload.ts",
+    "agent-mobile/src/api/modules/app.ts",
+    "agent-mobile/src/pages/home/home.vue",
+    "agent-mobile/src/pages-sub/tool-run/tool-run.vue",
+    "scripts/check-mobile-production-assets.mjs"
+  ],
+  "notes": [
+    "上传 URL 使用 Laravel 临时签名并通过 App v1 PUT 代理写入当前 StorageService；部署为 local/COS/OSS 时均保留同一客户端契约。",
+    "APP_V1_ENABLE_ASSETS 默认关闭，只有服务端显式开启后移动端才展示参考图入口。",
+    "参考图是短期任务输入资产，默认 24 小时过期；图片任务创建时必须重新检查 owner、ready 状态和 expires_at，并写入 2 小时 lease_until，清理命令跳过租约内资产。",
+    "清理命令 assets:purge-expired 每小时调度，按批次加锁；删除对象失败保留记录并返回非零/可重试状态，成功删除 DB 记录。local/COS/OSS 均使用记录的 storage_driver + object_key。",
+    "H5 生产要求 API HTTPS/CORS；微信小程序要求 upload/request 合法域名和 HTTPS，由部署验收检查，不在客户端绕过。",
+    "现有 Gateway/桌面图片链路保持兼容；限制 asset_ids 仅作用于 App v1。"
+  ]
+}

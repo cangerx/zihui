@@ -149,6 +149,40 @@ async function getProductionAppDetail(uuid: string): Promise<AppDetail | null> {
   const models = await appV1Client.models('image')
   if (!models.length) return null
 
+  const fields: AppSchemaField[] = [
+    ...(bootstrap.features.assets?.enabled ? [{
+      id: 'input_image', label: '参考图', type: 'image' as const, scope: 'system' as const,
+      required: false, maxCount: 4,
+    }] : []),
+    {
+      id: 'prompt',
+      label: '画面描述',
+      type: 'textarea',
+      scope: 'form',
+      required: true,
+      placeholder: '描述主体、场景、构图、光线和风格',
+      maxlength: 20000,
+      rows: 5,
+    },
+    {
+      id: 'model',
+      label: '生成模型',
+      type: 'select',
+      scope: 'form',
+      required: true,
+      default: modelOptionValue(models[0]),
+      options: models.map((model) => ({
+        label: `${model.name} · ${model.provider_name}`,
+        value: modelOptionValue(model),
+      })),
+    },
+    {
+      id: 'ratio', label: '图片比例', type: 'card-select', scope: 'form', required: true,
+      default: '1:1', options: IMAGE_RATIO_OPTIONS,
+    },
+    { id: 'n', label: '生成数量', type: 'number', scope: 'form', required: true, min: 1, max: 4, default: 1 },
+  ]
+
   return {
     app: {
       id: AI_IMAGE_APP_ID,
@@ -160,49 +194,7 @@ async function getProductionAppDetail(uuid: string): Promise<AppDetail | null> {
     workflowVersionId: 'app-v1-image-task',
     appSchema: {
       version: 1,
-      fields: [
-        {
-          id: 'prompt',
-          label: '画面描述',
-          type: 'textarea',
-          scope: 'form',
-          required: true,
-          placeholder: '描述主体、场景、构图、光线和风格',
-          maxlength: 20000,
-          rows: 5,
-        },
-        {
-          id: 'model',
-          label: '生成模型',
-          type: 'select',
-          scope: 'form',
-          required: true,
-          default: modelOptionValue(models[0]),
-          options: models.map((model) => ({
-            label: `${model.name} · ${model.provider_name}`,
-            value: modelOptionValue(model),
-          })),
-        },
-        {
-          id: 'ratio',
-          label: '图片比例',
-          type: 'card-select',
-          scope: 'form',
-          required: true,
-          default: '1:1',
-          options: IMAGE_RATIO_OPTIONS,
-        },
-        {
-          id: 'n',
-          label: '生成数量',
-          type: 'number',
-          scope: 'form',
-          required: true,
-          min: 1,
-          max: 4,
-          default: 1,
-        },
-      ],
+      fields,
     },
   }
 }
@@ -219,12 +211,14 @@ function imageTaskPayload(payload: WorkflowRunRequest): Record<string, unknown> 
   const prompt = String(payload.form.prompt || '').trim()
   if (!Number.isInteger(cloudModelId) || cloudModelId <= 0 || !model || !prompt) return null
 
+  const assetIds = Array.isArray(payload.system.asset_ids) ? payload.system.asset_ids : []
   return {
     model,
     cloud_model_id: cloudModelId,
     prompt,
     ratio: String(payload.form.ratio || '1:1'),
     n: Number(payload.form.n || 1),
+    ...(assetIds.length ? { asset_ids: assetIds } : {}),
   }
 }
 

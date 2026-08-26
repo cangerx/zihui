@@ -58,7 +58,8 @@
     "src/components/vip-promo/vip-promo.vue",
     "src/pages-sub/vip/vip.vue",
     "src/pages/home/home.vue",
-    "src/pages/template/template.vue"
+    "src/pages/template/template.vue",
+    "src/components/ai-input-card/ai-input-card.vue"
   ],
   "removedFiles": [
     "src/api/sign.ts"
@@ -81,7 +82,7 @@
     "src/api/request.ts": "6bf39554e7f73690b1133eb69281a5d8a6b924e32e08e54101877f18f2fec8d7",
     "src/api/types.ts": "874b0888bdfd91f5c9b22c5dcb03792e8845aab2f5d184fd2078d88d71e1d377",
     "src/App.vue": "e8975a4f5e1f329baf99fee6ddb048260829d8267e8bc2fcf3e4594fbc12effa",
-    "src/components/ai-input-card/ai-input-card.vue": "3a5bc412529714bccd4aeb97d6527a3b5c669fbb75fbcbb6f739636e0cb67a25",
+    "src/components/ai-input-card/ai-input-card.vue": "53cb43831fe9f3904a8d052ced88078e2e3005dd9410ddc36bfc6a4c123f6774",
     "src/components/ai-write-sheet/ai-write-sheet.vue": "054f0587e3f5c0245a30c0ea5f2ca1cc50da3023ba4a6c33743954428a3b062a",
     "src/components/asset-sheet/asset-sheet.vue": "e98a0bc144f4fba5cd99e3ed8cbf0eb4193afb38a44f2c81024316c9871ef439",
     "src/components/category-chips/category-chips.vue": "16fc21404d0d3ed306c4b5f0ddbeb97e56fde30f4488ba9116393c7b1ac40564",
