@@ -2,56 +2,105 @@
 /**
  * 最近任务 / 作图记录
  * TODO(design)：原型未给出详图，按现有设计语言补齐
- * TODO(api)：任务列表接口后端未提供，先用空态 + mock
  */
 import { computed, ref } from 'vue'
-import { onLoad } from '@dcloudio/uni-app'
+import { onLoad, onShow } from '@dcloudio/uni-app'
 import { listTasks } from '@/api/modules/tasks'
-import type { AppTask } from '@zihui/contracts'
-import type { TemplateItem } from '@/api/mock/data'
+import { extractResultImages } from '@/api/modules/app'
+import { USE_MOCK } from '@/api/config'
+import { apiErrorCode } from '@/api/v1-client'
+import { useUserStore } from '@/store/user'
+import type { AppTask, TaskStatus } from '@zihui/contracts'
+import type { WorkflowQueryResult } from '@/api/types'
 
-const tabs = ['全部', '生成中', '已完成']
+interface TaskHistoryItem {
+  id: string
+  cover: string
+  title: string
+  status: TaskStatus
+  statusLabel: string
+  errorMessage: string
+}
+
+const user = useUserStore()
+const tabs = ['全部', '生成中', '已完成', '失败']
 const activeTab = ref(0)
-const items = ref<TemplateItem[]>([])
+const items = ref<TaskHistoryItem[]>([])
 const isFavorite = ref(false)
+let awaitingLogin = false
 
 // tab：全部 / 生成中 / 已完成，按 status 筛。之前 computed 忽略 activeTab、点了无变化
 const filtered = computed(() => {
   if (isFavorite.value || activeTab.value === 0) return items.value
-  const want = activeTab.value === 1 ? 'running' : 'done'
-  return items.value.filter((it) => it.status === want)
+  if (activeTab.value === 1) {
+    return items.value.filter((item) => item.status === 'queued' || item.status === 'processing')
+  }
+  if (activeTab.value === 2) return items.value.filter((item) => item.status === 'succeeded')
+  return items.value.filter((item) => item.status === 'failed' || item.status === 'cancelled')
 })
 
 onLoad((query) => {
   isFavorite.value = query?.type === 'favorite'
   uni.setNavigationBarTitle({ title: isFavorite.value ? '我的收藏' : '最近任务' })
-  if (!isFavorite.value) loadTasks()
+  if (!isFavorite.value) {
+    if (!USE_MOCK && !user.isLogin) {
+      awaitingLogin = true
+      uni.navigateTo({ url: '/pages-sub/login/login' })
+      return
+    }
+    loadTasks()
+  }
+})
+
+onShow(() => {
+  if (awaitingLogin && user.isLogin) {
+    awaitingLogin = false
+    loadTasks()
+  }
 })
 
 async function loadTasks() {
   try {
     const tasks = await listTasks({ limit: 50 })
-    items.value = tasks.map(toTemplateItem)
-  } catch {
+    items.value = tasks.map(toTaskHistoryItem)
+  } catch (error) {
     items.value = []
+    if (!USE_MOCK && apiErrorCode(error) === 401) {
+      user.logout()
+      awaitingLogin = true
+      uni.navigateTo({ url: '/pages-sub/login/login' })
+    } else {
+      uni.showToast({ title: '任务加载失败，请稍后重试', icon: 'none' })
+    }
   }
 }
 
-function toTemplateItem(task: AppTask): TemplateItem {
-  const result = task.result as { data?: Array<{ url?: string; file_url?: string }>; url?: string; file_url?: string } | null
-  const first = result?.data?.[0]
-  const cover = first?.url || first?.file_url || result?.url || result?.file_url || '/static/logo.png'
+function toTaskHistoryItem(task: AppTask): TaskHistoryItem {
+  const images = extractResultImages(
+    (task.result || undefined) as WorkflowQueryResult['result'] | undefined,
+  )
+  const labels: Record<TaskStatus, string> = {
+    queued: '排队中',
+    processing: '生成中',
+    succeeded: '已完成',
+    failed: '失败',
+    cancelled: '已取消',
+  }
   return {
     id: task.id,
-    cover,
+    cover: images[0] || '/static/logo.png',
     title: (task.request as { prompt?: string })?.prompt || 'AI 图片任务',
-    ratio: 0.75,
-    appUuid: 'app-ai-image',
-    status: task.status === 'queued' || task.status === 'processing' ? 'running' : 'done',
+    status: task.status,
+    statusLabel: labels[task.status],
+    errorMessage: task.error?.message || '',
   }
 }
 
-function preview(item: TemplateItem) {
+function preview(item: TaskHistoryItem) {
+  if (item.status !== 'succeeded') {
+    uni.showToast({ title: item.errorMessage || item.statusLabel, icon: 'none' })
+    return
+  }
   uni.previewImage({ urls: [item.cover] })
 }
 </script>
@@ -63,8 +112,14 @@ function preview(item: TemplateItem) {
     <scroll-view v-if="filtered.length" class="th__body" scroll-y :show-scrollbar="false">
       <view class="th__grid">
         <view v-for="item in filtered" :key="item.id" class="th__card" @tap="preview(item)">
-          <image class="th__img" :src="item.cover" mode="aspectFill" lazy-load />
+          <view class="th__media">
+            <image class="th__img" :src="item.cover" mode="aspectFill" lazy-load />
+            <text class="th__status" :class="`th__status--${item.status}`">
+              {{ item.statusLabel }}
+            </text>
+          </view>
           <text class="th__title ellipsis">{{ item.title }}</text>
+          <text v-if="item.errorMessage" class="th__error ellipsis">{{ item.errorMessage }}</text>
         </view>
       </view>
       <view class="th__safe" />
@@ -109,11 +164,38 @@ function preview(item: TemplateItem) {
     background: #f2f2f7;
   }
 
+  &__media {
+    position: relative;
+  }
+
+  &__status {
+    position: absolute;
+    top: 12rpx;
+    right: 12rpx;
+    padding: 8rpx 14rpx;
+    border-radius: 8rpx;
+    background: rgba(22, 22, 26, 0.72);
+    font-size: 22rpx;
+    color: #ffffff;
+
+    &--failed,
+    &--cancelled {
+      background: rgba(198, 55, 55, 0.9);
+    }
+  }
+
   &__title {
     display: block;
     margin-top: 12rpx;
     font-size: $fs-aux;
     color: $ink-2;
+  }
+
+  &__error {
+    display: block;
+    margin-top: 6rpx;
+    font-size: 22rpx;
+    color: $danger;
   }
 
   &__empty {

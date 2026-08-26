@@ -9,21 +9,27 @@ import { onHide, onLoad, onShow } from '@dcloudio/uni-app'
 import {
   extractResultImages,
   getAppDetail,
+  getAppListByCategory,
   optimizeImage,
   optimizeText,
   queryWorkflow,
   runWorkflow,
 } from '@/api/modules/app'
 import { uploadImages } from '@/api/modules/upload'
+import { AI_IMAGE_APP_ID } from '@/api/catalog'
+import { USE_MOCK } from '@/api/config'
+import { apiErrorCode } from '@/api/v1-client'
 import { createPoller } from '@/utils/poller'
 import { useMemberStore } from '@/store/member'
-import { appCategories, getTemplateAppUuid } from '@/api/mock/data'
+import { useUserStore } from '@/store/user'
 import type { AppDetail, AppSchemaField, WorkflowQueryResult } from '@/api/types'
 
 const member = useMemberStore()
+const user = useUserStore()
 
 const detail = ref<AppDetail | null>(null)
 const loading = ref(true)
+const loadError = ref('')
 const values = ref<Record<string, unknown>>({})
 const optimizingField = ref('')
 
@@ -33,6 +39,9 @@ const results = ref<string[]>([])
 const showModeSheet = ref(false)
 
 let poller: ReturnType<typeof createPoller<WorkflowQueryResult>> | null = null
+let awaitingLogin = false
+let requestedUuid = USE_MOCK ? 'app-hd' : AI_IMAGE_APP_ID
+let requestedPreset = ''
 
 const fields = computed(() => detail.value?.appSchema.fields || [])
 /** 价格随模式变：高级模式约为普通的数倍（原型美豆价目表口径） */
@@ -44,42 +53,74 @@ const price = computed(() => {
 const demoBefore = ref('')
 const demoAfter = ref('')
 const modeLabel = computed(() => (member.runMode === 'advanced' ? '高级模式' : '普通模式'))
+const showModeControl = computed(() => USE_MOCK)
 
 /** 第一个图片上传字段是否已有图：决定底部按钮是「导入图片」还是「立即生成」 */
 const imageFieldId = computed(() => fields.value.find((f) => f.type === 'image')?.id || '')
 const hasImage = computed(() => (imageFieldId.value ? arrayValue(imageFieldId.value).length > 0 : true))
 
-onLoad(async (query) => {
+onLoad((query) => {
   // 从模板卡进来时带的是 template=tpl-x，需反查其功能 uuid（此前只读 uuid，
   // 模板参数被吞、一律兜底成 app-hd，任何模板点进来都是「画质修复」）
   const template = query?.template ? String(query.template) : ''
-  const uuid = (query?.uuid as string) || (template ? getTemplateAppUuid(template) : '') || 'app-hd'
-  const preset = query?.prompt ? decodeURIComponent(String(query.prompt)) : ''
+  const templateUuid = USE_MOCK && template ? AI_IMAGE_APP_ID : ''
+  requestedUuid = (query?.uuid as string) || templateUuid || requestedUuid
+  requestedPreset = query?.prompt ? decodeURIComponent(String(query.prompt)) : ''
 
-  const data = await getAppDetail(uuid)
-  detail.value = data
-  loading.value = false
-  if (!data) return
+  if (!USE_MOCK && !user.isLogin) {
+    loading.value = false
+    loadError.value = '登录后才能使用 AI 生图'
+    awaitingLogin = true
+    uni.navigateTo({ url: '/pages-sub/login/login' })
+    return
+  }
+  loadTool(requestedUuid, requestedPreset)
+})
+
+async function loadTool(uuid: string, preset: string) {
+  loading.value = true
+  loadError.value = ''
+  try {
+    const data = await getAppDetail(uuid)
+    detail.value = data
+    if (!data) loadError.value = '功能暂未开放或当前账号没有可用模型'
+  } catch (error) {
+    if (handleExpiredLogin(error)) return
+    loadError.value = '功能加载失败，请检查网络后重试'
+  } finally {
+    loading.value = false
+  }
+  if (!detail.value) return
 
   // 效果对比图取工具列表里的封面（GetApp 不返回 poster）
   // TODO(api)：before/after 后端未提供，先用同一封面占位，联调时替换为真实对比对
-  const poster = appCategories.flatMap((c) => c.apps).find((a) => a.uuid === uuid)?.poster || ''
+  const categories = USE_MOCK ? await getAppListByCategory() : []
+  const poster = categories.flatMap((category) => category.apps).find((app) => app.uuid === uuid)?.poster || ''
   demoBefore.value = poster
   demoAfter.value = poster
 
   const initial: Record<string, unknown> = {}
-  data.appSchema.fields.forEach((field) => {
+  detail.value.appSchema.fields.forEach((field) => {
     if (field.type === 'image' || field.type === 'card-multi-select') initial[field.id] = []
     else if (field.type === 'number') initial[field.id] = field.default ?? field.min ?? 1
     else initial[field.id] = field.default ?? ''
   })
   // 首页「一句话生成」带来的 prompt 填入第一个文本字段
   if (preset) {
-    const textField = data.appSchema.fields.find((f) => f.type === 'textarea')
+    const textField = detail.value.appSchema.fields.find((f) => f.type === 'textarea')
     if (textField) initial[textField.id] = preset
   }
   values.value = initial
-})
+}
+
+function handleExpiredLogin(error: unknown): boolean {
+  if (USE_MOCK || apiErrorCode(error) !== 401) return false
+  user.logout()
+  awaitingLogin = true
+  loadError.value = '登录状态已失效，请重新登录'
+  uni.navigateTo({ url: '/pages-sub/login/login' })
+  return true
+}
 
 onUnmounted(() => poller?.abort())
 
@@ -91,6 +132,10 @@ onHide(() => {
 })
 onShow(() => {
   pageVisible.value = true
+  if (awaitingLogin && user.isLogin) {
+    awaitingLogin = false
+    loadTool(requestedUuid, requestedPreset)
+  }
 })
 function toast(title: string) {
   if (pageVisible.value) uni.showToast({ title, icon: 'none' })
@@ -182,19 +227,24 @@ async function submit() {
   // internal_prompt 多选时按 prompt 拆多次请求（§3.2.3）
   const promptList = payload.prompts.length ? payload.prompts : ['']
   const taskIds: string[] = []
-  for (const prompt of promptList) {
-    const task = await runWorkflow({
-      uuid: detail.value.app.id,
-      form: payload.form,
-      system: prompt ? { ...payload.system, internal_prompt: prompt } : payload.system,
-    })
-    const id = task?.task_uuid || task?.task_id
-    if (id) taskIds.push(id)
+  try {
+    for (const prompt of promptList) {
+      const task = await runWorkflow({
+        uuid: detail.value.app.id,
+        form: payload.form,
+        system: prompt ? { ...payload.system, internal_prompt: prompt } : payload.system,
+      })
+      const id = task?.task_uuid || task?.task_id
+      if (id) taskIds.push(id)
+    }
+  } catch (error) {
+    if (!handleExpiredLogin(error)) toast('任务提交失败，请检查账号权限、余额或网络')
   }
 
   if (!taskIds.length) {
     running.value = false
-    statusText.value = ''
+    statusText.value = '任务提交失败'
+    toast('任务提交失败，请稍后重试')
     return
   }
 
@@ -208,7 +258,14 @@ async function submit() {
         statusText.value = data?.status === 'running' ? 'AI 正在生成中' : '排队中'
       },
     })
-    const { status, data } = await poller.start()
+    let polled: Awaited<ReturnType<typeof poller.start>>
+    try {
+      polled = await poller.start()
+    } catch (error) {
+      if (!handleExpiredLogin(error)) toast('任务状态查询失败，可稍后在最近任务查看')
+      continue
+    }
+    const { status, data } = polled
     if (status === 'done' && data) collected.push(...extractResultImages(data.result))
     if (status === 'failed') toast(data?.error_message || '生成失败')
     if (status === 'timeout') {
@@ -288,7 +345,13 @@ function goHistory() {
 
       <run-progress v-else-if="running" :status-text="statusText" :active="running" />
 
-      <view v-if="!loading" class="run__form">
+      <view v-if="!loading && loadError" class="run__unavailable">
+        <ui-icon name="image" :size="72" color="#b7b7c4" />
+        <text class="run__unavailable-title">功能暂不可用</text>
+        <text class="run__unavailable-text">{{ loadError }}</text>
+      </view>
+
+      <view v-if="!loading && detail" class="run__form">
         <schema-field
           v-for="field in fields"
           :key="field.id"
@@ -303,8 +366,8 @@ function goHistory() {
       <view class="run__safe" />
     </scroll-view>
 
-    <view class="run__foot">
-      <view class="run__mode" @tap="showModeSheet = true">
+    <view v-if="detail" class="run__foot">
+      <view v-if="showModeControl" class="run__mode" @tap="showModeSheet = true">
         <text class="run__mode-text">{{ modeLabel }}</text>
         <ui-icon :name="showModeSheet ? 'arrow-down' : 'arrow-up'" :size="24" color="#666666" />
       </view>
@@ -320,6 +383,7 @@ function goHistory() {
     </view>
 
     <mode-sheet
+      v-if="showModeControl"
       v-model="showModeSheet"
       :mode="member.runMode"
       @update:mode="member.setRunMode($event)"
@@ -398,6 +462,30 @@ function goHistory() {
 
   &__form {
     padding: 8rpx $gap-page 0;
+  }
+
+  &__unavailable {
+    min-height: 520rpx;
+    padding: 100rpx $gap-page 40rpx;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__unavailable-title {
+    margin-top: 28rpx;
+    font-size: $fs-title;
+    font-weight: 600;
+    color: $ink;
+  }
+
+  &__unavailable-text {
+    margin-top: 12rpx;
+    font-size: $fs-aux;
+    line-height: 1.6;
+    text-align: center;
+    color: $ink-3;
   }
 
   &__safe {

@@ -1,17 +1,13 @@
 <script setup lang="ts">
 /**
- * 登录页：小程序走微信授权，H5 走邮箱登录/注册
- * 接口见 docs/API开发文档.md §3.1（微信登录接口待后端提供，mock 已占位）
+ * 登录页：H5/小程序共用密码登录，微信登录由 bootstrap 能力开关控制。
  * TODO(design)：原型未提供登录页，按现有设计语言补齐
  */
-import { computed, onUnmounted, ref } from 'vue'
-import {
-  emailLogin,
-  emailRegister,
-  getImageCaptcha,
-  sendRegisterEmail,
-  wechatLogin,
-} from '@/api/modules/auth'
+import { computed, ref } from 'vue'
+import { onLoad } from '@dcloudio/uni-app'
+import { emailLogin, emailRegister, wechatLogin } from '@/api/modules/auth'
+import { getBootstrap } from '@/api/modules/app'
+import { USE_MOCK } from '@/api/config'
 import { useUserStore } from '@/store/user'
 import type { LoginResult } from '@/api/types'
 
@@ -21,23 +17,20 @@ const user = useUserStore()
 const mode = ref<'login' | 'register'>('login')
 const email = ref('')
 const password = ref('')
-const emailCode = ref('')
-const captchaCode = ref('')
-const captcha = ref({ aes: '', image: '' })
 const agreed = ref(false)
 const submitting = ref(false)
-const countdown = ref(0)
-let timer: ReturnType<typeof setInterval> | null = null
+const wechatEnabled = ref(USE_MOCK)
 
 const isRegister = computed(() => mode.value === 'register')
 const canSubmit = computed(() => {
   if (!email.value || !password.value) return false
-  if (isRegister.value && !emailCode.value) return false
   return agreed.value
 })
 
-onUnmounted(() => {
-  if (timer) clearInterval(timer)
+onLoad(async () => {
+  if (USE_MOCK) return
+  const bootstrap = await getBootstrap()
+  wechatEnabled.value = Boolean(bootstrap?.auth.wechat_mini)
 })
 
 function back() {
@@ -48,36 +41,6 @@ function back() {
 
 function switchMode(next: 'login' | 'register') {
   mode.value = next
-  if (next === 'register' && !captcha.value.aes) loadCaptcha()
-}
-
-async function loadCaptcha() {
-  const res = await getImageCaptcha()
-  if (res.code === 200 && res.data) captcha.value = res.data
-}
-
-function startCountdown() {
-  countdown.value = 60
-  timer = setInterval(() => {
-    countdown.value -= 1
-    if (countdown.value <= 0 && timer) {
-      clearInterval(timer)
-      timer = null
-    }
-  }, 1000)
-}
-
-async function sendCode() {
-  if (countdown.value > 0) return
-  if (!email.value) {
-    uni.showToast({ title: '请先填写邮箱', icon: 'none' })
-    return
-  }
-  const res = await sendRegisterEmail(email.value, captcha.value.aes, captchaCode.value)
-  if (res.code === 200) {
-    uni.showToast({ title: '验证码已发送', icon: 'none' })
-    startCountdown()
-  }
 }
 
 function applyAndBack(data: LoginResult) {
@@ -94,9 +57,6 @@ async function submit() {
     const res = await emailRegister({
       email: email.value,
       password: password.value,
-      email_code: emailCode.value,
-      aes: captcha.value.aes || undefined,
-      code: captchaCode.value || undefined,
     })
     if (res.code === 200) {
       // data 含 token 视为注册并自动登录，否则切回登录面板
@@ -106,10 +66,13 @@ async function submit() {
         uni.showToast({ title: '注册成功，请登录', icon: 'none' })
         mode.value = 'login'
       }
+    } else {
+      uni.showToast({ title: res.message || '注册失败，请稍后重试', icon: 'none' })
     }
   } else {
     const res = await emailLogin(email.value, password.value)
     if (res.code === 200 && res.data?.token) applyAndBack(res.data)
+    else uni.showToast({ title: res.message || '登录失败，请检查账号和密码', icon: 'none' })
   }
   submitting.value = false
 }
@@ -142,7 +105,7 @@ function wxLogin() {
 
     <!-- 小程序：微信一键登录 -->
     <!-- #ifdef MP-WEIXIN -->
-    <view class="login__wx-wrap">
+    <view v-if="wechatEnabled" class="login__wx-wrap">
       <view class="login__wx" @tap="wxLogin">
         <ui-icon name="wechat" :size="40" color="#ffffff" />
         <text class="login__wx-text">微信一键登录</text>
@@ -150,8 +113,7 @@ function wxLogin() {
     </view>
     <!-- #endif -->
 
-    <!-- H5：邮箱登录/注册 -->
-    <!-- #ifndef MP-WEIXIN -->
+    <!-- 密码登录是所有渠道的基础能力，微信资质未启用时小程序仍可联调。 -->
     <view class="login__form">
       <view class="login__tabs">
         <text
@@ -174,31 +136,6 @@ function wxLogin() {
         <input v-model="email" class="login__input" type="text" placeholder="邮箱" />
       </view>
 
-      <template v-if="isRegister">
-        <view class="login__field login__field--row">
-          <input v-model="captchaCode" class="login__input" placeholder="图片验证码" />
-          <image
-            v-if="captcha.image"
-            class="login__captcha"
-            :src="captcha.image"
-            mode="aspectFit"
-            @tap="loadCaptcha"
-          />
-          <view v-else class="login__captcha login__captcha--empty" @tap="loadCaptcha">
-            <text class="login__captcha-text">点击获取</text>
-          </view>
-        </view>
-
-        <view class="login__field login__field--row">
-          <input v-model="emailCode" class="login__input" placeholder="邮箱验证码" />
-          <view class="login__code" @tap="sendCode">
-            <text class="login__code-text">
-              {{ countdown > 0 ? `${countdown}s` : '获取验证码' }}
-            </text>
-          </view>
-        </view>
-      </template>
-
       <view class="login__field">
         <input v-model="password" class="login__input" password placeholder="密码" />
       </view>
@@ -207,7 +144,6 @@ function wxLogin() {
         <text class="login__submit-text">{{ isRegister ? '注册并登录' : '登录' }}</text>
       </view>
     </view>
-    <!-- #endif -->
 
     <view class="login__agree" @tap="agreed = !agreed">
       <view class="login__checkbox" :class="{ 'login__checkbox--on': agreed }">

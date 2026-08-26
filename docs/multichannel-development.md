@@ -289,6 +289,6 @@ GitHub Actions 建议拆为：
 5. 用 fake provider 打通 Web 登录、对话、图片任务，以及移动端登录、工具运行、生图和任务链路，再接真实供应商。
 6. 同步补齐 PHPUnit、Playwright、移动端构建验收和 IDOR 测试；测试未通过不得开始微信支付开发。
 
-截至 2026-08-26：清单 1-3 已完成；清单 4 的核心 API/UI 部分已完成共享 contracts/api-client、Laravel `/api/app/v1` 认证/模型/套餐/余额、会话与图片任务适配、Web SSE 对话流、会话消息持久化、跨用户 IDOR Feature Test，以及 Web/H5/mp-weixin 构建门禁。小程序微信登录、支付和手机号绑定仍关闭；清单 5-6 待执行。
+截至 2026-08-26：清单 1-3 已完成；清单 4 的核心 API/UI 部分已完成共享 contracts/api-client、Laravel `/api/app/v1` 认证/模型/套餐/余额、会话与图片任务适配、Web SSE 对话流、会话消息持久化、跨用户 IDOR Feature Test，以及 Web/H5/mp-weixin 构建门禁。移动端生产环境已用 `/bootstrap.features.image` 控制工具入口，并打通密码登录、授权图片模型、文生图任务提交、五状态轮询和任务历史；开发 Mock 仍用于源 UI 验收。首页、模板、VIP 和商品套图仍有 Mock 数据，参考图上传尚缺 `/assets/presign`，不能视为阶段 4 完成。小程序微信登录、支付和手机号绑定仍关闭。
 
 首轮完成的判断标准不是页面数量，而是：普通浏览器脱离 Electron 可以登录并完成一次对话和生图，任务状态可恢复，两个用户之间不能越权，CI 能阻止契约和依赖漂移。

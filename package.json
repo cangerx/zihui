@@ -15,6 +15,7 @@
   "scripts": {
     "check:ui-import": "node scripts/check-ui-import.mjs",
     "check:api-contract": "node scripts/check-app-v1-contract.mjs",
+    "check:mobile-real-api": "node scripts/check-mobile-real-api.mjs",
     "type-check": "npm run type-check --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "build:web": "npm run build --workspace=@zihui/web",

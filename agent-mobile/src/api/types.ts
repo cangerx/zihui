@@ -155,6 +155,12 @@ export interface WorkflowQueryResult {
       mime?: string
       size?: number
     }>
+    data?: Array<{
+      url?: string
+      file_url?: string
+      mime_type?: string
+      mime?: string
+    }>
     url?: string
     file_url?: string
   }

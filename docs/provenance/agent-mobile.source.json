@@ -46,7 +46,10 @@
     "src/api/modules/auth.ts",
     "src/api/modules/upload.ts",
     "src/api/request.ts",
+    "src/api/types.ts",
     "src/manifest.json",
+    "src/pages-sub/login/login.vue",
+    "src/pages-sub/tool-run/tool-run.vue",
     "src/pages-sub/task-history/task-history.vue"
   ],
   "removedFiles": [

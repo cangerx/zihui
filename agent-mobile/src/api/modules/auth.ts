@@ -54,9 +54,6 @@ export async function sendRegisterEmail(email: string, aes: string, code: string
 export async function emailRegister(payload: {
   email: string
   password: string
-  email_code: string
-  aes?: string
-  code?: string
 }) {
   try {
     const result = await appV1Client.register({

@@ -14,7 +14,11 @@
     "Added owner-scoped cloud conversations and persisted synchronous chat messages",
     "Added unified image task create/list/show/cancel/delete adapters over existing ImageTask jobs",
     "Connected Web chat/image/task facades and mobile task history to App v1",
-    "Made image job claiming atomic so cancelled pending tasks cannot reach the upstream provider"
+    "Made image job claiming atomic so cancelled pending tasks cannot reach the upstream provider",
+    "Connected the mobile production tool catalog to bootstrap image capability and authorized image models",
+    "Connected mobile text-to-image submission and polling to App v1 image-tasks and tasks endpoints",
+    "Added mobile password login fallback for mini-program builds while Wechat login remains feature-gated",
+    "Separated queued, processing, succeeded, failed and cancelled states in mobile task history"
   ],
   "verification": {
     "typeCheckPackages": "passed",
@@ -27,16 +31,19 @@
     "appV1Contract": "passed",
     "ciBackendJob": "configured_not_run_locally",
     "phpunit": "AppV1ContractTest passed; fixture-aware Unit run passed 139 tests; full Unit has 10 pre-existing missing-fixture failures",
+    "mobileRealApiContract": "passed",
+    "mobileH5MockBehavior": "passed 10/10",
     "browserVisualVerification": "not_run"
   },
   "knownGaps": [
     "Generic non-image task types, assets, agents and permissions endpoints remain unimplemented",
     "Web chat uses synchronous v1 messages; SSE streaming and interruption/resume are still pending",
-    "Some mobile tool pages still contain prototype Mock data outside task history",
+    "Mobile home, templates, VIP and ecommerce suite pages still contain prototype Mock data",
+    "Mobile production image generation currently supports text prompts only because App v1 asset presign/complete endpoints are not implemented",
     "Wechat mini-program login exchange, phone binding and payment are reserved but disabled",
     "Dedicated feature tests for IDOR, quota charging, task ownership and cancellation are still pending",
     "HttpOnly cookie migration remains pending; Web keeps localStorage Bearer compatibility",
     "Browser visual verification and real backend integration tests require a running environment"
   ],
-  "nextSlice": "Add feature-level ownership/quota/cancellation tests, then implement SSE and real mobile login adapters"
+  "nextSlice": "Replace production mobile home/template/VIP Mock entry points with bootstrap-gated real data, then add asset upload contracts before reference-image generation"
 }
