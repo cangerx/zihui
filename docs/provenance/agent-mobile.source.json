@@ -60,7 +60,8 @@
     "src/pages/mine/mine.vue",
     "src/pages/template/template.vue",
     "src/components/ai-input-card/ai-input-card.vue",
-    "src/store/user.ts"
+    "src/store/user.ts",
+    "src/utils/poller.ts"
   ],
   "removedFiles": [
     "src/api/sign.ts"
@@ -74,13 +75,14 @@
     "src/api/modules/profile.ts",
     "src/api/modules/task-result.ts",
     "src/api/modules/tasks.ts",
-    "src/api/v1-client.ts"
+    "src/api/v1-client.ts",
+    "tests/poller.test.mjs"
   ],
   "assetReview": "pending_internal_rights_review",
   "targetFiles": {
     ".gitignore": "037fb0abf4f9cb301f12fac39ea7de280b04d137f2a26c213c019bdbfd2bcd46",
     "index.html": "19b01b08739b798ea46b9ca6b4737f949e53f29c36eda10af8b3938e10ffb5b5",
-    "package.json": "fef2b102631ebd24824a8ee1e117cc58da1531cc97c5f0fc3fa550ac6cd266fd",
+    "package.json": "b105662a3b1cda180ddc18e83fba842532cfbc6d996562081a9f5aa33b1bdfe1",
     "scripts/h5-verify.js": "b6dc52dbfdf754fb8f0434ea5c67c0b8ccc85b639950dcf8208900f4fb9b7802",
     "scripts/mp-acceptance.js": "119b030009a1386c05526f16eb782f857ade253f9519eac09b5e0f6cef6e8379",
     "shims-uni.d.ts": "aa665d6a22c34ef3c84a0de28c7e3156c419d8bbcda2ddd24d85afbade06c7b4",
@@ -123,7 +125,7 @@
     "src/pages-sub/login/login.vue": "8717eb4f196a945aa2fd51856c36e9c58acd21ce3c84bc4993d846ef535974f2",
     "src/pages-sub/suite-result/suite-result.vue": "6432ec41b9a54d29a604a6ca3412614a080591d3e645c8bacfd74aee48588910",
     "src/pages-sub/suite-run/suite-run.vue": "bbc770147555fffeabe08aaa92a69c72e4d2014ee69e6ddd5e5cf5ae3d7a6503",
-    "src/pages-sub/task-history/task-history.vue": "0e1673ed69989e5fe76d1ff81e931bdb7f475ca08eee5e1eb8a73d722deb8acb",
+    "src/pages-sub/task-history/task-history.vue": "bfe18b68253483a1d68cc539ee9f2012733f021d2078a6731ac0048de1277d33",
     "src/pages-sub/tool-intro/tool-intro.vue": "2f7116f4b9db4d5e65eaaa9851c7cb9c61257b9a9577e014d9fbcf9b3fac65f1",
     "src/pages-sub/tool-run/tool-run.vue": "5ef68dcbe728dd8f6400ae8e92a495134082cb2e1bed63df64f4b02e45081087",
     "src/pages-sub/vip/vip.vue": "2ea90c1f80eb2f90e0a0179eebb787ed7c062cce48c31719f638c05555b4cdd1",
@@ -161,11 +163,11 @@
     "src/utils/entry-icons.ts": "5d9febd2119124f3f37e7b20cb1f1a0fdf9ced3e785ee31db8b0f5820fdcf456",
     "src/utils/event.ts": "e8252f4069b3ef53ef5171235ce0ebe1b2554d0954d05e85830e34fc792948c3",
     "src/utils/icons.ts": "79990fb6bf887905239ede26fc51d755c2c85c2881906627f5595c8a05901b8f",
-    "src/utils/poller.ts": "991a604ec5c76662d620a2f8e817bd54caf302b66638eb4d8e131fa444284ae0",
+    "src/utils/poller.ts": "96ad8f935058e5f2adc1394814c326b37440c1abbfb31700b6f84b47a5dc682e",
     "src/utils/system.ts": "65a484fb4004df0f1af0b76faf937a6d9722408c12314d31e5d3dcaab3e64ccb",
     "tsconfig.json": "45c19d945ebb6be37ff4cc3f9a0c7771f3fd1ab9fb7ba4434a754f96de46017a",
     "vite.config.ts": "32a9c7d9f5d0e4f9e26a271e68d36b36fb0fe3cc1987e6e0c8091c7f5446b58c"
   },
-  "targetFileCount": 96,
+  "targetFileCount": 97,
   "distributionStatus": "internal_development_only_pending_owner_confirmation"
 }

@@ -40,6 +40,7 @@
     "build:quickapp-webview-huawei": "uni build -p quickapp-webview-huawei",
     "build:quickapp-webview-union": "uni build -p quickapp-webview-union",
     "type-check": "vue-tsc --noEmit",
+    "test:poller": "node --experimental-strip-types --test tests/poller.test.mjs",
     "test:h5": "node scripts/h5-verify.js",
     "test:mp": "node scripts/mp-acceptance.js"
   },

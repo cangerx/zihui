@@ -1,0 +1,9 @@
+{
+  "checkpoint": "task-history-lifecycle-and-owner-scoped-cas",
+  "date": "2026-09-02",
+  "status": "passed",
+  "round": 6,
+  "evaluation": ".agents/runtime/harness/2026-08-26-multichannel-platform/round-06-evaluation.json",
+  "evidence": "独立只读 evaluator 返回 pass/importApproved=true；移动端 poller 5/5、API client 3/3、H5 验收 10/10、App v1 Feature 34 tests/252 assertions、类型检查、生产构建、入口/资源/契约门禁和 PHP/Node 语法检查通过。微信开发者工具自动化仅因本机 9420 未启动未执行。",
+  "nextSlice": "Round-07：围绕可上线前的真实 API 联调准备，拆分 PHP 8.2/Laravel 12 迁移、DCloud/uni-app 依赖安全升级、Electron 桌面解析链升级三个独立合同；继续保持微信登录、支付、订阅和生产资产开关关闭。"
+}

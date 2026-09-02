@@ -51,7 +51,21 @@
     "不实现新的任务重试或后台队列架构",
     "不迁移其他尚未接入真实 API 的移动端页面 Mock"
   ],
-  "handoffPaths": [],
+  "handoffPaths": [
+    ".github/workflows/quality.yml",
+    "agent-admin/backend/app/Http/Controllers/App/V1/TaskController.php",
+    "agent-admin/backend/tests/Feature/AppV1TaskLifecycleTest.php",
+    "agent-admin/backend/tests/Unit/AppV1ContractTest.php",
+    "agent-mobile/package.json",
+    "agent-mobile/src/api/modules/tasks.ts",
+    "agent-mobile/src/pages-sub/task-history/task-history.vue",
+    "agent-mobile/src/utils/poller.ts",
+    "agent-mobile/tests/poller.test.mjs",
+    "docs/multichannel-development.md",
+    "docs/provenance/agent-mobile.source.json",
+    "package.json",
+    "scripts/check-mobile-production-entrypoints.mjs"
+  ],
   "notes": [
     "Round-05 已通过独立评审并推送至 4491682。",
     "后端取消必须与 worker claim 的状态转换使用同一数据库条件更新语义，不能先读取后无条件 update。",

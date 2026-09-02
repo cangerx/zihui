@@ -79,6 +79,12 @@ const sourceChecks = [
       ["@/api/modules/task-result", 'Mock-free task result parser'],
       ['apiErrorCode(error) === 401', 'expired task session handling'],
       ['apiErrorInvalidatedSession(error)', 'current-token invalidation proof'],
+      ["status === 'queued' || status === 'processing'", 'non-terminal polling guard'],
+      ['isDone: (task) => !isPollingStatus(task.status)', 'terminal polling stop'],
+      ['uni.previewImage({ urls: item.images', 'complete multi-image preview'],
+      ['cancelTask(item.id)', 'queued task cancellation'],
+      ['deleteTask(item.id)', 'terminal task deletion'],
+      ['stopPollingFor(item.id)', 'cancel-safe poller invalidation'],
     ],
     forbidden: [
       ["@/api/modules/app", 'task history dependency on Mock-capable app facade'],
@@ -183,7 +189,9 @@ const artifactChecks = [
       ['mine', (path) => /pages-mine-mine/.test(path)],
       ['vip', (path) => /pages-sub-vip-vip/.test(path)],
       ['task-history', (path) => /pages-sub-task-history-task-history/.test(path)],
-      ['task-result', (path) => /task-result[.]/.test(path)],
+      // Vite may fold the small result parser into the poller or task-history
+      // chunk; the source-level check above still proves the parser import.
+      ['task-result', (path) => /task-result[.]|poller[.]|pages-sub-task-history-task-history[.]/.test(path)],
       ['app-v1-transport', (path) => /v1-client[.]/.test(path)],
     ],
     forbidden: [

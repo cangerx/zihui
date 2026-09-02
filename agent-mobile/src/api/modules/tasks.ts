@@ -48,3 +48,8 @@ export async function cancelTask(id: string): Promise<AppTask> {
   }
   return appV1Client.cancelTask(id)
 }
+
+export async function deleteTask(id: string): Promise<void> {
+  if (USE_MOCK) return
+  return appV1Client.deleteTask(id)
+}

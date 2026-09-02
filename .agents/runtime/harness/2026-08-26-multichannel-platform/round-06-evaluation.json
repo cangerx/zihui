@@ -1,0 +1,17 @@
+{
+  "round": 6,
+  "decision": "pass",
+  "scores": {
+    "feature_completeness": 10,
+    "functionality": 9,
+    "ux_or_design_quality": 8,
+    "code_quality": 9
+  },
+  "hardFailures": [],
+  "findings": [],
+  "nextActions": [
+    "在可写 CI 环境重跑 Web/H5/mp-weixin 构建和完整 PHP 生命周期套件；本地只读评审环境的失败来自既有输出、日志和缓存路径的 EPERM。"
+  ],
+  "importApproved": true,
+  "summary": "独立评审通过。abort -> poll 401 -> cancel 401 及逆序竞态均只产生一次 current-token 会话失效信号；owner-scoped 任务生命周期 CAS、终态轮询、多图预览、取消/删除规则、生产产物扫描、API client/poller/type-check/语法/契约门禁均有证据支持。"
+}

@@ -133,6 +133,9 @@ jobs:
       - name: Test shared API client
         run: npm run test:api-client
 
+      - name: Test mobile task poller
+        run: npm run test:mobile-poller
+
       - name: Type check
         run: npm run type-check
 

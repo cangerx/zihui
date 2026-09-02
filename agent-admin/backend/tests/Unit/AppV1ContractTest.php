@@ -25,6 +25,7 @@ class AppV1ContractTest extends TestCase
             "Route::post('/image-tasks'",
             "Route::get('/tasks'",
             "Route::post('/tasks/{id}/cancel'",
+            "Route::delete('/tasks/{id}'",
         ] as $route) {
             $this->assertStringContainsString($route, $routes, $route);
         }

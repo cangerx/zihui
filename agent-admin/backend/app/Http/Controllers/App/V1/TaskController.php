@@ -114,11 +114,30 @@ class TaskController
     public function cancel(Request $request, string $id)
     {
         if (!$this->imageEnabled()) return $this->disabled();
-        $task = ImageTask::where('id', $id)->where('user_id', $request->user()->id)->first();
+        $userId = (int) $request->user()->id;
+        $task = ImageTask::where('id', $id)->where('user_id', $userId)->first();
         if (!$task) return AppV1Response::error('not_found', 'Task not found', 404);
         if ($task->status === 'pending') {
-            $task->update(['status' => 'cancelled', 'error' => 'Cancelled by user']);
-            return AppV1Response::ok(AppV1TaskPresenter::image($task->fresh()));
+            // Claim and cancellation use the same conditional state transition. A
+            // worker that wins the pending -> processing race must not be overwritten
+            // by a stale cancellation request.
+            $cancelled = ImageTask::query()
+                ->whereKey($task->id)
+                ->where('user_id', $userId)
+                ->where('status', 'pending')
+                ->update([
+                    'status' => 'cancelled',
+                    'error' => 'Cancelled by user',
+                    'updated_at' => now(),
+                ]);
+            if ($cancelled === 1) {
+                return AppV1Response::ok(AppV1TaskPresenter::image($task->fresh()));
+            }
+
+            // The worker may have claimed (and even finished) the task while the
+            // conditional update was in flight. Re-read before deciding the result.
+            $task = ImageTask::whereKey($id)->where('user_id', $userId)->first();
+            if (!$task) return AppV1Response::error('not_found', 'Task not found', 404);
         }
         if ($task->status === 'processing') return AppV1Response::error('task_not_cancellable', '任务已开始处理，无法取消', 409);
         return AppV1Response::ok(AppV1TaskPresenter::image($task));
@@ -129,7 +148,7 @@ class TaskController
         if (!$this->imageEnabled()) return $this->disabled();
         $task = ImageTask::where('id', $id)->where('user_id', $request->user()->id)->first();
         if (!$task) return AppV1Response::error('not_found', 'Task not found', 404);
-        if (in_array($task->status, ['pending', 'processing'], true)) {
+        if (!in_array($task->status, ['completed', 'failed', 'cancelled', 'canceled'], true)) {
             return AppV1Response::error('task_not_deletable', '任务处理完成前不能删除', 409);
         }
         $task->delete();

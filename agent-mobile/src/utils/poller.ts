@@ -10,6 +10,8 @@ export interface PollOptions<T> {
   isFailed?: (data: T) => boolean
   /** 每次拿到结果的回调（用于进度展示） */
   onTick?: (data: T | null, attempt: number) => void
+  /** 请求错误观察器；即使 abort 后响应才落地，也会先通知再丢弃结果 */
+  onError?: (error: unknown) => void
   /** 首次间隔，默认 1200ms */
   interval?: number
   /** 最大间隔，默认 3000ms */
@@ -24,7 +26,7 @@ export interface PollResult<T> {
 }
 
 export function createPoller<T>(options: PollOptions<T>) {
-  const { fetch, isDone, isFailed, onTick } = options
+  const { fetch, isDone, isFailed, onTick, onError } = options
   const interval = options.interval ?? 1200
   const maxInterval = options.maxInterval ?? 3000
   const timeout = options.timeout ?? 120000
@@ -49,7 +51,21 @@ export function createPoller<T>(options: PollOptions<T>) {
       if (Date.now() - startedAt > timeout) return { status: 'timeout', data: null }
 
       attempt += 1
-      const data = await fetch()
+      let data: T | null
+      try {
+        data = await fetch()
+      } catch (error) {
+        // Authentication/session observers must still see an error that arrives
+        // after abort(); only page-state propagation is discarded below.
+        onError?.(error)
+        // fetch() itself may not be abortable. A rejection arriving after this
+        // poller was aborted belongs to the discarded request, not the caller.
+        if (aborted) return { status: 'aborted', data: null }
+        throw error
+      }
+      // fetch() itself is not abortable. If abort() happened while it was in
+      // flight, discard the response before it can mutate page state.
+      if (aborted) return { status: 'aborted', data: null }
       onTick?.(data, attempt)
 
       if (data) {
