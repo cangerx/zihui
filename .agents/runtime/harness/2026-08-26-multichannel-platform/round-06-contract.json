@@ -1,0 +1,60 @@
+{
+  "round": 6,
+  "goal": "补齐 H5/微信小程序任务历史生命周期，并保证 App v1 任务取消、删除和 worker 抢占的用户归属与原子性。",
+  "ownedTasks": [
+    "task_mobile_task_history_lifecycle_025",
+    "task_app_v1_task_cancel_delete_atomic_026",
+    "task_app_v1_task_lifecycle_tests_027",
+    "task_mobile_task_production_gate_028",
+    "task_task_contract_documentation_029"
+  ],
+  "deliverables": [
+    "移动端任务历史只对 queued/processing 任务轮询，terminal 状态立即停止轮询",
+    "任务历史支持多图片完整预览，且不因旧请求或会话切换覆盖当前 UI",
+    "queued 任务可取消；succeeded、failed、cancelled 任务允许删除；processing 任务不可取消或删除",
+    "任务列表、详情、取消和删除全部按当前 JWT 用户 owner scoped，跨用户访问返回统一 404",
+    "TaskController::cancel 使用 owner-scoped compare-and-set，避免与 worker claim 竞态覆盖状态",
+    "新增任务生命周期 Feature Test，覆盖取消、删除、归属和 terminal 状态规则",
+    "H5 与 mp-weixin 生产任务入口无 owned-entry Mock，401 停止轮询并只跳转一次登录",
+    "更新 App v1 任务契约与多端开发文档，明确状态映射和生命周期语义"
+  ],
+  "verificationPlan": [
+    {
+      "criterion": "任务生命周期状态和 owner 归属正确",
+      "howToCheck": "运行 AppV1TaskLifecycleTest 与 App v1 contract check，验证 list/show/cancel/delete 的用户隔离、状态码和 compare-and-set。",
+      "hardFail": true
+    },
+    {
+      "criterion": "移动端只轮询非 terminal 任务并支持取消/删除",
+      "howToCheck": "运行移动端类型检查和源码/产物契约扫描，检查 queued/processing 守卫、terminal 停止、多图 urls 预览及取消删除动作。",
+      "hardFail": true
+    },
+    {
+      "criterion": "401 会话失效不继续更新页面且只触发一次登录跳转",
+      "howToCheck": "静态检查 current-token invalidation guard、poller stop 和 navigateToLoginOnce，并执行 H5/mp-weixin 构建。",
+      "hardFail": true
+    },
+    {
+      "criterion": "生产产物不泄漏任务 Mock",
+      "howToCheck": "运行 mobile-real-api、mobile-production-entrypoints、mobile-production-assets 和 UI import checks，扫描 H5/mp-weixin owned entries。",
+      "hardFail": true
+    },
+    {
+      "criterion": "既有多端能力不回归",
+      "howToCheck": "运行 API client tests、workspace type-check、Web build、H5/mp-weixin build、PHP lint 与 git diff check。",
+      "hardFail": true
+    }
+  ],
+  "nonGoals": [
+    "不实现微信登录、手机号绑定、订单、支付或订阅消息",
+    "不打开图片资源、微信或支付相关生产开关",
+    "不实现新的任务重试或后台队列架构",
+    "不迁移其他尚未接入真实 API 的移动端页面 Mock"
+  ],
+  "handoffPaths": [],
+  "notes": [
+    "Round-05 已通过独立评审并推送至 4491682。",
+    "后端取消必须与 worker claim 的状态转换使用同一数据库条件更新语义，不能先读取后无条件 update。",
+    "任务 terminal 状态统一为 queued、processing、succeeded、failed、cancelled；后端内部 pending/completed 映射由 presenter 保持兼容。"
+  ]
+}
