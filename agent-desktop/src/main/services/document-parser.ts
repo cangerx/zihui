@@ -1,5 +1,5 @@
 /**
- * 文档解析统一入口：把 PDF / DOC / DOCX / XLS / XLSX 等二进制办公文档
+ * 文档解析统一入口：把 PSD / PDF / DOC / DOCX / XLS / XLSX 等二进制办公文档
  * 提取为纯文本，让 LLM 上下文 / file_ops / 知识库 / 附件能正确"看到"内容。
  *
  * 设计要点：
@@ -10,6 +10,7 @@
  *
  * 各扩展支持矩阵：
  *  - .txt / .md / .json / .csv  → utf-8 直读（不调本模块）
+ *  - .psd                       → ag-psd（仅解析图层/文字元数据，跳过位图）
  *  - .pdf                       → pdf-parse（限：扫描型 PDF 无文本层会返回空）
  *  - .docx                      → mammoth（仅文本，丢失图片/复杂样式）
  *  - .doc                       → word-extractor（pure JS 兜底，复杂格式效果有限）
@@ -18,14 +19,25 @@
  *  - .ppt                       → 老二进制 OLE 无成熟 pure-JS 提取器，明确报错引导另存为 .pptx
  */
 
-import { readFileSync, statSync, writeFileSync, unlinkSync } from 'fs'
-import { dirname, extname, join } from 'path'
+import { lstatSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'fs'
+import { dirname, extname, join, resolve } from 'path'
 import { tmpdir } from 'os'
-import { randomBytes } from 'crypto'
 import { pathToFileURL } from 'url'
 
 /** 单个文档的最大允许大小（解析前检查 stat），避免 OOM */
-const MAX_DOC_SIZE_BYTES = 50 * 1024 * 1024 // 50 MB
+export const MAX_DOC_SIZE_BYTES = 50 * 1024 * 1024 // 50 MB
+
+/**
+ * ZIP based formats are parsed in memory by their respective libraries.  The
+ * compressed input limit above is not enough to protect against a small ZIP
+ * expanding into hundreds of megabytes, so validate the central directory
+ * before handing the buffer to mammoth/SheetJS/JSZip.
+ */
+const MAX_ARCHIVE_ENTRIES = 10_000
+const MAX_ARCHIVE_UNCOMPRESSED_BYTES = 200 * 1024 * 1024
+const MAX_ARCHIVE_COMPRESSION_RATIO = 1_000
+const MAX_PSD_LAYERS = 10_000
+const MAX_PSD_LAYER_TEXT_CHARS = 10_000
 
 /** 解析后返回结果。text 永远是 utf-8 字符串；失败时 ok=false */
 export interface ParsedDocument {
@@ -36,28 +48,74 @@ export interface ParsedDocument {
   /** 文件大小（字节） */
   size: number
   /** 解析器名称，便于排查 */
-  parser: 'utf8' | 'pdf' | 'docx' | 'doc' | 'xlsx' | 'pptx' | 'unsupported' | 'error'
+  parser: 'utf8' | 'pdf' | 'psd' | 'docx' | 'doc' | 'xlsx' | 'pptx' | 'unsupported' | 'error'
   /** 失败时的错误说明 */
   error?: string
-  errorCode?: 'NO_EXTRACTABLE_TEXT' | 'TOO_LARGE' | 'READ_ERROR' | 'UNSUPPORTED_FORMAT' | 'PARSE_ERROR'
+  errorCode?: 'NO_EXTRACTABLE_TEXT' | 'TOO_LARGE' | 'READ_ERROR' | 'INVALID_PATH' | 'UNSUPPORTED_FORMAT' | 'PARSE_ERROR'
   warnings?: string[]
   features?: {
     hasImages?: boolean
     imageCount?: number
     pageCount?: number
     textLength?: number
+    layerCount?: number
+    textLayerCount?: number
   }
   /** 截断标记：text 是否因过长被截断；调用方可决定要不要走 RAG */
   truncated?: boolean
 }
 
 /** 这些扩展名走二进制文档解析器；其他扩展名调用方应自行 utf-8 直读 */
-export const BINARY_DOCUMENT_EXTENSIONS = new Set(['pdf', 'docx', 'doc', 'xlsx', 'xls', 'pptx', 'ppt'])
+export const BINARY_DOCUMENT_EXTENSIONS = new Set(['pdf', 'psd', 'docx', 'doc', 'xlsx', 'xls', 'pptx', 'ppt'])
 
 /** 判断扩展名是否走本模块解析；调用方按此分流 */
 export function isBinaryDocument(filePath: string): boolean {
-  const ext = extname(filePath).slice(1).toLowerCase()
+  if (typeof filePath !== 'string') return false
+  const ext = normalizeExtension(extname(filePath).slice(1))
   return BINARY_DOCUMENT_EXTENSIONS.has(ext)
+}
+
+/**
+ * Normalize an extension supplied over IPC.  An extension is a selector, not
+ * a path, so accepting slashes or parent segments here would make it possible
+ * to accidentally route an untrusted value into a filesystem-backed parser.
+ */
+function normalizeExtension(value: unknown): string {
+  if (typeof value !== 'string') return ''
+  const raw = value.trim().toLowerCase()
+  const withoutDot = raw.startsWith('.') ? raw.slice(1) : raw
+  return /^[a-z0-9]{1,16}$/.test(withoutDot) ? withoutDot : ''
+}
+
+/**
+ * Paths are intentionally allowed to point at user-selected files outside the
+ * workspace, but parent segments, NUL bytes, symlinks and directories are not
+ * accepted by the parser boundary.  Workspace callers already canonicalize
+ * their paths; this check protects the IPC/file attachment callers too.
+ */
+function validateDocumentPath(filePath: unknown): string {
+  if (typeof filePath !== 'string') throw new Error('文档路径必须是字符串')
+  const raw = filePath.trim()
+  if (!raw) throw new Error('文档路径不能为空')
+  if (raw.includes('\0')) throw new Error('文档路径包含非法 NUL 字符')
+  const slashPath = raw.replace(/\\/g, '/')
+  if (slashPath.split('/').some((part) => part === '..')) {
+    throw new Error('文档路径不允许包含父目录段（..）')
+  }
+  return resolve(raw)
+}
+
+function invalidPathResult(filePath: unknown, error: unknown): ParsedDocument {
+  const raw = typeof filePath === 'string' ? filePath : ''
+  return {
+    ok: false,
+    text: '',
+    ext: normalizeExtension(extname(raw).slice(1)),
+    size: 0,
+    parser: 'error',
+    error: `文档路径无效：${error instanceof Error ? error.message : String(error)}`,
+    errorCode: 'INVALID_PATH'
+  }
 }
 
 /** 单 sheet/单文档最多保留的字符数（防御性，超出可由调用方走 RAG） */
@@ -83,6 +141,7 @@ function imageWarning(ext: string): string {
   if (ext === 'docx' || ext === 'doc') return '该文档可能包含图片、截图或照片；当前仅提取文字内容，图片内容不会进入会话上下文，也不会被向量化。'
   if (ext === 'xlsx' || ext === 'xls') return '该表格可能包含图片；当前仅提取单元格文字，图片内容不会进入会话上下文，也不会被向量化。'
   if (ext === 'pptx') return '该 PPT 可能包含图片、图形或截图；当前仅提取每页文字（含演讲者备注），图片内容不会进入会话上下文，也不会被向量化。'
+  if (ext === 'psd') return '该 PSD 可能包含位图、智能对象或剪贴内容；当前仅提取可读文字图层，图片内容不会进入会话上下文，也不会被向量化。'
   return '当前仅提取文字内容，图片内容不会进入会话上下文，也不会被向量化。'
 }
 
@@ -106,6 +165,11 @@ function detectEmbeddedImages(buffer: Buffer, ext: string): { hasImages: boolean
     const sample = buffer.toString('latin1')
     const matches = sample.match(/ppt\/media\//g)
     return { hasImages: !!matches?.length, imageCount: matches?.length || 0 }
+  }
+  if (ext === 'psd') {
+    // A PSD is an image container by definition.  The parser deliberately
+    // skips raster data, so report this fact without attempting to decode it.
+    return { hasImages: true, imageCount: 1 }
   }
   return { hasImages: ext === 'doc' }
 }
@@ -145,6 +209,12 @@ function getPdfParseOptions(): Record<string, any> {
  * - DOC (word-extractor) 只接受路径，写临时文件兼容
  */
 async function parsePdfBuffer(buffer: Buffer): Promise<{ text: string }> {
+  // A PDF header may legally be preceded by a small binary comment, but it
+  // must occur near the beginning of the file.  Rejecting obvious non-PDF
+  // input keeps pdf.js from doing unnecessary work on malformed attachments.
+  if (buffer.subarray(0, Math.min(buffer.length, 1024)).indexOf(Buffer.from('%PDF-', 'ascii')) < 0) {
+    throw new Error('文件头不是有效 PDF')
+  }
   // pdf-parse 默认入口在加载时会跑一段示例代码，直接 require 子模块绕过
   const options = getPdfParseOptions()
   try {
@@ -184,18 +254,90 @@ async function parseDocxBuffer(buffer: Buffer): Promise<{ text: string }> {
 }
 
 async function parseDocBuffer(buffer: Buffer): Promise<{ text: string }> {
-  // word-extractor 只能从路径读，写个临时文件兼容。
-  // 路径用 randomBytes 加拼避免同名冲突；finally 中能刪就刪。
-  const tmpPath = join(tmpdir(), `local-agent-doc-${randomBytes(8).toString('hex')}.doc`)
+  // word-extractor 只能从路径读，使用私有临时目录并在 finally 中递归
+  // 清理，避免并发解析时留下可被其他进程读取的临时文件。
+  const tmpDir = mkdtempSync(join(tmpdir(), 'local-agent-doc-'))
+  const tmpPath = join(tmpDir, 'input.doc')
   try {
-    writeFileSync(tmpPath, buffer)
+    writeFileSync(tmpPath, buffer, { mode: 0o600 })
     const WordExtractor = require('word-extractor')
     const extractor = new WordExtractor()
     const doc = await extractor.extract(tmpPath)
     return { text: String(doc?.getBody?.() || '') }
   } finally {
-    try { unlinkSync(tmpPath) } catch { /* ignore */ }
+    try { rmSync(tmpDir, { recursive: true, force: true }) } catch { /* ignore */ }
   }
+}
+
+async function validateZipContainer(buffer: Buffer): Promise<void> {
+  const JSZip = require('jszip')
+  const zip = await JSZip.loadAsync(buffer, { createFolders: false, checkCRC32: false })
+  const files = Object.values(zip.files) as Array<any>
+  if (files.length > MAX_ARCHIVE_ENTRIES) throw new Error('压缩文档条目过多，已拒绝解析')
+
+  let totalUncompressed = 0
+  for (const file of files) {
+    if (file.dir) continue
+    // JSZip sanitizes `name`; unsafeOriginalName preserves the archive's raw
+    // value so traversal cannot be hidden by that normalization.
+    const rawName = String(file.unsafeOriginalName ?? file.name ?? '')
+    const normalized = rawName.replace(/\\/g, '/')
+    if (
+      !normalized ||
+      normalized.startsWith('/') ||
+      /^[a-z]:\//i.test(normalized) ||
+      normalized.split('/').some((part: string) => part === '..') ||
+      normalized.includes('\0')
+    ) {
+      throw new Error('压缩文档包含不安全的文件路径，已拒绝解析')
+    }
+    const metadata = file._data
+    const compressedSize = Number(metadata?.compressedSize)
+    const uncompressedSize = Number(metadata?.uncompressedSize)
+    if (!Number.isFinite(compressedSize) || !Number.isFinite(uncompressedSize) || compressedSize < 0 || uncompressedSize < 0) {
+      throw new Error('压缩文档尺寸元数据无效，已拒绝解析')
+    }
+    totalUncompressed += uncompressedSize
+    if (totalUncompressed > MAX_ARCHIVE_UNCOMPRESSED_BYTES) {
+      throw new Error('压缩文档展开后过大，已拒绝解析')
+    }
+    if (compressedSize > 0 && uncompressedSize / compressedSize > MAX_ARCHIVE_COMPRESSION_RATIO) {
+      throw new Error('压缩文档压缩比异常，已拒绝解析')
+    }
+  }
+}
+
+function parsePsdBuffer(buffer: Buffer): { text: string; layerCount: number; textLayerCount: number } {
+  const { readPsd } = require('ag-psd') as typeof import('ag-psd')
+  const psd = readPsd(buffer, {
+    skipLayerImageData: true,
+    skipCompositeImageData: true,
+    skipThumbnail: true,
+    skipLinkedFilesData: true
+  })
+  const texts: string[] = []
+  const names: string[] = []
+  let layerCount = 0
+  let textLayerCount = 0
+  const pending = Array.isArray((psd as any).children) ? [...(psd as any).children] : []
+  while (pending.length) {
+    const layer = pending.pop()
+    layerCount++
+    if (layerCount > MAX_PSD_LAYERS) throw new Error('PSD 图层过多，已拒绝解析')
+    const name = typeof layer?.name === 'string' ? layer.name.trim().slice(0, MAX_PSD_LAYER_TEXT_CHARS) : ''
+    if (name) names.push(`图层：${name}`)
+    const content = typeof layer?.text?.text === 'string'
+      ? layer.text.text.trim().slice(0, MAX_PSD_LAYER_TEXT_CHARS)
+      : ''
+    if (content) {
+      textLayerCount++
+      texts.push(content)
+    }
+    if (Array.isArray(layer?.children)) pending.push(...layer.children)
+  }
+  const header = `PSD ${Number((psd as any).width) || 0}x${Number((psd as any).height) || 0}`
+  const text = [header, ...names, ...texts].join('\n\n')
+  return { text, layerCount, textLayerCount }
 }
 
 function parseXlsxBuffer(buffer: Buffer): { text: string } {
@@ -284,12 +426,23 @@ async function dispatchBuffer(
     imageCount: imageInfo.imageCount
   }
   try {
+    if (ext === 'psd') {
+      if (buffer.length < 26 || buffer.toString('ascii', 0, 4) !== '8BPS') {
+        throw new Error('文件头不是有效 PSD')
+      }
+      const { text, layerCount, textLayerCount } = parsePsdBuffer(buffer)
+      features.textLength = text.length
+      features.layerCount = layerCount
+      features.textLayerCount = textLayerCount
+      return { ok: true, text, parser: 'psd', features, warnings: buildWarnings(ext, features) }
+    }
     if (ext === 'pdf') {
       const { text } = await parsePdfBuffer(buffer)
       features.textLength = text.length
       return { ok: true, text, parser: 'pdf', features, warnings: buildWarnings(ext, features) }
     }
     if (ext === 'docx') {
+      await validateZipContainer(buffer)
       const { text } = await parseDocxBuffer(buffer)
       features.textLength = text.length
       return { ok: true, text, parser: 'docx', features, warnings: buildWarnings(ext, features) }
@@ -300,11 +453,13 @@ async function dispatchBuffer(
       return { ok: true, text, parser: 'doc', features, warnings: buildWarnings(ext, features) }
     }
     if (ext === 'xlsx' || ext === 'xls') {
+      if (ext === 'xlsx') await validateZipContainer(buffer)
       const { text } = parseXlsxBuffer(buffer)
       features.textLength = text.length
       return { ok: true, text, parser: 'xlsx', features, warnings: buildWarnings(ext, features) }
     }
     if (ext === 'pptx') {
+      await validateZipContainer(buffer)
       const { text, slideCount } = await parsePptxBuffer(buffer)
       features.textLength = text.length
       features.pageCount = slideCount
@@ -325,10 +480,29 @@ async function dispatchBuffer(
  * 本函数永不抛错（除非文件根本读不到 stat），错误以 ok=false 返回。
  */
 export async function parseDocument(filePath: string): Promise<ParsedDocument> {
-  const ext = extname(filePath).slice(1).toLowerCase()
+  let safePath: string
+  try {
+    safePath = validateDocumentPath(filePath)
+  } catch (e) {
+    return invalidPathResult(filePath, e)
+  }
+  const ext = normalizeExtension(extname(safePath).slice(1))
   let size = 0
   try {
-    size = statSync(filePath).size
+    const link = lstatSync(safePath)
+    if (link.isSymbolicLink()) {
+      return {
+        ok: false, text: '', ext, size: 0, parser: 'error',
+        error: '拒绝解析符号链接文件，请选择实际文件', errorCode: 'INVALID_PATH'
+      }
+    }
+    if (!link.isFile()) {
+      return {
+        ok: false, text: '', ext, size: 0, parser: 'error',
+        error: '文档路径不是普通文件', errorCode: 'INVALID_PATH'
+      }
+    }
+    size = link.size
   } catch (e: any) {
     return { ok: false, text: '', ext, size: 0, parser: 'error', error: `读取文件失败：${e?.message || e}`, errorCode: 'READ_ERROR' }
   }
@@ -343,9 +517,17 @@ export async function parseDocument(filePath: string): Promise<ParsedDocument> {
 
   let buffer: Buffer
   try {
-    buffer = readFileSync(filePath)
+    buffer = readFileSync(safePath)
   } catch (e: any) {
     return { ok: false, text: '', ext, size, parser: 'error', error: `读取文件失败：${e?.message || e}`, errorCode: 'READ_ERROR' }
+  }
+  // Re-check after reading to cover a file that grew between lstat and read.
+  if (buffer.length > MAX_DOC_SIZE_BYTES) {
+    return {
+      ok: false, text: '', ext, size: buffer.length, parser: 'error',
+      error: `文件过大（${(buffer.length / 1024 / 1024).toFixed(1)}MB），超过 50MB 限制`,
+      errorCode: 'TOO_LARGE'
+    }
   }
   const r = await dispatchBuffer(buffer, ext)
   if (!r.ok) {
@@ -366,24 +548,36 @@ export async function parseDocument(filePath: string): Promise<ParsedDocument> {
  * - ext 由调用方从文件名提取（已 lower-case，不带点）
  */
 export async function parseDocumentFromBuffer(buffer: Buffer, ext: string): Promise<ParsedDocument> {
-  const size = buffer.length
+  const normalizedExt = normalizeExtension(ext)
+  const input = Buffer.isBuffer(buffer)
+    ? buffer
+    : buffer instanceof Uint8Array
+      ? Buffer.from(buffer.buffer, buffer.byteOffset, buffer.byteLength)
+      : null
+  if (!input) {
+    return {
+      ok: false, text: '', ext: normalizedExt, size: 0, parser: 'error',
+      error: '文档数据必须是 Buffer 或 Uint8Array', errorCode: 'READ_ERROR'
+    }
+  }
+  const size = input.length
   if (size > MAX_DOC_SIZE_BYTES) {
     return {
-      ok: false, text: '', ext, size, parser: 'error',
+      ok: false, text: '', ext: normalizedExt, size, parser: 'error',
       error: `文件过大（${(size / 1024 / 1024).toFixed(1)}MB），超过 50MB 限制`,
       errorCode: 'TOO_LARGE'
     }
   }
-  const r = await dispatchBuffer(buffer, ext)
+  const r = await dispatchBuffer(input, normalizedExt)
   if (!r.ok) {
-    return { ok: false, text: '', ext, size, parser: r.parser, error: r.error, errorCode: r.errorCode, warnings: r.warnings, features: r.features }
+    return { ok: false, text: '', ext: normalizedExt, size, parser: r.parser, error: r.error, errorCode: r.errorCode, warnings: r.warnings, features: r.features }
   }
-  if (!hasUsefulExtractedText(r.text, ext)) {
-    const warnings = r.features?.hasImages ? buildWarnings(ext, r.features) : r.warnings
-    return { ok: false, text: '', ext, size, parser: r.parser, error: emptyTextError(ext), errorCode: 'NO_EXTRACTABLE_TEXT', warnings, features: r.features }
+  if (!hasUsefulExtractedText(r.text, normalizedExt)) {
+    const warnings = r.features?.hasImages ? buildWarnings(normalizedExt, r.features) : r.warnings
+    return { ok: false, text: '', ext: normalizedExt, size, parser: r.parser, error: emptyTextError(normalizedExt), errorCode: 'NO_EXTRACTABLE_TEXT', warnings, features: r.features }
   }
   const c = clamp(r.text)
-  return { ok: true, text: c.text, ext, size, parser: r.parser, truncated: c.truncated, warnings: r.warnings, features: r.features }
+  return { ok: true, text: c.text, ext: normalizedExt, size, parser: r.parser, truncated: c.truncated, warnings: r.warnings, features: r.features }
 }
 
 /**
@@ -391,14 +585,33 @@ export async function parseDocumentFromBuffer(buffer: Buffer, ext: string): Prom
  * 用于替换原来无差别 readFileSync(p, 'utf-8') 的位置。
  */
 export async function readFileSmart(filePath: string): Promise<ParsedDocument> {
-  const ext = extname(filePath).slice(1).toLowerCase()
+  let safePath: string
+  try {
+    safePath = validateDocumentPath(filePath)
+  } catch (e) {
+    return invalidPathResult(filePath, e)
+  }
+  const ext = normalizeExtension(extname(safePath).slice(1))
   if (BINARY_DOCUMENT_EXTENSIONS.has(ext)) {
-    return parseDocument(filePath)
+    return parseDocument(safePath)
   }
   // 非二进制文档：utf-8 直读，统一返回 ParsedDocument 形态便于上层一致处理
   let size = 0
   try {
-    size = statSync(filePath).size
+    const link = lstatSync(safePath)
+    if (link.isSymbolicLink()) {
+      return {
+        ok: false, text: '', ext, size: 0, parser: 'error',
+        error: '拒绝解析符号链接文件，请选择实际文件', errorCode: 'INVALID_PATH'
+      }
+    }
+    if (!link.isFile()) {
+      return {
+        ok: false, text: '', ext, size: 0, parser: 'error',
+        error: '文档路径不是普通文件', errorCode: 'INVALID_PATH'
+      }
+    }
+    size = link.size
   } catch (e: any) {
     return { ok: false, text: '', ext, size: 0, parser: 'error', error: `读取文件失败：${e?.message || e}`, errorCode: 'READ_ERROR' }
   }
@@ -410,7 +623,14 @@ export async function readFileSmart(filePath: string): Promise<ParsedDocument> {
     }
   }
   try {
-    const raw = readFileSync(filePath, 'utf-8')
+    const raw = readFileSync(safePath, 'utf-8')
+    if (Buffer.byteLength(raw, 'utf8') > MAX_DOC_SIZE_BYTES) {
+      return {
+        ok: false, text: '', ext, size: Buffer.byteLength(raw, 'utf8'), parser: 'error',
+        error: `文件过大（${(Buffer.byteLength(raw, 'utf8') / 1024 / 1024).toFixed(1)}MB），超过 50MB 限制`,
+        errorCode: 'TOO_LARGE'
+      }
+    }
     const c = clamp(raw)
     return { ok: true, text: c.text, ext, size, parser: 'utf8', truncated: c.truncated }
   } catch (e: any) {

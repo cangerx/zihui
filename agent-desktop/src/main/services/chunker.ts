@@ -13,7 +13,7 @@ export interface ChunkOptions {
 }
 
 export class DocumentParseError extends Error {
-  code?: 'NO_EXTRACTABLE_TEXT' | 'TOO_LARGE' | 'READ_ERROR' | 'UNSUPPORTED_FORMAT' | 'PARSE_ERROR'
+  code?: 'NO_EXTRACTABLE_TEXT' | 'TOO_LARGE' | 'READ_ERROR' | 'INVALID_PATH' | 'UNSUPPORTED_FORMAT' | 'PARSE_ERROR'
   warnings?: string[]
   features?: {
     hasImages?: boolean

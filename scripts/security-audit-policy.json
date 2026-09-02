@@ -3,50 +3,6 @@
   "maximum_exception_expiry": "2026-09-30",
   "exceptions": [
     {
-      "ecosystem": "composer",
-      "scope": "agent-admin/backend",
-      "advisory": "GHSA-5VG9-5847-VVMQ",
-      "package": "laravel/framework",
-      "severity": "high",
-      "reason": "The patched Laravel line requires PHP 8.2 and a coordinated framework, Sanctum, Ignition, Monolog, Carbon, Termwind, and Symfony migration; production remains pinned to PHP 8.0.28.",
-      "owner": "Zihui backend platform owner",
-      "expires": "2026-09-30",
-      "exit_criteria": "Complete the PHP 8.2 and Laravel 12 migration contract, install Laravel 12.60.0 or newer, and pass the App v1 regression suite and deployment rehearsal."
-    },
-    {
-      "ecosystem": "composer",
-      "scope": "agent-admin/backend",
-      "advisory": "GHSA-3RG7-WF37-54RM",
-      "package": "symfony/http-foundation",
-      "severity": "high",
-      "reason": "The first maintained Symfony 6 fix is on the 6.4 line, which requires PHP 8.1 while the production Composer platform is PHP 8.0.28.",
-      "owner": "Zihui backend platform owner",
-      "expires": "2026-09-30",
-      "exit_criteria": "Move production to PHP 8.2 with the Laravel migration and resolve symfony/http-foundation to 6.4.29 or a newer unaffected supported release."
-    },
-    {
-      "ecosystem": "composer",
-      "scope": "agent-admin/backend",
-      "advisory": "GHSA-QPMX-3RFJ-7RHV",
-      "package": "symfony/mime",
-      "severity": "high",
-      "reason": "The Symfony MIME fix is available only on maintained branches that require a newer PHP runtime than the current PHP 8.0.28 production target.",
-      "owner": "Zihui backend platform owner",
-      "expires": "2026-09-30",
-      "exit_criteria": "Move production to PHP 8.2 with the Laravel migration and resolve symfony/mime to 6.4.40 or a newer unaffected supported release."
-    },
-    {
-      "ecosystem": "composer",
-      "scope": "agent-admin/backend",
-      "advisory": "GHSA-QQ5C-677P-737Q",
-      "package": "symfony/process",
-      "severity": "high",
-      "reason": "The Symfony Process fix is available only on the 6.4 maintained line requiring PHP 8.1; the production platform remains PHP 8.0.28 and is deployed on Linux.",
-      "owner": "Zihui backend platform owner",
-      "expires": "2026-09-30",
-      "exit_criteria": "Move production to PHP 8.2 with the Laravel migration and resolve symfony/process to 6.4.14 or a newer unaffected supported release."
-    },
-    {
       "ecosystem": "npm",
       "scope": "root",
       "advisory": "GHSA-P2PH-7G93-HW3M",
@@ -144,6 +100,138 @@
       "owner": "Zihui mobile platform owner",
       "expires": "2026-09-30",
       "exit_criteria": "Adopt a DCloud release resolving ws to 8.21.0 or newer and pass clean H5/mp-weixin builds and production bundle scans."
+    },
+    {
+      "ecosystem": "npm",
+      "scope": "agent-desktop",
+      "advisory": "GHSA-532V-XPQ5-8H95",
+      "package": "electron",
+      "severity": "high",
+      "reason": "The production desktop lock is pinned to Electron 31.7.7; this use-after-free is fixed only on a later Electron major and requires a runtime compatibility review.",
+      "owner": "Zihui desktop platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Upgrade Electron to a maintained release that includes the fix, complete main/renderer IPC and packaging regression tests on Node 22, and rerun the scoped production audit."
+    },
+    {
+      "ecosystem": "npm",
+      "scope": "agent-desktop",
+      "advisory": "GHSA-8337-3P73-46F4",
+      "package": "electron",
+      "severity": "high",
+      "reason": "The production desktop lock is pinned to Electron 31.7.7; the WebContents permission callback use-after-free fix is available only on a later Electron major.",
+      "owner": "Zihui desktop platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Upgrade Electron to a maintained release containing the fix, verify permission handlers and renderer isolation on supported OS targets, and rerun the scoped production audit."
+    },
+    {
+      "ecosystem": "npm",
+      "scope": "agent-desktop",
+      "advisory": "GHSA-JJP3-MQ3X-295M",
+      "package": "electron",
+      "severity": "high",
+      "reason": "The production desktop lock is pinned to Electron 31.7.7; the PowerMonitor use-after-free fix requires an Electron major upgrade with OS-level regression coverage.",
+      "owner": "Zihui desktop platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Upgrade Electron to a maintained release containing the fix, test power-monitor lifecycle on macOS and Windows, and rerun the scoped production audit."
+    },
+    {
+      "ecosystem": "npm",
+      "scope": "agent-desktop",
+      "advisory": "GHSA-9WFR-W7MM-PC7F",
+      "package": "electron",
+      "severity": "high",
+      "reason": "The production desktop lock is pinned to Electron 31.7.7; the renderer command-line switch injection fix is only available on a later Electron major.",
+      "owner": "Zihui desktop platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Upgrade Electron to a maintained release containing the fix, audit all BrowserWindow webPreferences and command-line switches, and pass packaged-app security regression tests."
+    },
+    {
+      "ecosystem": "npm",
+      "scope": "agent-desktop",
+      "advisory": "GHSA-V3J7-R9GQ-3GJW",
+      "package": "electron",
+      "severity": "high",
+      "reason": "The production desktop lock is pinned to Electron 31.7.7; the custom-protocol cross-origin read fix requires a later Electron major and protocol behavior validation.",
+      "owner": "Zihui desktop platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Upgrade Electron to a maintained release containing the fix, verify custom protocol CORS and navigation behavior, and pass packaged-app network isolation tests."
+    },
+    {
+      "ecosystem": "npm",
+      "scope": "agent-desktop",
+      "advisory": "GHSA-H7RP-CF8H-J98X",
+      "package": "electron",
+      "severity": "high",
+      "reason": "The production desktop lock is pinned to Electron 31.7.7; the context-isolation Function.prototype.bind bypass fix requires a later Electron major.",
+      "owner": "Zihui desktop platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Upgrade Electron to a maintained release containing the fix, verify contextIsolation/contextBridge invariants with hostile renderer tests, and rerun the scoped production audit."
+    },
+    {
+      "ecosystem": "npm",
+      "scope": "agent-desktop",
+      "advisory": "GHSA-9F4C-93C8-JC8G",
+      "package": "electron",
+      "severity": "high",
+      "reason": "The production desktop lock is pinned to Electron 31.7.7; the sandboxed iframe OpenURL restriction fix requires a later Electron major.",
+      "owner": "Zihui desktop platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Upgrade Electron to a maintained release containing the fix, verify iframe navigation and popup restrictions in packaged builds, and rerun the scoped production audit."
+    },
+    {
+      "ecosystem": "npm",
+      "scope": "agent-desktop",
+      "advisory": "GHSA-JMR9-QJV8-65GV",
+      "package": "extract-zip",
+      "severity": "high",
+      "reason": "Electron 31.7.7 brings extract-zip 2.0.1 transitively; no patched extract-zip release is available in this dependency line and npm recommends a later Electron major.",
+      "owner": "Zihui desktop platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Move to an Electron release resolving extract-zip to an unaffected version, verify updater/package extraction with traversal fixtures, and rerun the scoped production audit."
+    },
+    {
+      "ecosystem": "npm",
+      "scope": "agent-desktop",
+      "advisory": "GHSA-W3RX-R6R6-PGPR",
+      "package": "image-size",
+      "severity": "high",
+      "reason": "pptxgenjs 4.0.1 resolves image-size 1.2.1; the advisory affects the published image-size line and npm only suggests an incompatible pptxgenjs downgrade.",
+      "owner": "Zihui desktop platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Replace or isolate the PPTX image-size path with a maintained parser, preserve deck export coverage, and verify the scoped audit has no image-size advisory."
+    },
+    {
+      "ecosystem": "npm",
+      "scope": "agent-desktop",
+      "advisory": "GHSA-5P2G-FCMC-QVQQ",
+      "package": "image-size",
+      "severity": "high",
+      "reason": "pptxgenjs 4.0.1 resolves image-size 1.2.1; the advisory affects the published image-size line and npm only suggests an incompatible pptxgenjs downgrade.",
+      "owner": "Zihui desktop platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Replace or isolate the PPTX image-size path with a maintained parser, preserve deck export coverage, and verify the scoped audit has no image-size advisory."
+    },
+    {
+      "ecosystem": "npm",
+      "scope": "agent-desktop",
+      "advisory": "GHSA-4R6H-8V6P-XVW6",
+      "package": "xlsx",
+      "severity": "high",
+      "reason": "The desktop document parser uses xlsx 0.18.5, and npm reports no compatible fixed release for this prototype-pollution advisory in the published package line.",
+      "owner": "Zihui desktop platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Migrate spreadsheet parsing to a maintained release or isolated replacement with equivalent XLS/XLSX coverage, retain hostile-input tests, and rerun the scoped audit."
+    },
+    {
+      "ecosystem": "npm",
+      "scope": "agent-desktop",
+      "advisory": "GHSA-5PGG-2G8V-P4X9",
+      "package": "xlsx",
+      "severity": "high",
+      "reason": "The desktop document parser uses xlsx 0.18.5, and npm reports no compatible fixed release for this regular-expression denial-of-service advisory in the published package line.",
+      "owner": "Zihui desktop platform owner",
+      "expires": "2026-09-30",
+      "exit_criteria": "Migrate spreadsheet parsing to a maintained release or isolated replacement with equivalent XLS/XLSX coverage, retain hostile-input tests, and rerun the scoped audit."
     }
   ]
 }

@@ -35,7 +35,17 @@
 | `agent-admin/frontend` `--omit=dev` | 0 high / 0 critical | 0 high / 0 critical | CI 必须保持为零 |
 | `agent-build/backend` `--omit=dev` | 0 high / 0 critical | 0 high / 0 critical | CI 必须保持为零 |
 
-本轮范围外复核还发现 `agent-admin/docs-frontend`、`agent-build/frontend` 和 `agent-desktop` 的独立 lock 存在新公告。它们不能复用根 workspace 的例外，也不在本轮悄悄升级：文档前端和构建前端先做可兼容的 Axios/React Router 补丁升级；桌面端 Electron 31、updater、xlsx 与文件解析链需要单独 P0 合同、桌面构建和打包回归。
+2026-09-02 Round-08 当前状态（不覆盖上面的历史快照）：
+
+| 范围 | 当前结果 | 当前结论 |
+| --- | --- | --- |
+| `agent-admin/backend` Composer | 0 advisory / 0 abandoned package | 正式依赖已切换到 PHP `^8.2`、Laravel `12.69.1` 和 Composer platform `8.2.0`；原 Laravel 9/Symfony 6.0 high 例外已清除 |
+| 根 workspace `--omit=dev` | 11 high / 46 total | Node 22/npm 10 最新审计仍对应 9 条独立 high GHSA，已精确登记但未修复；基线脚本阻止依赖静默漂移 |
+| `agent-desktop` `--omit=dev` | 5 high 包记录 / 12 条独立 high GHSA / 0 critical | updater 和兼容依赖已升级，文件解析链已加固；12 条 high 例外最晚 2026-09-30 到期，仍需 Electron、PPTX 图片和 XLSX 退出方案 |
+
+Composer 的本地验证实际运行于 PHP `8.5.3`，只通过 Composer platform 固定 PHP `8.2.0` 的依赖解析下界；PHP 8.2 与 MySQL 8.0 的精确运行时、安装和迁移证明仍依赖 CI。cloud-build fixture 已重建，后端本地全量 PHPUnit 为 195 tests / 1130 assertions；这些证据仍不能把 Composer 零发现扩展为生产就绪结论。
+
+`agent-admin/docs-frontend`、`agent-build/frontend`、`agent-desktop` 与根 workspace 各自拥有独立 lock 和审计边界，不能复用 Composer 或其他 scope 的例外。桌面审计细节见 `agent-desktop/docs/round-08-security-audit.md`，DCloud 锁定版本和退出条件见 `docs/dcloud-dependency-baseline-2026-09-02.md`。
 
 ## 上线前硬阻塞
 
@@ -44,4 +54,4 @@
 - 小程序 AppID 为空且 `urlCheck` 为开发设置；需配置真实 AppID、合法域名、隐私声明与支付资质。
 - Web 导入的头像、WebP 和品牌 Logo 需要肖像权、商标和产品素材授权复核；移动端源码与资产需要所有者确认许可。
 - 当前来源记录只证明固定提交、目标快照和内部开发用途，不等同于公开分发或生产使用授权；未完成确认前不得用于商业发布。
-- PHP 8.0、Laravel 9、DCloud 旧平台依赖和 Electron TLS 放宽配置均为既有安全债务。PHP 8.2/Laravel 12、DCloud 安全版本线与 Electron 升级必须分别立项并在 2026-09-30 前清除对应例外，不能通过延长通配豁免上线。
+- `agent-admin/backend` 已迁移到 PHP 8.2/Laravel 12 目标线且 Composer 审计归零，本地全量回归已通过，但精确 PHP 8.2/MySQL 8.0 CI 证据仍是硬门禁。DCloud 的 9 条独立 high GHSA 与 Electron 的 12 条独立 high GHSA 仍为既有安全债务，必须按各自退出条件清除，不能因 Composer 归零而忽略，也不能通过延长或通配豁免上线。

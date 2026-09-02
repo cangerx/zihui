@@ -72,7 +72,10 @@ function composerAdvisoryId(advisory) {
 function extractComposerRecords(audit, scope) {
   assertObject(audit, "Composer audit");
   if (audit.error) throw new Error(`Composer audit returned an error: ${audit.error.message ?? audit.error}`);
-  assertObject(audit.advisories, "Composer audit advisories");
+  const advisoriesAreEmptyArray = Array.isArray(audit.advisories) && audit.advisories.length === 0;
+  if (!advisoriesAreEmptyArray) {
+    assertObject(audit.advisories, "Composer audit advisories");
+  }
   const records = [];
 
   for (const rawAdvisories of Object.values(audit.advisories ?? {})) {

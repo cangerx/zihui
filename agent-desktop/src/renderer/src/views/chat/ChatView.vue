@@ -2033,9 +2033,9 @@ async function onImageModelChange(val: { provider_id: string; model_id: string }
 }
 
 const IMAGE_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'gif', 'webp'])
-const DOC_EXTENSIONS = new Set(['txt', 'md', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'csv', 'json', 'pptx', 'ppt'])
+const DOC_EXTENSIONS = new Set(['txt', 'md', 'pdf', 'psd', 'doc', 'docx', 'xls', 'xlsx', 'csv', 'json', 'pptx', 'ppt'])
 // 二进制办公文档：file.text() 按 utf-8 读会得到乱码，必须走 main 进程 parseBuffer 解析
-const BINARY_DOC_EXTENSIONS = new Set(['pdf', 'doc', 'docx', 'xls', 'xlsx', 'pptx', 'ppt'])
+const BINARY_DOC_EXTENSIONS = new Set(['pdf', 'psd', 'doc', 'docx', 'xls', 'xlsx', 'pptx', 'ppt'])
 
 function canAddAttachment(): boolean {
   if (pendingAttachments.value.length >= MAX_ATTACHMENTS) {
@@ -2158,7 +2158,7 @@ async function pickFile(fileType: 'image' | 'document') {
   try {
     const filters = fileType === 'image'
       ? [{ name: 'Images', extensions: ['jpg', 'jpeg', 'png', 'gif', 'webp'] }]
-      : [{ name: 'Documents', extensions: ['txt', 'md', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'csv', 'json', 'pptx', 'ppt'] }]
+      : [{ name: 'Documents', extensions: ['txt', 'md', 'pdf', 'psd', 'doc', 'docx', 'xls', 'xlsx', 'csv', 'json', 'pptx', 'ppt'] }]
 
     const result = await window.api.dialog.openFile({
       title: fileType === 'image' ? '选择图片' : '选择文档',

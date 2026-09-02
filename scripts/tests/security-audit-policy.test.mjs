@@ -178,6 +178,22 @@ test("parses Composer advisory objects with numeric keys", () => {
   assert.equal(result.advisories, 1);
 });
 
+test("accepts Composer 2.8 empty advisory arrays", () => {
+  const result = evaluateSecurityAudit({
+    ecosystem: "composer",
+    scope: "backend",
+    audit: { advisories: [], abandoned: [] },
+    policy: { ...policy(), exceptions: [] },
+    today,
+  });
+  assert.deepEqual(result, {
+    ecosystem: "composer",
+    scope: "backend",
+    advisories: 0,
+    exceptions: 0,
+  });
+});
+
 test("rejects missing audit schemas instead of treating endpoint failures as clean", () => {
   assert.throws(
     () =>

@@ -348,7 +348,7 @@ function clip(s: string, n: number): string { return s.length > n ? s.slice(0, n
 async function addDocument(): Promise<void> {
   const res = await api().dialog.openFile({
     title: '选择文档',
-    filters: [{ name: '文档', extensions: ['txt', 'md', 'pdf', 'docx', 'doc', 'xls', 'xlsx', 'csv', 'json', 'pptx', 'ppt'] }],
+    filters: [{ name: '文档', extensions: ['txt', 'md', 'pdf', 'psd', 'docx', 'doc', 'xls', 'xlsx', 'csv', 'json', 'pptx', 'ppt'] }],
     properties: ['openFile', 'multiSelections']
   })
   if (res.canceled || !res.filePaths?.length) return

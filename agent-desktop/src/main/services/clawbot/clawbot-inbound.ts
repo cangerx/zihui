@@ -15,7 +15,7 @@ import type { MessageItem, WeixinMessage } from './ilink-types'
 import { parseDocumentFromBuffer } from '../document-parser'
 
 /** 与渲染层 ChatView 对齐的文档白名单（这些类型能被解析成文本；.ppt 进白名单只为给出"请转 pptx"的精准提示） */
-const DOC_EXTENSIONS = new Set(['txt', 'md', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'csv', 'json', 'pptx', 'ppt'])
+const DOC_EXTENSIONS = new Set(['txt', 'md', 'pdf', 'psd', 'doc', 'docx', 'xls', 'xlsx', 'csv', 'json', 'pptx', 'ppt'])
 /** 与 ChatView 的 MAX_ATTACHMENTS 对齐 */
 const MAX_ATTACHMENTS = 5
 /** 与 ChatView compressImage 对齐：最长边 1024、jpeg 0.8 */
