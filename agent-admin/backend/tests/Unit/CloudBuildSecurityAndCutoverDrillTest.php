@@ -101,8 +101,11 @@ class CloudBuildSecurityAndCutoverDrillTest extends CloudBuildExecutionTestCase
         $stateJson = (string) file_get_contents($path);
         $this->assertStringNotContainsString($originalToken, $stateJson);
         $this->assertDoesNotMatchRegularExpression('/ghp_|github_pat_|BEGIN [A-Z ]*PRIVATE KEY/', $stateJson);
-        @unlink($path);
-        @unlink($path . '.tmp');
+        foreach ([$path, $path . '.tmp'] as $cleanupPath) {
+            if (is_file($cleanupPath) || is_link($cleanupPath)) {
+                unlink($cleanupPath);
+            }
+        }
 
         $planted = 'PLANTED_CALLBACK_' . str_repeat('deadbeef', 4);
         $packed = CloudBuildLedgerFile::pack([[

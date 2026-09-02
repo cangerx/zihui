@@ -15,15 +15,24 @@ class CloudBuildLedgerMigrationTest extends CloudBuildExecutionTestCase
     public function test_canonical_digest_matches_contract_fixture(): void
     {
         $fixture = $this->contractFixture();
+        $this->assertSame(
+            'deterministic-redacted-baseline-rebuilt-2026-09-02',
+            $fixture['provenance']
+        );
+        $this->assertSame(
+            ['queued', 'building', 'artifact_pending', 'ready', 'delivered', 'failed'],
+            array_column($fixture['target'], 'phase')
+        );
         $digest = CloudBuildLedgerCanonical::digest($fixture['source'], true);
         $this->assertSame(
             CloudBuildLedgerCanonical::digest($fixture['target'], false),
             $digest
         );
         $this->assertSame(
-            '4e93e4f0e827f30669f86bbc90910571bbaef4c80c8e7bddecdb2aa3830add05',
+            'f33b7624fe8ddb0aa7408e2897b063e087a459ff7d48a1a332bab0b769f3ca44',
             $digest
         );
+        $this->assertSame($fixture['canonical_sha256'], $digest);
     }
 
     public function test_import_is_idempotent_and_reconcile_has_zero_hard_diff(): void

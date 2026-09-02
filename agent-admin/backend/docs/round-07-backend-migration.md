@@ -2,9 +2,11 @@
 
 日期：2026-09-02  
 范围：`task_php82_laravel12_migration_030`  
-结论：**候选依赖可解析，正式 Composer lock 暂不切换**。
+Round-07 当时结论：**候选依赖可解析，正式 Composer lock 暂不切换**。
 
-## 当前基线
+> **Round-08 后续状态（2026-09-02）**：本文以下内容保留为 Round-07 的历史取证，不能再作为当前依赖状态使用。主工作树的正式约束和 lock 已切换到 PHP `^8.2`、Laravel `12.69.1`、Sanctum `4.3.3`、PHPUnit `11.5.56`，Composer platform 固定为 `8.2.0`；当前 Composer 审计为 0 advisory。迁移后的 App v1 定向回归为 34 tests / 252 assertions，跨驱动迁移定向回归为 4 tests / 18 assertions；cloud-build contract baseline 已重建，后端本地全量回归为 195 tests / 1130 assertions。上述本地验证实际运行于 PHP `8.5.3`，只借助 Composer platform 模拟最低 PHP 版本，不能替代 PHP 8.2 真实运行时证据；PHP 8.2 与 MySQL 8.0 的精确验证依赖 CI。当前迁移详情见 `round-08-backend-migration.md`。
+
+## Round-07 当时基线
 
 - 基线提交：`2a0f378`。
 - 当前生产依赖仍为 PHP `^8.0`、Laravel `^9.19`、Sanctum `^2.15`、PHPUnit `^9.5`，Composer platform 为 `8.0.28`。
@@ -63,7 +65,7 @@ AppV1 Feature 回归未通过，不能将候选 lock 提升为正式 lock。失�
 
 这部分是兼容性修复，不代表所有迁移已完成跨数据库适配；正式升级前仍需处理上面列出的原生 `ALTER`/`FULLTEXT` 路径并回归 MySQL 8.0。
 
-## 继续迁移的门槛
+## Round-07 提出的继续迁移门槛
 
 1. 把所有迁移中的数据库专用 SQL 列成清单，优先修复测试会执行的 `MODIFY`、`information_schema` 和 `FULLTEXT`。
 2. 在 PHP 8.2 + MySQL 8.0 CI 服务中执行 `composer install`、全量迁移和 AppV1 Feature/Unit 套件；SQLite 仅作为快速回归，不替代 MySQL 证据。
@@ -81,4 +83,4 @@ vendor/bin/phpunit
 find app config routes database tests -type f -name '*.php' -print0 | xargs -0 -n1 php -l
 ```
 
-当前主工作树中的 `composer.json`/`composer.lock` 保持 Laravel 9 兼容线，避免在迁移证据不完整时影响既有桌面端和管理端部署。
+Round-07 执行时，主工作树中的 `composer.json`/`composer.lock` 保持 Laravel 9 兼容线，避免在迁移证据不完整时影响既有桌面端和管理端部署；该句是历史记录，已被文首的 Round-08 后续状态取代。

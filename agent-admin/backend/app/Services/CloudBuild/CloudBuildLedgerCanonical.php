@@ -3,7 +3,7 @@
 namespace App\Services\CloudBuild;
 
 /**
- * 与 docs/contracts/cloud-build-migration/verify-fixture.cjs 同源的 canonical 摘要。
+ * agent-admin/docs/contracts/cloud-build-migration fixture 的 authoritative canonical 摘要。
  * 只含稳定业务字段：排除自增 ID、URL、路径、密钥和更新时间。
  */
 class CloudBuildLedgerCanonical

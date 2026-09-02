@@ -1,0 +1,56 @@
+{
+  "schema_version": "rebuilt-baseline-v1",
+  "auth_check_success_keys": [
+    "_status",
+    "authorized",
+    "reason",
+    "client_id",
+    "domain",
+    "origin",
+    "status",
+    "expires_at",
+    "daily_limit",
+    "daily_used",
+    "daily_remaining",
+    "monthly_limit",
+    "maintenance",
+    "maintenance_message",
+    "maintenance_active",
+    "maintenance_exempt",
+    "min_admin_version",
+    "current_admin_version",
+    "admin_version_too_low",
+    "can_use_ewei_shop",
+    "mall_authorizations",
+    "can_use_github_packaging",
+    "can_use_mac_packaging",
+    "backend"
+  ],
+  "request_success_keys": [
+    "_status",
+    "build_id",
+    "status",
+    "app_version",
+    "estimated_wait_seconds",
+    "backend"
+  ],
+  "frontend_statuses": [
+    "queued",
+    "building",
+    "success",
+    "downloading",
+    "delivered",
+    "failed",
+    "cancelled",
+    "expired",
+    "purged"
+  ],
+  "internal_phase_projection": {
+    "queued": "queued",
+    "building": "building",
+    "artifact_pending": "success",
+    "ready": "success",
+    "delivered": "delivered",
+    "failed": "failed"
+  }
+}

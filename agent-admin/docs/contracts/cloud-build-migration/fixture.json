@@ -1,0 +1,218 @@
+{
+  "schema_version": "rebuilt-baseline-v1",
+  "provenance": "deterministic-redacted-baseline-rebuilt-2026-09-02",
+  "canonical_sha256": "f33b7624fe8ddb0aa7408e2897b063e087a459ff7d48a1a332bab0b769f3ca44",
+  "expected": {
+    "job_count": 6,
+    "phases": [
+      "queued",
+      "building",
+      "artifact_pending",
+      "ready",
+      "delivered",
+      "failed"
+    ],
+    "quota_consumed": {
+      "client-a": 3,
+      "client-b": 2
+    },
+    "terminal_count": 2
+  },
+  "source": [
+    {
+      "build_id": "00000000-0000-4000-8000-000000000001",
+      "client_ref": "client-a",
+      "platform": "win",
+      "build_mode": "normal",
+      "oem_project_key": null,
+      "status": "queued",
+      "mirror_status": null,
+      "dispatch_attempts": 0,
+      "executor_run_id": null,
+      "app_name": "Fixture App 01",
+      "app_version": "1.0.0",
+      "artifacts": []
+    },
+    {
+      "build_id": "00000000-0000-4000-8000-000000000002",
+      "client_ref": "client-b",
+      "platform": "mac",
+      "build_mode": "normal",
+      "oem_project_key": null,
+      "status": "building",
+      "mirror_status": null,
+      "dispatch_attempts": 1,
+      "executor_run_id": 2002,
+      "app_name": "Fixture App 02",
+      "app_version": "1.0.0",
+      "artifacts": []
+    },
+    {
+      "build_id": "00000000-0000-4000-8000-000000000003",
+      "client_ref": "client-a",
+      "platform": "win",
+      "build_mode": "oem",
+      "oem_project_key": "fixture-project-a",
+      "status": "success",
+      "mirror_status": "mirroring",
+      "dispatch_attempts": 1,
+      "executor_run_id": 2003,
+      "app_name": "Fixture App 03",
+      "app_version": "1.0.1",
+      "artifacts": [
+        {
+          "filename": "fixture-app-03.exe",
+          "role": "primary",
+          "size": 3145728,
+          "sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+        }
+      ]
+    },
+    {
+      "build_id": "00000000-0000-4000-8000-000000000004",
+      "client_ref": "client-b",
+      "platform": "mac",
+      "build_mode": "normal",
+      "oem_project_key": null,
+      "status": "success",
+      "mirror_status": "mirrored",
+      "dispatch_attempts": 2,
+      "executor_run_id": 2004,
+      "app_name": "Fixture App 04",
+      "app_version": "1.0.1",
+      "artifacts": [
+        {
+          "filename": "fixture-app-04.dmg",
+          "role": "primary",
+          "size": 4194304,
+          "sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+        }
+      ]
+    },
+    {
+      "build_id": "00000000-0000-4000-8000-000000000005",
+      "client_ref": "client-a",
+      "platform": "win",
+      "build_mode": "normal",
+      "oem_project_key": null,
+      "status": "delivered",
+      "mirror_status": "mirrored",
+      "dispatch_attempts": 1,
+      "executor_run_id": 2005,
+      "app_name": "Fixture App 05",
+      "app_version": "1.0.2",
+      "artifacts": [
+        {
+          "filename": "fixture-app-05.exe",
+          "role": "primary",
+          "size": 5242880,
+          "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+        }
+      ]
+    },
+    {
+      "build_id": "00000000-0000-4000-8000-000000000006",
+      "client_ref": "client-b",
+      "platform": "win",
+      "build_mode": "oem",
+      "oem_project_key": "fixture-project-b",
+      "status": "failed",
+      "mirror_status": null,
+      "dispatch_attempts": 2,
+      "executor_run_id": 2006,
+      "app_name": "Fixture App 06",
+      "app_version": "1.0.2",
+      "error_message": "fixture build failure",
+      "artifacts": []
+    }
+  ],
+  "target": [
+    {
+      "build_id": "00000000-0000-4000-8000-000000000001",
+      "client_ref": "client-a",
+      "platform": "win",
+      "build_mode": "normal",
+      "oem_project_key": null,
+      "phase": "queued",
+      "attempt_count": 0,
+      "executor_run_id": null,
+      "artifacts": []
+    },
+    {
+      "build_id": "00000000-0000-4000-8000-000000000002",
+      "client_ref": "client-b",
+      "platform": "mac",
+      "build_mode": "normal",
+      "oem_project_key": null,
+      "phase": "building",
+      "attempt_count": 1,
+      "executor_run_id": 2002,
+      "artifacts": []
+    },
+    {
+      "build_id": "00000000-0000-4000-8000-000000000003",
+      "client_ref": "client-a",
+      "platform": "win",
+      "build_mode": "oem",
+      "oem_project_key": "fixture-project-a",
+      "phase": "artifact_pending",
+      "attempt_count": 1,
+      "executor_run_id": 2003,
+      "artifacts": [
+        {
+          "filename": "fixture-app-03.exe",
+          "role": "primary",
+          "size": 3145728,
+          "sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+        }
+      ]
+    },
+    {
+      "build_id": "00000000-0000-4000-8000-000000000004",
+      "client_ref": "client-b",
+      "platform": "mac",
+      "build_mode": "normal",
+      "oem_project_key": null,
+      "phase": "ready",
+      "attempt_count": 2,
+      "executor_run_id": 2004,
+      "artifacts": [
+        {
+          "filename": "fixture-app-04.dmg",
+          "role": "primary",
+          "size": 4194304,
+          "sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+        }
+      ]
+    },
+    {
+      "build_id": "00000000-0000-4000-8000-000000000005",
+      "client_ref": "client-a",
+      "platform": "win",
+      "build_mode": "normal",
+      "oem_project_key": null,
+      "phase": "delivered",
+      "attempt_count": 1,
+      "executor_run_id": 2005,
+      "artifacts": [
+        {
+          "filename": "fixture-app-05.exe",
+          "role": "primary",
+          "size": 5242880,
+          "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+        }
+      ]
+    },
+    {
+      "build_id": "00000000-0000-4000-8000-000000000006",
+      "client_ref": "client-b",
+      "platform": "win",
+      "build_mode": "oem",
+      "oem_project_key": "fixture-project-b",
+      "phase": "failed",
+      "attempt_count": 2,
+      "executor_run_id": 2006,
+      "artifacts": []
+    }
+  ]
+}

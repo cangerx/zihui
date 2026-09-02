@@ -24,8 +24,11 @@ class CloudBuildCutoverServiceTest extends CloudBuildExecutionTestCase
 
     protected function tearDown(): void
     {
-        @unlink($this->path);
-        @unlink($this->path . '.tmp');
+        foreach ([$this->path, $this->path . '.tmp'] as $path) {
+            if (is_file($path) || is_link($path)) {
+                unlink($path);
+            }
+        }
         parent::tearDown();
     }
 
