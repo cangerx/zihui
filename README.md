@@ -16,7 +16,7 @@ local-agent-portable/
 ├── 部署说明.md            既有三端生产部署流程
 ├── deploy.local.example   本实例发布通道模板（复制为 deploy.local 填写；ssh 或 cloudflare）
 │
-├── agent-admin/           【云控端】v1.6.43  PHP 8.0 (Laravel 9) + React 19 + MySQL 8.0
+├── agent-admin/           【云控端】v1.6.43  PHP 8.2 (Laravel 12) + React 19 + MySQL 8.0
 │   ├── backend/           Laravel 后端（无 vendor / .env / 运行时缓存）
 │   ├── frontend/          管理后台 React SPA（无 node_modules / dist）
 │   ├── docs-frontend/     用户文档站点 React SPA（无 node_modules）
@@ -55,7 +55,7 @@ local-agent-portable/
 
 ## 快速开始
 
-1. 安装 Node.js 22 LTS、npm 10、PHP 8.0、Composer 和 MySQL 8.0。根目录提供 `.nvmrc`，CI 固定 npm `10.9.2`。
+1. 安装 Node.js 22 LTS、npm 10、PHP 8.2、Composer 和 MySQL 8.0。授权管理端 `agent-build` 仍保留 PHP 8.0/Laravel 9 独立运行时。根目录提供 `.nvmrc`，CI 固定 npm `10.9.2`。
 2. 安装 Web/H5/小程序依赖：根目录执行 `npm ci`。
 3. Web：`npm run dev --workspace=@zihui/web`，默认访问 `http://localhost:3000`。
 4. H5：复制 `agent-mobile/.env.example` 为本地环境文件并配置 `VITE_API_BASE`，执行 `npm run dev:h5 --workspace=@zihui/mobile`。

@@ -38,7 +38,13 @@ return new class extends Migration {
             $table->index(['embedding_model', 'vec_indexed'], 'idx_kb_chunks_model_indexed');
         });
 
-        // FULLTEXT + ngram parser：中文关键词检索（hybrid 的关键词召回路）。
+        // FULLTEXT + ngram parser 仅是 MySQL 的关键词召回优化。
+        // SQLite/PostgreSQL 没有兼容的 MySQL FULLTEXT 语法，直接跳过索引；
+        // 应用层会退化为向量检索，不影响表结构和数据写入。
+        if (DB::connection()->getDriverName() !== 'mysql') {
+            return;
+        }
+
         // 某些 MySQL 发行版未启用 ngram 解析器时降级（关键词路退化，向量检索不受影响）。
         try {
             DB::statement('ALTER TABLE `kb_chunks` ADD FULLTEXT INDEX `ft_kb_chunks_text` (`chunk_text`) WITH PARSER ngram');

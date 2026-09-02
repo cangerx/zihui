@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Services\CloudBuild\CloudBuildStateMachine;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class CloudBuildStateMachineTest extends TestCase
@@ -25,9 +26,7 @@ class CloudBuildStateMachineTest extends TestCase
         $this->assertTrue($this->machine->canTransition('delivered', 'purged'));
     }
 
-    /**
-     * @dataProvider illegalTransitions
-     */
+    #[DataProvider('illegalTransitions')]
     public function test_illegal_transitions_are_rejected(string $from, string $to): void
     {
         $this->assertFalse($this->machine->canTransition($from, $to));
@@ -35,7 +34,7 @@ class CloudBuildStateMachineTest extends TestCase
         $this->machine->assertCanTransition($from, $to);
     }
 
-    public function illegalTransitions(): array
+    public static function illegalTransitions(): array
     {
         return [
             'skip mirror' => ['queued', 'delivered'],

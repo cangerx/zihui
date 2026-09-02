@@ -66,10 +66,10 @@ function action_check_env(): array
     $checks = [];
 
     // PHP 版本
-    $phpOk = version_compare(PHP_VERSION, '8.0.0', '>=');
+    $phpOk = version_compare(PHP_VERSION, '8.2.0', '>=');
     $checks[] = [
         'name'     => 'PHP 版本',
-        'required' => '>= 8.0',
+        'required' => '>= 8.2',
         'actual'   => PHP_VERSION,
         'ok'       => $phpOk,
     ];

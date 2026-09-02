@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -12,7 +13,7 @@ return new class extends Migration
             return;
         }
 
-        DB::statement('ALTER TABLE video_sku_prices MODIFY default_credit_cost DECIMAL(16,6) NULL DEFAULT NULL');
+        $this->makeDefaultCreditCostNullable();
 
         $this->syncModels();
         $this->syncSeedanceSkus();
@@ -24,7 +25,7 @@ return new class extends Migration
             ->where('sku_key', 'duomi:grok-video:default')
             ->update([
                 'status' => 'disabled',
-                'default_credit_cost' => null,
+                'default_credit_cost' => $this->emptyCreditCost(),
                 'price_label' => '',
                 'updated_at' => now(),
             ]);
@@ -40,7 +41,7 @@ return new class extends Migration
             ->whereNull('default_credit_cost')
             ->update(['default_credit_cost' => 0, 'updated_at' => now()]);
 
-        DB::statement('ALTER TABLE video_sku_prices MODIFY default_credit_cost DECIMAL(16,6) NOT NULL DEFAULT 0');
+        $this->restoreDefaultCreditCostConstraint();
     }
 
     private function syncModels(): void
@@ -190,7 +191,7 @@ return new class extends Migration
             'resolution' => $resolution,
             'aspect_ratio' => $ratio,
             'quality' => '',
-            'default_credit_cost' => null,
+            'default_credit_cost' => $this->emptyCreditCost(),
             'price_label' => '',
             'provider_cost_text' => $costText,
             'provider_cost_source' => $source,
@@ -227,5 +228,42 @@ return new class extends Migration
             'fast' => '快速',
             default => $mode,
         };
+    }
+
+    private function emptyCreditCost(): ?float
+    {
+        return null;
+    }
+
+    private function makeDefaultCreditCostNullable(): void
+    {
+        $driver = DB::connection()->getDriverName();
+
+        if ($driver === 'mysql') {
+            // Preserve the original MySQL 8.0 precision and nullable/default semantics.
+            DB::statement('ALTER TABLE video_sku_prices MODIFY default_credit_cost DECIMAL(16,6) NULL DEFAULT NULL');
+        } elseif ($driver === 'pgsql') {
+            // PostgreSQL has no MySQL MODIFY syntax; use its native ALTER COLUMN form.
+            DB::statement('ALTER TABLE video_sku_prices ALTER COLUMN default_credit_cost DROP DEFAULT, ALTER COLUMN default_credit_cost DROP NOT NULL');
+        } elseif ($driver === 'sqlite') {
+            Schema::table('video_sku_prices', function (Blueprint $table): void {
+                $table->decimal('default_credit_cost', 16, 6)->nullable()->default(null)->change();
+            });
+        }
+    }
+
+    private function restoreDefaultCreditCostConstraint(): void
+    {
+        $driver = DB::connection()->getDriverName();
+
+        if ($driver === 'mysql') {
+            DB::statement('ALTER TABLE video_sku_prices MODIFY default_credit_cost DECIMAL(16,6) NOT NULL DEFAULT 0');
+        } elseif ($driver === 'pgsql') {
+            DB::statement('ALTER TABLE video_sku_prices ALTER COLUMN default_credit_cost SET DEFAULT 0, ALTER COLUMN default_credit_cost SET NOT NULL');
+        } elseif ($driver === 'sqlite') {
+            Schema::table('video_sku_prices', function (Blueprint $table): void {
+                $table->decimal('default_credit_cost', 16, 6)->default(0)->nullable(false)->change();
+            });
+        }
     }
 };

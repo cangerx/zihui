@@ -20,18 +20,23 @@ return new class extends Migration
         // 1) 空串手机号统一转 NULL
         DB::statement("UPDATE users SET phone = NULL WHERE phone = '' OR phone IS NULL");
 
-        // 2) 重复非空手机号：每组保留最小 id，其余置 NULL
-        DB::statement("
-            UPDATE users AS u
-            JOIN (
-                SELECT phone, MIN(id) AS keep_id
-                FROM users
-                WHERE phone IS NOT NULL AND phone <> ''
-                GROUP BY phone
-                HAVING COUNT(*) > 1
-            ) AS d ON u.phone = d.phone AND u.id <> d.keep_id
-            SET u.phone = NULL
-        ");
+        // 2) 重复非空手机号：每组保留最小 id，其余置 NULL。
+        // 使用 Query Builder 避免 MySQL 专属 UPDATE ... JOIN，确保 SQLite /
+        // PostgreSQL 也能完成同样的数据清洗。
+        $duplicates = DB::table('users')
+            ->select('phone', DB::raw('MIN(id) AS keep_id'))
+            ->whereNotNull('phone')
+            ->where('phone', '<>', '')
+            ->groupBy('phone')
+            ->havingRaw('COUNT(*) > 1')
+            ->get();
+
+        foreach ($duplicates as $duplicate) {
+            DB::table('users')
+                ->where('phone', $duplicate->phone)
+                ->where('id', '<>', $duplicate->keep_id)
+                ->update(['phone' => null]);
+        }
 
         // 3) 加唯一索引（允许多个 NULL，未绑定手机号的历史用户不受影响）
         Schema::table('users', function (Blueprint $table) {
