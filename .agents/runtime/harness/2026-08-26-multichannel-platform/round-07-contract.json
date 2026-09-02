@@ -1,0 +1,74 @@
+{
+  "round": 7,
+  "goal": "在真实 API 联调前清理三条已登记的高风险兼容债：完成 PHP 8.2/Laravel 12 后端迁移候选、升级 DCloud/uni-app 安全依赖线，并加固 Electron 桌面文件解析链；每条依赖线必须有独立 lock、回归测试和可复现证据。",
+  "ownedTasks": [
+    "task_php82_laravel12_migration_030",
+    "task_dcloud_security_dependency_line_031",
+    "task_electron_parser_chain_hardening_032",
+    "task_round07_cross_channel_evaluation_033"
+  ],
+  "deliverables": [
+    "后端 Composer 目标切换到 PHP 8.2 与 Laravel 12 兼容线，完成必要框架适配，保留 App v1 API 行为，并更新独立 composer.lock。",
+    "DCloud/uni-app 及其直接构建依赖升级到可验证的安全版本；根 workspace lock 与 agent-mobile 构建矩阵保持一致，不扩大微信/支付/资产生产开关。",
+    "Electron 桌面文件解析链完成依赖和输入边界加固，覆盖 PSD/PDF/DOCX 等已支持格式的大小、路径、异常输入和资源释放回归。",
+    "三条独立依赖线各自保留可审计的变更说明、测试命令和未解决风险，不以通配安全豁免替代修复。",
+    "跨渠道既有 App v1、Web、H5、mp-weixin、桌面构建和安全门禁无回归。"
+  ],
+  "verificationPlan": [
+    {
+      "criterion": "PHP 8.2/Laravel 12 迁移候选可安装且 App v1 行为不回归",
+      "howToCheck": "在 agent-admin/backend 执行 composer validate --strict、composer install --no-interaction、全量 PHP lint、AppV1 Feature/Unit 套件；确认 composer.json platform 与 lock 不再要求 PHP 8.0/Laravel 9。",
+      "hardFail": true
+    },
+    {
+      "criterion": "DCloud/uni-app 安全依赖线可重复安装并通过多端构建",
+      "howToCheck": "执行 npm ci、root 与 mobile 安全审计政策、workspace type-check、H5 和 mp-weixin production build、mobile production entrypoint/asset checks；git diff 必须不产生 lock 漂移。",
+      "hardFail": true
+    },
+    {
+      "criterion": "Electron 文件解析链拒绝危险输入且既有格式能力可用",
+      "howToCheck": "执行 agent-desktop npm ci、解析器回归/新增边界测试、TypeScript 编译或 electron-vite build，并验证路径穿越、超大文件、畸形文档和临时文件清理。",
+      "hardFail": true
+    },
+    {
+      "criterion": "高危安全审计仍是精确、未过期、可追踪的记录",
+      "howToCheck": "运行 npm run test:security-audit 及每个独立 lock 的审计；新增或剩余 high/critical 必须逐条登记 package、advisory、owner、expiry、exit_criteria，禁止 wildcard 或延长既有期限。",
+      "hardFail": true
+    },
+    {
+      "criterion": "多端现有能力不回归",
+      "howToCheck": "运行 API client/poller tests、App v1 contract、Web build、H5 smoke、App v1 PHP suite、生产入口/资源扫描和 git diff --check；微信开发者工具仍作为外部环境缺口单独记录。",
+      "hardFail": true
+    }
+  ],
+  "nonGoals": [
+    "不启用微信登录、手机号绑定、订单、支付、订阅消息或 APP_V1_ENABLE_ASSETS。",
+    "不把 Laravel/DCloud/Electron 三条独立 lock 合并进根 workspace，也不修改无关应用的依赖。",
+    "不以延长安全豁免、降低审计级别或删除测试来换取绿色构建。",
+    "不在本轮实现云端知识库、视频任务、跨端同步或生产对象存储开关。"
+  ],
+  "handoffPaths": [
+    "agent-admin/backend/composer.json",
+    "agent-admin/backend/composer.lock",
+    "agent-admin/backend/app/**/*.php",
+    "agent-admin/backend/tests/**/*.php",
+    "agent-admin/backend/docs/**/*.md",
+    "agent-mobile/package.json",
+    "agent-mobile/src/**/*.ts",
+    "agent-mobile/src/**/*.vue",
+    "package.json",
+    "package-lock.json",
+    "scripts/security-audit-policy.json",
+    "agent-desktop/package.json",
+    "agent-desktop/package-lock.json",
+    "agent-desktop/src/main/services/**/*.{ts,js,cjs}",
+    "agent-desktop/scripts/test-*.{cjs,mjs,js}",
+    "docs/security-baseline-2026-08-26.md",
+    "docs/multichannel-development.md"
+  ],
+  "notes": [
+    "Round-06 已通过独立评审并推送至 520a03d；任务历史生命周期和 owner-scoped CAS 作为本轮回归基线。",
+    "三条工作面必须分别报告实际升级版本、无法升级的具体阻塞和下一步，不得把只读环境 EPERM 当作代码通过。",
+    "生产开关和微信能力继续关闭；真实 COS/OSS、HTTPS CORS、合法域名和平台资质仍是后续联调前置条件。"
+  ]
+}
