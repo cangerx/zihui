@@ -18,6 +18,7 @@
     "check:mobile-real-api": "node scripts/check-mobile-real-api.mjs",
     "check:mobile-production-entrypoints": "node scripts/check-mobile-production-entrypoints.mjs",
     "check:mobile-production-assets": "node scripts/check-mobile-production-assets.mjs",
+    "check:dcloud-dependency-baseline": "node scripts/check-dcloud-dependency-baseline.mjs",
     "check:security-audit": "node scripts/check-security-audit.mjs",
     "test:security-audit": "node --test scripts/tests/security-audit-policy.test.mjs",
     "test:api-client": "npm test --workspace=@zihui/api-client",

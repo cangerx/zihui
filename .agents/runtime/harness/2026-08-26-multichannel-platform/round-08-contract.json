@@ -1,0 +1,54 @@
+{
+  "round": 8,
+  "goal": "清除 Round-07 暴露的跨驱动迁移与 cloud-build fixture 阻塞，并为已经写入正式 Composer 依赖线的 PHP 8.2/Laravel 12 迁移建立完整验证证据。",
+  "ownedTasks": [
+    "task_cross_driver_migrations_034",
+    "task_cloud_build_fixture_recovery_035",
+    "task_round08_cross_channel_evaluation_036"
+  ],
+  "deliverables": [
+    "历史迁移不再在 SQLite/PostgreSQL 上执行 MySQL 专用 MODIFY/FULLTEXT 语句，并保留 MySQL 8.0 语义。",
+    "重建 cloud-build migration 的确定性脱敏 contract fixture 及其配套文档，使现有 ledger/phase/security 测试可重复读取且不包含真实凭据；不得声称恢复了从未入库的历史 fixture。",
+    "为每项兼容修复补充针对性测试或确定性验证命令，并记录未解决的 Laravel 12 迁移风险。",
+    "验证正式 PHP ^8.2/Laravel 12 Composer lock 可重复安装且 Composer audit 保持零发现；不得用本机 PHP 8.5 代替 PHP 8.2/MySQL 8.0 CI 证据。"
+  ],
+  "verificationPlan": [
+    {
+      "criterion": "cloud-build fixture 套件完整且安全",
+      "howToCheck": "运行全量 PHPUnit，确认缺失 fixture 的 10 个错误消失；运行 cloud-build 相关 Unit/Feature 套件并执行凭据泄漏断言。",
+      "hardFail": true
+    },
+    {
+      "criterion": "历史迁移跨驱动可加载",
+      "howToCheck": "执行 PHP lint、SQLite migration smoke test，并静态扫描迁移中的 MODIFY/FULLTEXT；MySQL 专用语句必须位于明确的 driver 分支且有 MySQL 8.0 验证说明。",
+      "hardFail": true
+    },
+    {
+      "criterion": "App v1 行为无回归",
+      "howToCheck": "运行 AppV1 Feature/Unit 套件、任务生命周期套件及现有 Node/Web/H5/mp-weixin 构建门禁。",
+      "hardFail": true
+    },
+    {
+      "criterion": "Laravel 12 正式依赖线可重复安装且验证边界准确",
+      "howToCheck": "正式 Composer 环境执行 composer validate --strict、composer install --dry-run、composer audit、artisan about 与迁移加载检查；PHP 8.2/MySQL 8.0 精确运行时证据以 CI 为准，本机 PHP 8.5 结果不得冒充。",
+      "hardFail": true
+    }
+  ],
+  "nonGoals": [
+    "不在本轮启用微信登录、手机号绑定、支付、订阅或 APP_V1_ENABLE_ASSETS。",
+    "不把 cloud-build fixture 当成真实生产数据，不提交任何 token、私钥或线上 URL 凭据。",
+    "不因正式 composer.json/lock 已切换而在缺少 PHP 8.2、MySQL 8.0、cloud-build fixture 与全量回归证据时宣称 Round-08 通过或生产就绪。"
+  ],
+  "handoffPaths": [
+    "agent-admin/backend/database/migrations/**/*.php",
+    "agent-admin/backend/tests/**/*.php",
+    "agent-admin/docs/contracts/cloud-build-migration/**",
+    "agent-admin/backend/docs/round-08-*.md",
+    ".agents/runtime/harness/2026-08-26-multichannel-platform/round-08-*.json"
+  ],
+  "notes": [
+    "Round-07 的候选解析已经在 Round-08 写入正式 PHP ^8.2/Laravel 12 Composer 依赖线；当前 Composer audit 为零，但完整回归和精确运行时证据尚未形成。",
+    "DCloud 与 Electron 改动保持独立审计 scope：DCloud 在 Node 22/npm 10 下当前为 11 high / 46 total（9 条独立 high GHSA），桌面端为 5 个 high 包记录、12 条独立 high GHSA、0 critical；两者均不得被 Composer 零发现覆盖。",
+    "cloud-build fixture 和全量 PHPUnit 在合同更新时仍待完成；只有 authoritative 测试结果可以改变该状态。"
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "round": 7,
+  "decision": "fail",
+  "importApproved": false,
+  "hardFailures": [
+    "正式 composer.json/lock 仍是 PHP 8.0/Laravel 9，未完成 PHP 8.2/Laravel 12 迁移",
+    "agent-desktop 独立 lock 的 high/critical 审计未纳入精确安全策略和 CI"
+  ],
+  "findings": [
+    {
+      "severity": "high",
+      "criterion": "PHP 8.2/Laravel 12 迁移",
+      "evidence": "agent-admin/backend/composer.json 仍声明 php ^8.0、laravel/framework ^9.19、sanctum ^2.15，platform 仍为 8.0.28；迁移说明明确记录正式 lock 未切换。"
+    },
+    {
+      "severity": "high",
+      "criterion": "独立依赖线安全门禁",
+      "evidence": "npm audit --prefix agent-desktop --omit=dev 报告 10 high、0 critical，security-audit-policy 没有 agent-desktop 范围，CI 未审计该 lock。"
+    },
+    {
+      "severity": "high",
+      "criterion": "全量后端回归",
+      "evidence": "191 tests / 973 assertions 中有 10 errors，均来自缺失 agent-admin/docs/contracts/cloud-build-migration fixture。"
+    },
+    {
+      "severity": "medium",
+      "criterion": "Electron PDF 输入边界",
+      "evidence": "parsePdfBuffer 使用 buffer.indexOf 的第三参数传入 1024；该参数是 encoding，并未限制搜索范围。"
+    }
+  ],
+  "scores": {
+    "php": 1,
+    "dcloud": 4,
+    "electron": 4,
+    "security": 1,
+    "regression": 4
+  },
+  "verificationEvidence": [
+    "AppV1 36/267",
+    "任务生命周期 7/73",
+    "全量 PHPUnit 191/973/10 errors",
+    "DCloud baseline PASS",
+    "Electron parser 6/6",
+    "Electron clean temporary install/build PASS",
+    "agent-desktop npm audit 10 high",
+    "Web/H5/mobile gates PASS",
+    "git diff --check PASS"
+  ],
+  "nextActions": [
+    "完成 PHP 8.2/Laravel 12 框架适配并提交 composer.lock，重跑 MySQL/AppV1 回归",
+    "为每条 desktop high advisory 建立 owner/expiry/exit_criteria 精确记录并接入 CI",
+    "修复 PDF header 搜索边界，重跑 Node 22/npm 10 桌面矩阵",
+    "恢复 cloud-build migration contract fixture 并重跑全量 PHPUnit"
+  ]
+}

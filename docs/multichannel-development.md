@@ -4,13 +4,13 @@
 
 目标是在保留 Electron 桌面端本地能力的前提下，新增可独立部署的 Web、H5 和微信小程序入口。四个渠道共享云端账号、模型权限、对话、数字员工、生图任务、资源、余额和套餐口径。
 
-本计划以 `agent-admin/backend` 的 Laravel 9 云控后端为业务中心，从两个既有 UI 项目白名单抽离 `agent-web` 和 `agent-mobile`，并通过共享包避免请求结构和状态机在多端漂移。UI 迁移以保留现有设计与交互为原则，主要工作从“重新搭页面”调整为“去旧品牌、替换协议、接通能力、补齐测试”。
+本计划以 `agent-admin/backend` 的 Laravel 12 云控后端为业务中心，从两个既有 UI 项目白名单抽离 `agent-web` 和 `agent-mobile`，并通过共享包避免请求结构和状态机在多端漂移。UI 迁移以保留现有设计与交互为原则，主要工作从“重新搭页面”调整为“去旧品牌、替换协议、接通能力、补齐测试”。
 
 第一阶段不迁移 Electron 的本地图库、SQLite 知识库扫描、MCP、ClawBot、FFmpeg、浏览器自动化、电商连接器、大型画布和本地 PPT/视频编辑。这些能力依赖本机文件系统或 Electron IPC，应在云端能力稳定后单独立项。
 
 ## 2. 当前基线
 
-- 后端：Laravel 9、PHP 8.0 兼容目标、MySQL 8.0，已有 JWT、Sanctum、用户、模型、余额、套餐、订单、图片任务和队列能力。
+- 后端：Laravel 12、PHP 8.2 最低运行时、MySQL 8.0，已有 JWT、Sanctum、用户、模型、余额、套餐、订单、图片任务和队列能力。
 - 管理端：React 19，继续作为运营后台，不与用户 Web 端共用页面。
 - 桌面端：Electron 31、Vue 3、TypeScript，约 67 个视图，其中约 26 个直接依赖 `window.api`、SQLite、`local-file://` 或本地进程。
 - Git：`main` 已同步到 `https://github.com/cangerx/zihui`，规划调整前基线提交为 `d5ece8e`。
@@ -57,7 +57,7 @@
 
 任务：
 
-1. 固定 Node 22 LTS、npm 10、PHP 8.0、Composer 和 MySQL 8.0 的 CI 版本；本地使用 `nvm`/容器提供一致环境。
+1. 固定 Node 22 LTS、npm 10、PHP 8.2、Composer 和 MySQL 8.0 的 CI 版本；本地使用 `nvm`/容器提供一致环境。
 2. 修复 `agent-admin/frontend` manifest/lock 不一致，所有项目确认可重复安装。
 3. 盘点 `.env.example`，区分服务端密钥、公开配置和渠道配置；真实密钥不得进入 Git。
 4. 建立安全基线：移除生产环境全局 `ignore-certificate-errors`，评估 `webSecurity: false`，补充 CORS、CSRF、限流、上传大小和 MIME 校验。
@@ -255,7 +255,7 @@ GET    /billing/orders/{orderNo}
 GitHub Actions 建议拆为：
 
 1. `quality.yml`：格式、TypeScript 类型、contracts schema、依赖锁文件一致性、secret scan。
-2. `backend.yml`：PHP 8.0 + MySQL 8.0，`composer install --no-interaction`、迁移、PHPUnit Feature Test、`composer audit`。
+2. `backend.yml`：PHP 8.2 + MySQL 8.0，`composer install --no-interaction`、迁移、PHPUnit Feature Test、`composer audit`。
 3. `web.yml`：Node 22 + npm 10，`npm ci`/workspace install、lint、typecheck、unit、build、Playwright smoke。
 4. `mobile.yml`：type-check、H5 构建、mp-weixin 构建、共享包依赖扫描。
 5. `desktop.yml`：沿用现有 Electron 构建和最小回归，不因新端改动旧 preload 契约。
@@ -287,14 +287,14 @@ GitHub Actions 建议拆为：
 ## 10. 首个开发迭代的可执行清单
 
 1. 合并调整后的规划、产品规格、首轮契约和 UI 迁移矩阵。
-2. 修复 admin frontend lock，确定 Node 22 + npm 10/PHP 8.0 生产兼容目标和根 npm workspace；CI 当前使用 PHP 8.2 执行兼容回归，不能据此直接切换生产运行时。
+2. 修复 admin frontend lock，确定 Node 22 + npm 10/PHP 8.2 生产目标和根 npm workspace，并由 Composer platform 与 CI 同时固定最低运行时。
 3. 按固定 SHA 和复制白名单抽离 `agent-web`、`agent-mobile`，生成来源清单，不复制依赖、产物、环境文件和源 lock。
 4. 先保持 Mock 构建通过并完成截图基线，再实现 contracts、错误模型、认证 client 和 `/api/app/v1/auth/*`、`/bootstrap`。
 5. 用 fake provider 打通 Web 登录、对话、图片任务，以及移动端登录、工具运行、生图和任务链路，再接真实供应商。
 6. 同步补齐 PHPUnit、Playwright、移动端构建验收和 IDOR 测试；测试未通过不得开始微信支付开发。
 
-截至 2026-09-02：清单 1-3 已完成；清单 4 的核心 API/UI 部分已完成共享 contracts/api-client、Laravel `/api/app/v1` 认证/模型/套餐/余额、会话与图片任务适配、Web SSE 对话流、会话消息持久化、跨用户 IDOR Feature Test，以及 Web/H5/mp-weixin 构建门禁。移动端生产环境已用 `/bootstrap.features.image` 控制工具入口，并打通密码登录、授权图片模型、文生图任务提交、五状态轮询和任务历史；一级“我的”页已改用 `/auth/me` 与 `/billing/balance`，覆盖未登录、加载、网络错误、401 和确认退出状态，`/auth/logout` 成功会使旧 JWT 失效，服务端注销失败返回明确 503，但客户端仍最终清除本地 token/account。任务 API 已明确使用 owner-scoped 列表、详情、取消和删除；queued 取消与 worker claim 均以 pending 条件原子更新，processing 不可取消或删除，succeeded/failed/cancelled 可删除。参考图已完成 presign、签名二进制 PUT、complete、owner-scoped 内容访问和 `asset_ids` 任务租约，包含同键同参 10 分钟幂等、同键异参冲突、每日 100 个资产配额、按 IP/用户分档限流、脱敏审计和清理任务，但生产开关要等 COS/OSS、HTTPS CORS 与微信合法域名联调后开启。Round-04 已在 PHP 8.0/Laravel 9 兼容线内将 Composer 审计从 32 条/10 包降至 12 条/6 包，Guzzle、PSR-7 与 CommonMark high 已清除；Laravel 9/Symfony 6.0 仍有 4 条显式 high，只能随 PHP 8.2/Laravel 12 独立迁移解决。根 workspace 的 DCloud 工具链仍为 11 high/0 critical，无效 overrides 已撤回；9 条独立 high GHSA 与 Composer 剩余 high 已进入最晚 2026-09-30 到期的精确安全门禁，不能描述为全部风险已解决。首页只展示 bootstrap 明确启用的 AI 生图，模板页在模板 API 尚未提供时显示不可用空态，VIP 页读取 `/billing/plans` 与登录用户的 `/billing/balance`，支付方式和 CTA 保持关闭。生产 Mine、profile、task history 和任务 API 产物已加入 H5/mp-weixin Mock 泄漏及小程序浏览器构造器兼容扫描；开发 Mock 仍仅用于源 UI 验收。商品套图等后续页面、订单/支付接口及微信资质仍待后续轮次，因此不能视为阶段 4 完成。小程序微信登录、支付和手机号绑定仍关闭。
+截至 2026-09-02：清单 1-3 已完成；清单 4 的核心 API/UI 部分已完成共享 contracts/api-client、Laravel `/api/app/v1` 认证/模型/套餐/余额、会话与图片任务适配、Web SSE 对话流、会话消息持久化、跨用户 IDOR Feature Test，以及 Web/H5/mp-weixin 构建门禁。移动端生产环境已用 `/bootstrap.features.image` 控制工具入口，并打通密码登录、授权图片模型、文生图任务提交、五状态轮询和任务历史；一级“我的”页已改用 `/auth/me` 与 `/billing/balance`，覆盖未登录、加载、网络错误、401 和确认退出状态，`/auth/logout` 成功会使旧 JWT 失效，服务端注销失败返回明确 503，但客户端仍最终清除本地 token/account。任务 API 已明确使用 owner-scoped 列表、详情、取消和删除；queued 取消与 worker claim 均以 pending 条件原子更新，processing 不可取消或删除，succeeded/failed/cancelled 可删除。参考图已完成 presign、签名二进制 PUT、complete、owner-scoped 内容访问和 `asset_ids` 任务租约，包含同键同参 10 分钟幂等、同键异参冲突、每日 100 个资产配额、按 IP/用户分档限流、脱敏审计和清理任务，但生产开关要等 COS/OSS、HTTPS CORS 与微信合法域名联调后开启。Round-04 曾在 PHP 8.0/Laravel 9 兼容线内将 Composer 审计从 32 条/10 包降至 12 条/6 包；Round-08 已把正式依赖切换到 PHP `^8.2`、Laravel `12.69.1` 和 Composer platform `8.2.0`，当前 Composer 审计为 0 advisory，原 Laravel 9/Symfony 6.0 high 例外已清除。cloud-build 6-job 脱敏 contract baseline 已重建，后端本地全量回归为 195 tests / 1130 assertions；Web、H5 和 mp-weixin 已在 Node `22.23.0` / npm `10.9.2` 的干净依赖安装后构建通过。本地 PHP 验证实际使用 `8.5.3`，platform 约束不能替代 PHP 8.2 真实运行时；PHP 8.2/MySQL 8.0 精确证明仍依赖 CI。根 workspace 的 DCloud 工具链当前审计为 11 high / 46 total，其中 9 条独立 high GHSA 已登记但未修复；桌面端完成兼容依赖升级和文件解析加固后仍有 5 个 high 包记录、12 条独立 high GHSA、0 critical。两类残余风险均受独立 scope 门禁和 2026-09-30 到期日约束，不能描述为全部风险已解决。首页只展示 bootstrap 明确启用的 AI 生图，模板页在模板 API 尚未提供时显示不可用空态，VIP 页读取 `/billing/plans` 与登录用户的 `/billing/balance`，支付方式和 CTA 保持关闭。生产 Mine、profile、task history 和任务 API 产物已加入 H5/mp-weixin Mock 泄漏及小程序浏览器构造器兼容扫描；开发 Mock 仍仅用于源 UI 验收。商品套图等后续页面、订单/支付接口及微信资质仍待后续轮次，因此不能视为阶段 4 完成。小程序微信登录、支付和手机号绑定仍关闭。
 
-下一安全切片必须拆成三个独立合同：PHP 8.2 + Laravel 12 后端迁移、DCloud/uni-app 安全依赖线升级、Electron 与桌面文件解析链升级。每个合同都要有自己的构建和回归面，不能用根 workspace 例外覆盖其他独立 lock。生产 `APP_V1_ENABLE_ASSETS` 继续默认关闭；真实 COS/OSS、HTTPS CORS 与微信合法域名联调完成前不得打开。
+Round-08 继续按三个独立验证面收口：PHP 8.2 + Laravel 12 后端的 CI/全量回归、DCloud/uni-app 安全依赖线退出、Electron 剩余依赖和桌面打包回归。每个验证面都要保留自己的构建、审计 scope 和退出证据，不能用 Composer 零发现或根 workspace 例外覆盖其他独立 lock。生产 `APP_V1_ENABLE_ASSETS` 继续默认关闭；真实 COS/OSS、HTTPS CORS 与微信合法域名联调完成前不得打开。
 
 首轮完成的判断标准不是页面数量，而是：普通浏览器脱离 Electron 可以登录并完成一次对话和生图，任务状态可恢复，两个用户之间不能越权，CI 能阻止契约和依赖漂移。

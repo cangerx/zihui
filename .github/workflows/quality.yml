@@ -13,6 +13,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: test-root-password
+          MYSQL_DATABASE: agent_admin_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -ptest-root-password"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
     steps:
       - uses: actions/checkout@v4
 
@@ -56,29 +70,24 @@ jobs:
           find agent-admin/backend/app agent-admin/backend/config agent-admin/backend/routes -name '*.php' -print0 \
             | xargs -0 -n1 php -l
 
+      - name: Verify MySQL 8.0 migrations
+        working-directory: agent-admin/backend
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: agent_admin_test
+          DB_USERNAME: root
+          DB_PASSWORD: test-root-password
+        run: php artisan migrate:fresh --force
+
       - name: Verify App v1 routes
         working-directory: agent-admin/backend
         run: php artisan route:list --path=api/app/v1
 
       - name: Run backend tests
         working-directory: agent-admin/backend
-        run: |
-          if [ -d ../docs/contracts/cloud-build-migration ]; then
-            php artisan test --testsuite=Unit
-          else
-            while IFS= read -r -d '' test_file; do
-              php artisan test "$test_file"
-            done < <(find tests/Unit -name '*Test.php' \
-              ! -name 'CloudBuildFrontendApiContractTest.php' \
-              ! -name 'CloudBuildLedgerMigrationTest.php' \
-              ! -name 'CloudBuildPhaseNormalizerTest.php' \
-              ! -name 'CloudBuildSecurityAndCutoverDrillTest.php' \
-              -print0)
-          fi
-
-      - name: Run App v1 feature tests
-        working-directory: agent-admin/backend
-        run: php artisan test --testsuite=Feature --filter=AppV1
+        run: php artisan test --without-tty
 
   multichannel-ui:
     runs-on: ubuntu-latest
@@ -115,6 +124,9 @@ jobs:
 
       - name: Test security policy
         run: npm run test:security-audit
+
+      - name: Verify DCloud dependency baseline
+        run: npm run check:dcloud-dependency-baseline
 
       - name: Enforce workspace security policy
         run: |
@@ -182,3 +194,8 @@ jobs:
             --ecosystem npm \
             --scope agent-build/backend \
             --audit "$RUNNER_TEMP/npm-build-backend-audit.json"
+          npm audit --prefix agent-desktop --omit=dev --registry=https://registry.npmjs.org --json > "$RUNNER_TEMP/npm-desktop-audit.json" || true
+          node scripts/check-security-audit.mjs \
+            --ecosystem npm \
+            --scope agent-desktop \
+            --audit "$RUNNER_TEMP/npm-desktop-audit.json"
