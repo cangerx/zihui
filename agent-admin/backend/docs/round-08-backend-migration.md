@@ -2,7 +2,7 @@
 
 日期：2026-09-02  
 范围：`agent-admin/backend` 正式 PHP 8.2 / Laravel 12 依赖线、跨驱动迁移和安全审计  
-状态：**正式依赖已切换，本地完整回归通过，精确 PHP 8.2/MySQL 8.0 证明仍待 CI 完成**。
+状态：**正式依赖已切换，本地完整回归与 GitHub PHP 8.2/MySQL 8.0 门禁均通过**。
 
 ## 正式依赖状态
 
@@ -30,10 +30,10 @@
 - `php artisan test --without-tty` 本地全量回归为 195 tests / 1130 assertions，无失败和 warning。
 - Composer 审计为 0 advisory / 0 abandoned package。
 
-本地 CLI 是 PHP `8.5.3`，Composer platform 固定为 `8.2.0`。platform 约束能验证依赖解析下界，但不会把 PHP 8.5 变成 PHP 8.2，因此上述命令不能作为 PHP 8.2 精确运行时证明。本机也没有可无凭据使用的 MySQL 8.0 服务；PHP 8.2 和 MySQL 8.0 的安装、全量迁移与测试证据依赖 GitHub CI 的对应 runner/service，必须以实际 CI 结果为准。
+本地 CLI 是 PHP `8.5.3`，Composer platform 固定为 `8.2.0`。platform 约束能验证依赖解析下界，但不会把 PHP 8.5 变成 PHP 8.2，因此本地结果不能单独作为 PHP 8.2 精确运行时证明。GitHub Quality run `33635828129` 已在 PHP 8.2 runner 和 MySQL 8.0 service 上完成 Composer 安装、安全审计、`migrate:fresh`、路由加载与完整 PHPUnit，`backend-app-v1` job 成功。
 
 ## 尚未关闭的门禁
 
 原 cloud-build migration fixture 从未入库，不能声称恢复历史内容。本轮已经重新建立 6-job 确定性脱敏 baseline 和配套 runbook，source/target canonical SHA-256 均为 `f33b7624fe8ddb0aa7408e2897b063e087a459ff7d48a1a332bab0b769f3ca44`；依赖 fixture 的专项测试和全量 PHPUnit 已形成上述通过证据。
 
-H5 和 mp-weixin 已在 Node `22.23.0` / npm `10.9.2` 的干净根依赖安装后构建通过。剩余硬门禁是 GitHub CI 中 PHP 8.2/MySQL 8.0 的精确安装、迁移与全量测试，以及 Round-08 独立评审。DCloud/uni-app 和 Electron 使用独立 npm lock 与独立安全门禁，不会因 Composer 审计归零而自动关闭；本文不作生产就绪声明。
+H5 和 mp-weixin 已在 Node `22.23.0` / npm `10.9.2` 的干净根依赖安装后构建通过，GitHub `multichannel-ui` job 也完成 Web/H5/mp-weixin、类型、lint、契约、独立 lock 和安全门禁。Round-08 evaluation 已通过。DCloud/uni-app 和 Electron 使用独立 npm lock 与独立安全门禁，不会因 Composer 审计归零而自动关闭；真实对象存储、微信合法域名和平台能力仍未联调，本文不作生产就绪声明。

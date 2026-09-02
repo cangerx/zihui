@@ -1,0 +1,62 @@
+{
+  "round": 8,
+  "decision": "pass",
+  "importApproved": true,
+  "hardFailures": [],
+  "findings": [
+    {
+      "severity": "medium",
+      "criterion": "独立依赖线安全治理",
+      "evidence": "Node 22/npm 10 最新生产审计仍有根 workspace 11 high / 46 total（9 条独立 high GHSA）和 agent-desktop 5 high / 8 total（12 条独立 high GHSA）；全部逐条匹配有效例外，但尚未从依赖图消除。",
+      "repro": [
+        "npm audit --omit=dev --json",
+        "npm audit --prefix agent-desktop --omit=dev --registry=https://registry.npmjs.org --json"
+      ],
+      "suggestedFix": "在 2026-09-30 前分别升级受支持的 DCloud Vue 3 与 Electron 依赖线，并删除对应精确例外。"
+    },
+    {
+      "severity": "medium",
+      "criterion": "前端代码质量",
+      "evidence": "Node 22/npm 10 lint 退出码为 0，但现有 Web 代码仍报告 289 条 warning，包括 any、未使用导入、原生 img 和 React hooks 规则。",
+      "repro": [
+        "npm run lint"
+      ],
+      "suggestedFix": "按页面分批清理 warning，并逐步将 CI warning 上限从当前基线收紧。"
+    },
+    {
+      "severity": "low",
+      "criterion": "CI 运行时维护",
+      "evidence": "GitHub run 33635828129 全绿，但 checkout/setup-node v4 收到 Node.js 20 action runtime 弃用提示。",
+      "repro": [
+        "gh run view 33635828129"
+      ],
+      "suggestedFix": "验证并升级到支持新 action runtime 的 checkout/setup-node 主版本。"
+    }
+  ],
+  "scores": {
+    "php": 9,
+    "dcloud": 7,
+    "electron": 8,
+    "security": 8,
+    "regression": 9
+  },
+  "verificationEvidence": [
+    "GitHub Quality run 33635828129 conclusion=success，headSha=7c6ada15301182f19459ffae5917dc8279fd5b23",
+    "GitHub backend-app-v1：PHP 8.2 Composer 安装、Composer 安全策略、MySQL 8.0 migrate:fresh、25 条 App v1 路由和完整 PHPUnit 全部通过",
+    "本地 PHP 8.5/SQLite 完整 PHPUnit：195 tests / 1130 assertions，无失败和 warning",
+    "CloudBuild 套件：117 tests / 683 assertions；fixture 核心契约：16 tests / 178 assertions",
+    "cloud-build 6-job source/target canonical SHA-256：f33b7624fe8ddb0aa7408e2897b063e087a459ff7d48a1a332bab0b769f3ca44",
+    "App v1、跨驱动迁移和状态机定向回归：48 tests / 304 assertions",
+    "GitHub multichannel-ui：Node 22/npm 10 安装、安全策略、API client、poller、type-check、lint、Web/H5/mp-weixin 构建、生产契约和独立 lock 全部通过",
+    "本地 Node 22.23.0/npm 10.9.2 干净安装后 Web、H5、mp-weixin 构建通过",
+    "Electron 文档解析器 7/7，main/preload/renderer 构建通过",
+    "Composer audit 0 advisory；root 9/9 与 agent-desktop 12/12 high/critical 精确策略匹配",
+    "DCloud dependency baseline PASS；git diff --check 与 CI YAML 解析通过"
+  ],
+  "nextActions": [
+    "建立真实 COS/OSS、HTTPS CORS 与微信合法域名联调合同，在证据齐全前保持 APP_V1_ENABLE_ASSETS 关闭",
+    "分别退出 DCloud 9 条与 Electron 12 条 high GHSA 例外，不延长期限或使用通配覆盖",
+    "在真实微信开发者工具和设备上验证登录、会话、生图与任务恢复，再单独规划手机号、支付和订阅消息",
+    "清理 Web lint warning 基线并升级 GitHub Actions runtime"
+  ]
+}

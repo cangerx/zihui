@@ -4,7 +4,7 @@
 范围：`task_php82_laravel12_migration_030`  
 Round-07 当时结论：**候选依赖可解析，正式 Composer lock 暂不切换**。
 
-> **Round-08 后续状态（2026-09-02）**：本文以下内容保留为 Round-07 的历史取证，不能再作为当前依赖状态使用。主工作树的正式约束和 lock 已切换到 PHP `^8.2`、Laravel `12.69.1`、Sanctum `4.3.3`、PHPUnit `11.5.56`，Composer platform 固定为 `8.2.0`；当前 Composer 审计为 0 advisory。迁移后的 App v1 定向回归为 34 tests / 252 assertions，跨驱动迁移定向回归为 4 tests / 18 assertions；cloud-build contract baseline 已重建，后端本地全量回归为 195 tests / 1130 assertions。上述本地验证实际运行于 PHP `8.5.3`，只借助 Composer platform 模拟最低 PHP 版本，不能替代 PHP 8.2 真实运行时证据；PHP 8.2 与 MySQL 8.0 的精确验证依赖 CI。当前迁移详情见 `round-08-backend-migration.md`。
+> **Round-08 后续状态（2026-09-02）**：本文以下内容保留为 Round-07 的历史取证，不能再作为当前依赖状态使用。主工作树的正式约束和 lock 已切换到 PHP `^8.2`、Laravel `12.69.1`、Sanctum `4.3.3`、PHPUnit `11.5.56`，Composer platform 固定为 `8.2.0`；当前 Composer 审计为 0 advisory。迁移后的 App v1 定向回归为 34 tests / 252 assertions，跨驱动迁移定向回归为 4 tests / 18 assertions；cloud-build contract baseline 已重建，后端本地全量回归为 195 tests / 1130 assertions。GitHub Quality run `33635828129` 已补齐 PHP 8.2 与 MySQL 8.0 的精确安装、迁移和完整测试证据。当前迁移详情见 `round-08-backend-migration.md`。
 
 ## Round-07 当时基线
 
