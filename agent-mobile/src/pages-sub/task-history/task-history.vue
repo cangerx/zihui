@@ -4,11 +4,12 @@
  * TODO(design)：原型未给出详图，按现有设计语言补齐
  */
 import { computed, ref } from 'vue'
-import { onLoad, onShow } from '@dcloudio/uni-app'
+import { onHide, onLoad, onShow } from '@dcloudio/uni-app'
 import { listTasks } from '@/api/modules/tasks'
-import { extractResultImages } from '@/api/modules/app'
+import { extractResultImages } from '@/api/modules/task-result'
 import { USE_MOCK } from '@/api/config'
-import { apiErrorCode } from '@/api/v1-client'
+import { apiErrorCode, apiErrorInvalidatedSession } from '@/api/v1-client'
+import { navigateToLoginOnce } from '@/api/login-navigation'
 import { useUserStore } from '@/store/user'
 import type { AppTask, TaskStatus } from '@zihui/contracts'
 import type { WorkflowQueryResult } from '@/api/types'
@@ -28,6 +29,7 @@ const activeTab = ref(0)
 const items = ref<TaskHistoryItem[]>([])
 const isFavorite = ref(false)
 let awaitingLogin = false
+let loadSequence = 0
 
 // tab：全部 / 生成中 / 已完成，按 status 筛。之前 computed 忽略 activeTab、点了无变化
 const filtered = computed(() => {
@@ -45,7 +47,7 @@ onLoad((query) => {
   if (!isFavorite.value) {
     if (!USE_MOCK && !user.isLogin) {
       awaitingLogin = true
-      uni.navigateTo({ url: '/pages-sub/login/login' })
+      navigateToLoginOnce()
       return
     }
     loadTasks()
@@ -59,16 +61,28 @@ onShow(() => {
   }
 })
 
+onHide(() => {
+  loadSequence += 1
+})
+
 async function loadTasks() {
+  const requestToken = user.token
+  const sequence = ++loadSequence
   try {
     const tasks = await listTasks({ limit: 50 })
+    if (sequence !== loadSequence) return
+    if (!USE_MOCK && (requestToken !== user.token || !user.isLogin)) return
     items.value = tasks.map(toTaskHistoryItem)
   } catch (error) {
+    if (sequence !== loadSequence) return
+    const invalidatedCurrentSession = apiErrorInvalidatedSession(error)
+    if (!USE_MOCK && requestToken !== user.token && !invalidatedCurrentSession) return
     items.value = []
     if (!USE_MOCK && apiErrorCode(error) === 401) {
+      if (!invalidatedCurrentSession) return
       user.logout()
       awaitingLogin = true
-      uni.navigateTo({ url: '/pages-sub/login/login' })
+      navigateToLoginOnce()
     } else {
       uni.showToast({ title: '任务加载失败，请稍后重试', icon: 'none' })
     }

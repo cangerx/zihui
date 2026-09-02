@@ -41,6 +41,7 @@
   },
   "modifiedFiles": [
     "package.json",
+    "src/api/auth-storage.ts",
     "src/api/config.ts",
     "src/api/modules/app.ts",
     "src/api/modules/auth.ts",
@@ -51,18 +52,29 @@
     "src/pages-sub/login/login.vue",
     "src/pages-sub/tool-run/tool-run.vue",
     "src/pages-sub/task-history/task-history.vue",
-    "src/api/modules/discovery.ts",
-    "src/api/modules/billing.ts",
     "src/components/template-waterfall/template-waterfall.vue",
     "src/components/asset-sheet/asset-sheet.vue",
     "src/components/vip-promo/vip-promo.vue",
     "src/pages-sub/vip/vip.vue",
     "src/pages/home/home.vue",
+    "src/pages/mine/mine.vue",
     "src/pages/template/template.vue",
-    "src/components/ai-input-card/ai-input-card.vue"
+    "src/components/ai-input-card/ai-input-card.vue",
+    "src/store/user.ts"
   ],
   "removedFiles": [
     "src/api/sign.ts"
+  ],
+  "addedFiles": [
+    ".env.example",
+    "src/api/catalog.ts",
+    "src/api/login-navigation.ts",
+    "src/api/modules/billing.ts",
+    "src/api/modules/discovery.ts",
+    "src/api/modules/profile.ts",
+    "src/api/modules/task-result.ts",
+    "src/api/modules/tasks.ts",
+    "src/api/v1-client.ts"
   ],
   "assetReview": "pending_internal_rights_review",
   "targetFiles": {
@@ -154,6 +166,6 @@
     "tsconfig.json": "45c19d945ebb6be37ff4cc3f9a0c7771f3fd1ab9fb7ba4434a754f96de46017a",
     "vite.config.ts": "32a9c7d9f5d0e4f9e26a271e68d36b36fb0fe3cc1987e6e0c8091c7f5446b58c"
   },
-  "targetFileCount": 87,
+  "targetFileCount": 96,
   "distributionStatus": "internal_development_only_pending_owner_confirmation"
 }

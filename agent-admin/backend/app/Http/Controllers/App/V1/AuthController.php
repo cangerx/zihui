@@ -8,6 +8,7 @@ use App\Support\AppV1Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
@@ -116,9 +117,23 @@ class AuthController
     public function logout()
     {
         try {
-            if (JWTAuth::getToken()) JWTAuth::invalidate(JWTAuth::getToken());
-        } catch (\Throwable) {
-            // The client can safely clear its token even if the blacklist backend is unavailable.
+            $token = JWTAuth::getToken();
+            if ($token) JWTAuth::invalidate($token);
+        } catch (\Throwable $exception) {
+            try {
+                Log::warning('App v1 logout token invalidation failed', [
+                    'user_id' => auth()->id(),
+                    'exception' => $exception::class,
+                ]);
+            } catch (\Throwable) {
+                // Logging must not replace the versioned fail-closed response.
+            }
+
+            return AppV1Response::error(
+                'logout_failed',
+                '服务端登录状态暂时无法注销，请稍后重试',
+                503
+            );
         }
         return AppV1Response::ok(null);
     }

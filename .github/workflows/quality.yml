@@ -76,6 +76,10 @@ jobs:
               -print0)
           fi
 
+      - name: Run App v1 feature tests
+        working-directory: agent-admin/backend
+        run: php artisan test --testsuite=Feature --filter=AppV1
+
   multichannel-ui:
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -126,6 +130,9 @@ jobs:
       - name: Verify App v1 contract
         run: npm run check:api-contract
 
+      - name: Test shared API client
+        run: npm run test:api-client
+
       - name: Type check
         run: npm run type-check
 
@@ -137,9 +144,19 @@ jobs:
 
       - name: Build H5
         run: npm run build:mobile:h5
+        env:
+          VITE_API_BASE: https://api.example.invalid/api/app/v1
 
       - name: Build Weixin Mini Program
         run: npm run build:mobile:mp-weixin
+        env:
+          VITE_API_BASE: https://api.example.invalid/api/app/v1
+
+      - name: Verify mobile production contracts
+        run: |
+          npm run check:mobile-real-api
+          npm run check:mobile-production-entrypoints
+          npm run check:mobile-production-assets
 
       - name: Verify independent locks
         run: |

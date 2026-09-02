@@ -69,7 +69,6 @@
     "src/hooks/use-page-title.ts",
     "src/lib/api.ts",
     "src/lib/download.ts",
-    "src/lib/features.ts",
     "src/lib/plugin-sdk.ts",
     "src/store/auth.ts",
     "src/store/modules.ts",
@@ -78,6 +77,14 @@
   ],
   "removedFiles": [
     "src/middleware.ts"
+  ],
+  "addedFiles": [
+    ".env.example",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "src/lib/features.ts",
+    "src/lib/tenant.ts",
+    "src/proxy.ts"
   ],
   "assetReview": "pending_internal_rights_review",
   "targetFiles": {
@@ -312,9 +319,6 @@
     "src/store/theme.ts": "178f50108703fdcd2efad91d9dcac76059320b6466a5465cb219ecd3bc56e843",
     "tsconfig.json": "5c51df4c59f4510d8c7dadf07a5c32132228826a3b331da5e286207b4df7ef9c"
   },
-  "targetFileCount": 230,
-  "addedFiles": [
-    "src/proxy.ts"
-  ],
+  "targetFileCount": 236,
   "distributionStatus": "internal_development_only_pending_asset_rights_review"
 }

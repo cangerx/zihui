@@ -1,0 +1,88 @@
+{
+  "round": 5,
+  "goal": "将 H5/微信小程序一级“我的”页面从 Mock 会员信息改为真实 App v1 账户、余额和退出闭环。",
+  "ownedTasks": [
+    "task_mobile_profile_snapshot_021",
+    "task_mobile_remote_logout_022",
+    "task_profile_production_gate_023",
+    "task_profile_backend_regression_024"
+  ],
+  "deliverables": [
+    "生产“我的”页在每次显示时使用 GET /auth/me 与 GET /billing/balance 刷新持久化账户和真实额度。",
+    "页面完整区分未登录、加载、成功、网络错误和 401 会话失效；错误不得显示为零额度。",
+    "提供确认式退出，先调用 POST /auth/logout，最终清除本地 token/account 并恢复未登录 UI。",
+    "生产 UI 移除 mineMenus、本地会员等级、Mock 余额、扫码及收藏/反馈/偏好/邀请占位入口，只保留真实套餐与最近任务入口。",
+    "H5 与 mp-weixin Mine 生产产物加入静态门禁，后端新增账户、余额归属和 JWT 注销 Feature Test。"
+  ],
+  "verificationPlan": [
+    {
+      "criterion": "账户和余额来自当前 JWT 用户且不会跨用户泄露。",
+      "howToCheck": "运行 AppV1ProfileTest，覆盖未认证 401、me 响应、两个用户独立余额与额度合计。",
+      "hardFail": true
+    },
+    {
+      "criterion": "退出先尝试服务端 JWT 注销，并始终清理本地会话。",
+      "howToCheck": "Feature Test 验证 POST /auth/logout 后旧 JWT 不能访问 /auth/me；源码门禁验证 signOut 后 finally 调用本地 logout。",
+      "hardFail": true
+    },
+    {
+      "criterion": "Mine 生产页面没有 Mock 或未开放入口。",
+      "howToCheck": "构建 H5/mp-weixin 后扫描 Mine 页面及其直接任务模块；不得出现 mineMenus、Mock 会员等级、功能开发中、uni.scanCode 或 api/mock/data。",
+      "hardFail": true
+    },
+    {
+      "criterion": "页面保留真实套餐和任务入口，并有加载、错误、401 与退出状态。",
+      "howToCheck": "静态契约检查 getProfileSnapshot、apiErrorCode、refreshProfile、signOut、退出登录、套餐与额度、最近任务标记，并运行 mobile type-check。",
+      "hardFail": true
+    },
+    {
+      "criterion": "既有多端链路和生产关闭项不回归。",
+      "howToCheck": "运行 App v1 Feature、契约和生产扫描、Web/H5/mp-weixin 构建；资产、微信登录、手机号、订单/支付和 Mock 支付继续关闭。",
+      "hardFail": true
+    }
+  ],
+  "nonGoals": [
+    "不实现真实会员等级、订阅状态或到期时间；现有契约没有这些字段。",
+    "不实现收藏、反馈、邀请、偏好、扫码或会员购买。",
+    "不在本轮增强任务轮询、取消、删除或重试；任务列表基础真实接线已存在，下一轮独立处理。",
+    "不实现微信登录、手机号绑定、订单、支付或订阅消息。",
+    "不打开 APP_V1_ENABLE_ASSETS、微信或支付相关生产开关。",
+    "不修改 Web 个人中心或进行 Laravel/DCloud 大版本升级。"
+  ],
+  "handoffPaths": [
+    ".github/workflows/quality.yml",
+    "agent-admin/backend/app/Http/Controllers/App/V1/AuthController.php",
+    "agent-admin/backend/app/Providers/RouteServiceProvider.php",
+    "agent-admin/backend/routes/app.php",
+    "agent-admin/backend/tests/Feature/AppV1ProfileTest.php",
+    "agent-mobile/src/api/auth-storage.ts",
+    "agent-mobile/src/api/login-navigation.ts",
+    "agent-mobile/src/api/modules/app.ts",
+    "agent-mobile/src/api/modules/profile.ts",
+    "agent-mobile/src/api/modules/tasks.ts",
+    "agent-mobile/src/api/modules/task-result.ts",
+    "agent-mobile/src/api/v1-client.ts",
+    "agent-mobile/src/store/user.ts",
+    "agent-mobile/src/pages/mine/mine.vue",
+    "agent-mobile/src/pages-sub/task-history/task-history.vue",
+    "agent-mobile/src/pages-sub/tool-run/tool-run.vue",
+    "docs/multichannel-development.md",
+    "docs/provenance/agent-mobile.source.json",
+    "docs/provenance/agent-web.source.json",
+    "package.json",
+    "packages/api-client/package.json",
+    "packages/api-client/src/index.test.ts",
+    "packages/api-client/src/index.ts",
+    "packages/api-client/tsconfig.json",
+    "scripts/check-mobile-production-entrypoints.mjs",
+    "scripts/check-mobile-real-api.mjs",
+    "scripts/check-ui-import.mjs",
+    ".agents/runtime/harness/2026-08-26-multichannel-platform/round-05-evaluation.json",
+    ".agents/runtime/harness/2026-08-26-multichannel-platform/checkpoint-05.json"
+  ],
+  "notes": [
+    "独立只读 planner session 01a03e43-11d7-7390-bb2e-4d7ca792129b 推荐本切片；它比重复任务列表接线更优先，因为 Mine 是生产一级 Tab 且仍静态导入 Mock。",
+    "最新 DCloud vue3 候选仍固定已知风险传递依赖；DCloud 升级暂不能消除 Round-04 高危，继续由精确例外门禁治理。",
+    "PHP 8.2/Laravel 12 涉及 332 个 PHP 文件、120 个迁移和协调依赖升级，保留为独立迁移轮次。"
+  ]
+}

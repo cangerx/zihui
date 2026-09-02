@@ -13,8 +13,8 @@ Route::middleware('app.request')->group(function () {
     Route::get('/bootstrap', BootstrapController::class)->middleware('auth.jwt.optional');
 
     Route::prefix('auth')->group(function () {
-        Route::post('/password/login', [AuthController::class, 'login']);
-        Route::post('/password/register', [AuthController::class, 'register']);
+        Route::post('/password/login', [AuthController::class, 'login'])->middleware('throttle:app-auth-login');
+        Route::post('/password/register', [AuthController::class, 'register'])->middleware('throttle:app-auth-register');
         Route::post('/refresh', [AuthController::class, 'refresh']);
         Route::middleware('auth.jwt')->group(function () {
             Route::get('/me', [AuthController::class, 'me']);

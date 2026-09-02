@@ -18,7 +18,8 @@ import {
 import { uploadAppAssets, uploadImages } from '@/api/modules/upload'
 import { AI_IMAGE_APP_ID } from '@/api/catalog'
 import { USE_MOCK } from '@/api/config'
-import { apiErrorCode } from '@/api/v1-client'
+import { apiErrorCode, apiErrorInvalidatedSession } from '@/api/v1-client'
+import { navigateToLoginOnce } from '@/api/login-navigation'
 import { createPoller } from '@/utils/poller'
 import { useMemberStore } from '@/store/member'
 import { useUserStore } from '@/store/user'
@@ -40,6 +41,7 @@ const showModeSheet = ref(false)
 
 let poller: ReturnType<typeof createPoller<WorkflowQueryResult>> | null = null
 let awaitingLogin = false
+let toolLoadSequence = 0
 let requestedUuid = USE_MOCK ? 'app-hd' : AI_IMAGE_APP_ID
 let requestedPreset = ''
 
@@ -80,24 +82,27 @@ onLoad((query) => {
     loading.value = false
     loadError.value = '登录后才能使用 AI 生图'
     awaitingLogin = true
-    uni.navigateTo({ url: '/pages-sub/login/login' })
+    navigateToLoginOnce()
     return
   }
   loadTool(requestedUuid, requestedPreset, initialImages)
 })
 
 async function loadTool(uuid: string, preset: string, initialImages: string[] = []) {
+  const requestToken = user.token
+  const sequence = ++toolLoadSequence
   loading.value = true
   loadError.value = ''
   try {
     const data = await getAppDetail(uuid)
+    if (sequence !== toolLoadSequence || isStaleSession(requestToken)) return
     detail.value = data
     if (!data) loadError.value = '功能暂未开放或当前账号没有可用模型'
   } catch (error) {
-    if (handleExpiredLogin(error)) return
+    if (sequence !== toolLoadSequence || handleExpiredLogin(error, requestToken)) return
     loadError.value = '功能加载失败，请检查网络后重试'
   } finally {
-    loading.value = false
+    if (sequence === toolLoadSequence) loading.value = false
   }
   if (!detail.value) return
 
@@ -126,12 +131,19 @@ async function loadTool(uuid: string, preset: string, initialImages: string[] = 
   values.value = initial
 }
 
-function handleExpiredLogin(error: unknown): boolean {
+function isStaleSession(requestToken: string): boolean {
+  return !USE_MOCK && (requestToken !== user.token || !user.isLogin)
+}
+
+function handleExpiredLogin(error: unknown, requestToken: string): boolean {
+  const invalidatedCurrentSession = apiErrorInvalidatedSession(error)
+  if (!USE_MOCK && requestToken !== user.token && !invalidatedCurrentSession) return true
   if (USE_MOCK || apiErrorCode(error) !== 401) return false
+  if (!invalidatedCurrentSession) return true
   user.logout()
   awaitingLogin = true
   loadError.value = '登录状态已失效，请重新登录'
-  uni.navigateTo({ url: '/pages-sub/login/login' })
+  navigateToLoginOnce()
   return true
 }
 
@@ -224,6 +236,7 @@ async function buildPayload() {
 
 async function submit() {
   if (running.value || !detail.value) return
+  const requestToken = user.token
   const error = validate()
   if (error) {
     uni.showToast({ title: error, icon: 'none' })
@@ -235,6 +248,11 @@ async function submit() {
   statusText.value = '正在上传素材'
 
   const payload = await buildPayload()
+  if (isStaleSession(requestToken)) {
+    running.value = false
+    statusText.value = ''
+    return
+  }
   if (!payload) {
     running.value = false
     statusText.value = ''
@@ -248,18 +266,25 @@ async function submit() {
   const taskIds: string[] = []
   try {
     for (const prompt of promptList) {
+      if (isStaleSession(requestToken)) break
       const task = await runWorkflow({
         uuid: detail.value.app.id,
         form: payload.form,
         system: prompt ? { ...payload.system, internal_prompt: prompt } : payload.system,
       })
+      if (isStaleSession(requestToken)) break
       const id = task?.task_uuid || task?.task_id
       if (id) taskIds.push(id)
     }
   } catch (error) {
-    if (!handleExpiredLogin(error)) toast('任务提交失败，请检查账号权限、余额或网络')
+    if (!handleExpiredLogin(error, requestToken)) toast('任务提交失败，请检查账号权限、余额或网络')
   }
 
+  if (isStaleSession(requestToken)) {
+    running.value = false
+    statusText.value = ''
+    return
+  }
   if (!taskIds.length) {
     running.value = false
     statusText.value = '任务提交失败'
@@ -270,10 +295,14 @@ async function submit() {
   const collected: string[] = []
   for (const taskId of taskIds) {
     poller = createPoller<WorkflowQueryResult>({
-      fetch: () => queryWorkflow(taskId),
+      fetch: () => {
+        if (isStaleSession(requestToken)) throw new Error('stale_session')
+        return queryWorkflow(taskId)
+      },
       isDone: (data) => data.status === 'completed' || data.status === 'success',
       isFailed: (data) => data.status === 'failed' || Boolean(data.error_message),
       onTick: (data) => {
+        if (isStaleSession(requestToken)) return
         statusText.value = data?.status === 'running' ? 'AI 正在生成中' : '排队中'
       },
     })
@@ -281,9 +310,10 @@ async function submit() {
     try {
       polled = await poller.start()
     } catch (error) {
-      if (!handleExpiredLogin(error)) toast('任务状态查询失败，可稍后在最近任务查看')
+      if (!handleExpiredLogin(error, requestToken)) toast('任务状态查询失败，可稍后在最近任务查看')
       continue
     }
+    if (isStaleSession(requestToken)) break
     const { status, data } = polled
     if (status === 'done' && data) collected.push(...extractResultImages(data.result))
     if (status === 'failed') toast(data?.error_message || '生成失败')
@@ -292,6 +322,12 @@ async function submit() {
     }
   }
 
+  if (isStaleSession(requestToken)) {
+    running.value = false
+    statusText.value = ''
+    poller = null
+    return
+  }
   statusText.value = collected.length ? '生成完成' : '未获取到结果'
   results.value = collected
   running.value = false

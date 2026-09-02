@@ -25,7 +25,12 @@ function walk(root) {
   for (const entry of readdirSync(root, { withFileTypes: true })) {
     const path = join(root, entry.name);
     if (entry.isDirectory() && !generatedDirectories.has(entry.name)) files.push(...walk(path));
-    else if (entry.isFile()) files.push(path);
+    else if (
+      entry.isFile() &&
+      !entry.name.endsWith(".tsbuildinfo") &&
+      entry.name !== ".DS_Store" &&
+      entry.name !== "next-env.d.ts"
+    ) files.push(path);
   }
   return files;
 }
@@ -89,6 +94,8 @@ function verifyAgainstLocalSource(manifest, targetRoot) {
 function verifyTargetSnapshot(manifest, targetRoot) {
   const targetFiles = manifest.targetFiles;
   const modified = new Set(manifest.modifiedFiles || []);
+  const removed = new Set(manifest.removedFiles || []);
+  const added = new Set(manifest.addedFiles || []);
   if (!targetFiles || typeof targetFiles !== "object" || !Object.keys(targetFiles).length) {
     failures.push(`${manifest.target}: targetFiles SHA-256 snapshot is missing`);
     return;
@@ -104,6 +111,27 @@ function verifyTargetSnapshot(manifest, targetRoot) {
     if (actualHash !== expectedHash) {
       failures.push(`${manifest.target}: snapshot hash mismatch ${targetPath}`);
     }
+  }
+
+  const declared = new Set([...Object.keys(targetFiles), ...removed, ...added]);
+  const actualFiles = walk(targetRoot).map((file) => relative(targetRoot, file));
+  for (const targetPath of actualFiles) {
+    if (!declared.has(targetPath)) {
+      failures.push(
+        manifest.target + ': unclassified target file ' + targetPath + '; register it in targetFiles or addedFiles',
+      );
+    }
+  }
+  for (const targetPath of added) {
+    const absoluteTarget = join(targetRoot, targetPath);
+    if (!existsSync(absoluteTarget) || !statSync(absoluteTarget).isFile()) {
+      failures.push(manifest.target + ': registered added file is missing ' + targetPath);
+    }
+  }
+  if (actualFiles.length !== manifest.targetFileCount) {
+      failures.push(
+      manifest.target + ': target contains ' + actualFiles.length + ' files, expected ' + manifest.targetFileCount,
+    );
   }
 }
 

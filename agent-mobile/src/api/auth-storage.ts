@@ -26,6 +26,10 @@ export function setAuth(token: string, account: LoginAccount) {
   uni.setStorageSync(STORAGE_KEYS.account, account)
 }
 
+export function setAccount(account: LoginAccount) {
+  uni.setStorageSync(STORAGE_KEYS.account, account)
+}
+
 export function clearAuth() {
   uni.removeStorageSync(STORAGE_KEYS.token)
   uni.removeStorageSync(STORAGE_KEYS.account)

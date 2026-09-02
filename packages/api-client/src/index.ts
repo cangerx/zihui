@@ -35,6 +35,7 @@ export class ApiClientError extends Error {
   readonly code: string;
   readonly details?: Record<string, unknown>;
   readonly requestId?: string;
+  readonly accessTokenInvalidated: boolean;
 
   constructor(
     message: string,
@@ -43,6 +44,7 @@ export class ApiClientError extends Error {
       code?: string;
       details?: Record<string, unknown>;
       requestId?: string;
+      accessTokenInvalidated?: boolean;
     },
   ) {
     super(message);
@@ -51,6 +53,7 @@ export class ApiClientError extends Error {
     this.code = options.code || "api_error";
     this.details = options.details;
     this.requestId = options.requestId;
+    this.accessTokenInvalidated = options.accessTokenInvalidated || false;
   }
 }
 
@@ -58,6 +61,47 @@ function trimBase(baseUrl: string): string {
   const normalized = baseUrl.trim().replace(/\/+$/, "");
   if (!normalized) throw new Error("API base URL is required");
   return normalized;
+}
+
+function headerRecord(input?: HeadersInit): Record<string, string> {
+  const result: Record<string, string> = {};
+  if (!input) return result;
+  if (Array.isArray(input)) {
+    for (const [key, value] of input) result[key] = value;
+    return result;
+  }
+  const iterable = input as { forEach?: (callback: (value: string, key: string) => void) => void };
+  if (typeof iterable.forEach === "function") {
+    iterable.forEach((value, key) => { result[key] = value; });
+    return result;
+  }
+  for (const [key, value] of Object.entries(input)) result[key] = String(value);
+  return result;
+}
+
+function setHeader(headers: Record<string, string>, name: string, value: string): void {
+  const existing = Object.keys(headers).find((key) => key.toLowerCase() === name.toLowerCase());
+  headers[existing || name] = value;
+}
+
+function appendQuery(
+  input: string,
+  query?: Record<string, string | number | boolean | null | undefined>,
+): string {
+  const entries = Object.entries(query || {}).filter(([, value]) => value !== undefined && value !== null);
+  if (!entries.length) return input;
+  const hashIndex = input.indexOf("#");
+  const hash = hashIndex >= 0 ? input.slice(hashIndex) : "";
+  const base = hashIndex >= 0 ? input.slice(0, hashIndex) : input;
+  const separator = base.includes("?") ? (base.endsWith("?") || base.endsWith("&") ? "" : "&") : "?";
+  const encoded = entries
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)
+    .join("&");
+  return `${base}${separator}${encoded}${hash}`;
+}
+
+function isFormData(value: unknown): value is FormData {
+  return typeof FormData !== "undefined" && value instanceof FormData;
 }
 
 export class ApiClient {
@@ -81,27 +125,21 @@ export class ApiClient {
     const rawUrl = /^https?:\/\//i.test(path)
       ? path
       : `${this.baseUrl}${path.startsWith("/") ? path : `/${path}`}`;
-    const absolute = /^https?:\/\//i.test(rawUrl);
-    const url = new URL(rawUrl, "http://zihui.local");
-    for (const [key, value] of Object.entries(options.query || {})) {
-      if (value !== undefined && value !== null) url.searchParams.set(key, String(value));
-    }
-
-    const headers = new Headers(options.headers);
-    headers.set("Accept", "application/json");
-    headers.set("X-Channel", this.channel);
+    const requestUrl = appendQuery(rawUrl, options.query);
+    const headers = headerRecord(options.headers);
+    setHeader(headers, "Accept", "application/json");
+    setHeader(headers, "X-Channel", this.channel);
     const token = this.getAccessToken?.();
-    if (token) headers.set("Authorization", `Bearer ${token}`);
+    if (token) setHeader(headers, "Authorization", `Bearer ${token}`);
     const isRawBody = options.body instanceof ArrayBuffer || ArrayBuffer.isView(options.body as ArrayBufferView) || (typeof Blob !== "undefined" && options.body instanceof Blob);
-    if (options.body !== undefined && !(options.body instanceof FormData) && !isRawBody) {
-      headers.set("Content-Type", "application/json");
+    if (options.body !== undefined && !isFormData(options.body) && !isRawBody) {
+      setHeader(headers, "Content-Type", "application/json");
     }
 
-    const requestUrl = absolute ? url.toString() : `${url.pathname}${url.search}`;
     const response = await this.fetchImpl(requestUrl, {
       ...options,
       body:
-        options.body === undefined || options.body instanceof FormData || isRawBody
+        options.body === undefined || isFormData(options.body) || isRawBody
           ? (options.body as BodyInit | null | undefined)
           : JSON.stringify(options.body),
       credentials: options.credentials || this.credentials,
@@ -117,12 +155,18 @@ export class ApiClient {
     }
     if (!response.ok || payload?.error) {
       const error = payload?.error || {};
-      if (response.status === 401) this.setAccessToken?.(null);
+      const accessTokenInvalidated = Boolean(
+        token && response.status === 401 && this.getAccessToken?.() === token,
+      );
+      if (accessTokenInvalidated) {
+        this.setAccessToken?.(null);
+      }
       throw new ApiClientError(error.message || `API request failed (${response.status})`, {
         status: response.status,
         code: error.code,
         details: error.details,
         requestId: payload?.meta?.request_id || requestId,
+        accessTokenInvalidated,
       });
     }
     return (payload?.data ?? payload) as T;

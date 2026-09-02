@@ -15,6 +15,7 @@ import type {
   WorkflowRunRequest,
   WorkflowRunResult,
 } from '../types'
+export { extractResultImages } from './task-result'
 
 export async function getBootstrap(): Promise<BootstrapPayload | null> {
   try {
@@ -306,15 +307,4 @@ export async function optimizeImage(uuid: string, field: string, images: string[
     argument: { uuid, field, images },
   })
   return res.code === 200 ? res.data?.text || '' : ''
-}
-
-/** 从任务结果中解析图片 URL，优先级见 §3.2.4 */
-export function extractResultImages(result?: WorkflowQueryResult['result']): string[] {
-  if (!result) return []
-  const list = [...(result.images || []), ...(result.data || [])]
-    .map((item) => item.url || item.file_url)
-    .filter((url): url is string => Boolean(url))
-  if (list.length) return list
-  const single = result.url || result.file_url
-  return single ? [single] : []
 }

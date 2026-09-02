@@ -1,29 +1,88 @@
 <script setup lang="ts">
 /**
- * 我的：未登录/已登录态 + VIP 黑金 banner + 我的空间 + 分组菜单
+ * 我的：真实账户、额度、套餐与最近任务入口
  * 对照 原型图/个人中心.jpg
  */
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import { onHide, onShow } from '@dcloudio/uni-app'
 import { getNavMetrics } from '@/utils/system'
 import { useUserStore } from '@/store/user'
-import { useMemberStore } from '@/store/member'
-import { mineMenus } from '@/api/mock/data'
+import { balanceTotal } from '@/api/modules/billing'
+import { getProfileSnapshot, signOut } from '@/api/modules/profile'
+import { apiErrorCode, apiErrorInvalidatedSession } from '@/api/v1-client'
+import { navigateToLoginOnce } from '@/api/login-navigation'
+import type { AppBalance } from '@zihui/contracts'
 
 const metrics = getNavMetrics()
 const headStyle = computed(() => `padding-top:${metrics.statusBarHeight + 8}px`)
 
 const user = useUserStore()
-const member = useMemberStore()
+const balances = ref<AppBalance[]>([])
+const loading = ref(false)
+const loadError = ref('')
+const signingOut = ref(false)
+let refreshSequence = 0
 
-const vipLabel = computed(() => {
-  if (member.level === 'premium') return '高级会员 · 权益生效中'
-  if (member.level === 'basic') return '基础会员 · 权益生效中'
-  return '立即开通'
+const creditBalance = computed(() => balanceTotal(balances.value, 'credit'))
+const tokenBalance = computed(() => balanceTotal(balances.value, 'token'))
+const balanceSummary = computed(() => {
+  if (loading.value) return '正在同步账户与额度'
+  if (loadError.value) return '账户同步失败，请重试'
+  return `创作额度 ${creditBalance.value} · Token ${tokenBalance.value}`
 })
+
+onShow(() => {
+  if (user.isLogin) refreshProfile()
+  else resetProfileState()
+})
+
+onHide(() => {
+  invalidateProfileRefresh()
+})
+
+function invalidateProfileRefresh() {
+  refreshSequence += 1
+  loading.value = false
+}
+
+function resetProfileState() {
+  invalidateProfileRefresh()
+  balances.value = []
+  loading.value = false
+  loadError.value = ''
+}
+
+async function refreshProfile() {
+  if (!user.isLogin || loading.value) return
+  const requestToken = user.token
+  const sequence = ++refreshSequence
+  loading.value = true
+  loadError.value = ''
+  try {
+    const snapshot = await getProfileSnapshot()
+    if (sequence !== refreshSequence || requestToken !== user.token || !user.isLogin) return
+    user.applyAccount(snapshot.account)
+    balances.value = snapshot.balances
+  } catch (error) {
+    if (sequence !== refreshSequence) return
+    if (apiErrorCode(error) === 401) {
+      if (!apiErrorInvalidatedSession(error)) return
+      user.logout()
+      resetProfileState()
+      navigateToLoginOnce()
+      return
+    }
+    if (requestToken !== user.token || !user.isLogin) return
+    balances.value = []
+    loadError.value = '暂时无法获取账户信息，请检查网络后重试'
+  } finally {
+    if (sequence === refreshSequence) loading.value = false
+  }
+}
 
 function goLogin() {
   if (user.isLogin) return
-  uni.navigateTo({ url: '/pages-sub/login/login' })
+  navigateToLoginOnce()
 }
 
 function goVip() {
@@ -34,22 +93,36 @@ function goSpace() {
   uni.navigateTo({ url: '/pages-sub/task-history/task-history' })
 }
 
-function onMenuTap(key: string) {
-  if (key === 'favorite') {
-    // TODO(design)：收藏页原型未给出，先复用作图记录页
-    uni.navigateTo({ url: '/pages-sub/task-history/task-history?type=favorite' })
-    return
-  }
-  uni.showToast({ title: '功能开发中', icon: 'none' })
+function confirmSignOut() {
+  if (!user.isLogin || signingOut.value) return
+  uni.showModal({
+    title: '退出登录',
+    content: '退出后仍可浏览公开内容，账户数据不会被删除。',
+    confirmText: '退出',
+    confirmColor: '#c63737',
+    success: (result) => {
+      if (result.confirm) void performSignOut()
+    },
+  })
 }
 
-function onScan() {
-  // #ifdef MP-WEIXIN
-  uni.scanCode({ success: () => uni.showToast({ title: '扫码功能开发中', icon: 'none' }) })
-  // #endif
-  // #ifndef MP-WEIXIN
-  uni.showToast({ title: '请在小程序中使用扫码', icon: 'none' })
-  // #endif
+async function performSignOut() {
+  if (signingOut.value) return
+  const requestToken = user.token
+  invalidateProfileRefresh()
+  signingOut.value = true
+  try {
+    await signOut()
+  } catch {
+    // Local credentials must still be removed when the network or blacklist
+    // backend is unavailable. The expired token cannot remain active in UI.
+  } finally {
+    if (!user.token || user.token === requestToken) {
+      user.logout()
+      resetProfileState()
+    }
+    signingOut.value = false
+  }
 }
 </script>
 
@@ -58,14 +131,7 @@ function onScan() {
     <view class="mine__bg" />
 
     <scroll-view class="mine__scroll" scroll-y :show-scrollbar="false">
-      <view class="mine__top" :style="headStyle">
-        <view class="mine__tool" @tap="onScan">
-          <ui-icon name="scan" :size="34" color="#333333" />
-        </view>
-        <view class="mine__tool" @tap="onMenuTap('preference')">
-          <ui-icon name="setting" :size="34" color="#333333" />
-        </view>
-      </view>
+      <view class="mine__top" :style="headStyle" />
 
       <!-- 用户信息 -->
       <view class="mine__user" @tap="goLogin">
@@ -75,48 +141,48 @@ function onScan() {
         </view>
         <view class="mine__user-text">
           <text class="mine__nickname">{{ user.isLogin ? user.nickname || '未设置昵称' : '立即登录' }}</text>
-          <text class="mine__sub">{{ user.isLogin ? `美豆 ${member.beans}` : '登录后同步你的设计与素材' }}</text>
+          <text class="mine__sub">{{ user.isLogin ? balanceSummary : '登录后同步你的任务与额度' }}</text>
         </view>
         <ui-icon v-if="!user.isLogin" name="arrow" :size="30" color="#999999" />
       </view>
 
-      <!-- VIP banner -->
+      <view v-if="user.isLogin && loadError" class="mine__error" @tap="refreshProfile">
+        <ui-icon name="refresh" :size="30" color="#c63737" />
+        <text class="mine__error-text">{{ loadError }}</text>
+        <text class="mine__retry">重试</text>
+      </view>
+
+      <!-- 套餐入口只展示服务端已有的套餐与额度语义，不推断会员等级。 -->
       <view class="mine__vip" @tap="goVip">
         <view class="mine__vip-left">
           <ui-icon name="vip" :size="44" color="#f3d9b7" />
           <view class="mine__vip-text">
-            <text class="mine__vip-title">美图设计室 VIP</text>
-            <text class="mine__vip-sub">设计功能，无限畅用</text>
+            <text class="mine__vip-title">套餐与额度</text>
+            <text class="mine__vip-sub">查看可用套餐与当前创作额度</text>
           </view>
         </view>
         <view class="mine__vip-btn">
-          <text class="mine__vip-btn-text">{{ vipLabel }}</text>
+          <text class="mine__vip-btn-text">查看</text>
         </view>
       </view>
 
-      <!-- 我的空间 -->
+      <!-- 最近任务 -->
       <view class="mine__card" @tap="goSpace">
         <view class="mine__card-left">
           <ui-icon name="image" :size="40" color="#5f5ffd" />
-          <text class="mine__card-title">我的空间</text>
+          <text class="mine__card-title">最近任务</text>
         </view>
         <ui-icon name="arrow" :size="30" color="#999999" />
       </view>
 
-      <!-- 菜单组 -->
-      <view class="mine__menus">
-        <view
-          v-for="(item, index) in mineMenus"
-          :key="item.key"
-          class="mine__menu"
-          :class="{ 'mine__menu--line': index !== mineMenus.length - 1 }"
-          @tap="onMenuTap(item.key)"
-        >
+      <view v-if="user.isLogin" class="mine__menus">
+        <view class="mine__menu" @tap="confirmSignOut">
           <view class="mine__menu-left">
-            <ui-icon :name="item.icon" :size="38" color="#555555" />
-            <text class="mine__menu-name">{{ item.name }}</text>
+            <ui-icon name="back" :size="38" color="#c63737" />
+            <text class="mine__menu-name mine__menu-name--danger">
+              {{ signingOut ? '正在退出...' : '退出登录' }}
+            </text>
           </view>
-          <ui-icon name="arrow" :size="28" color="#cccccc" />
         </view>
       </view>
 
@@ -197,6 +263,32 @@ function onScan() {
     margin-top: 8rpx;
     font-size: $fs-aux;
     color: $ink-2;
+  }
+
+  &__error {
+    min-height: 78rpx;
+    margin: -12rpx $gap-page 20rpx;
+    padding: 14rpx 20rpx;
+    border: 1px solid rgba(198, 55, 55, 0.18);
+    border-radius: $radius-btn;
+    background: rgba(255, 244, 244, 0.92);
+    display: flex;
+    align-items: center;
+    gap: 12rpx;
+  }
+
+  &__error-text {
+    flex: 1;
+    min-width: 0;
+    font-size: 24rpx;
+    line-height: 1.45;
+    color: $danger;
+  }
+
+  &__retry {
+    font-size: 24rpx;
+    font-weight: 600;
+    color: $danger;
   }
 
   &__vip {
@@ -298,6 +390,10 @@ function onScan() {
   &__menu-name {
     font-size: $fs-body;
     color: $ink;
+
+    &--danger {
+      color: $danger;
+    }
   }
 
   &__safe {

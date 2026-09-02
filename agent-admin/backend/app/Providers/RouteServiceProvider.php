@@ -47,6 +47,22 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(180)->by((string) $request->ip());
         });
 
+        RateLimiter::for('app-auth-login', function (Request $request) {
+            $identifier = strtolower(trim((string) ($request->input('identifier')
+                ?: $request->input('username')
+                ?: $request->input('email'))));
+
+            return Limit::perMinute(10)
+                ->by(hash('sha256', (string) $request->ip().'|'.$identifier))
+                ->response(fn (Request $request, array $headers) => $this->rateLimited($headers));
+        });
+
+        RateLimiter::for('app-auth-register', function (Request $request) {
+            return Limit::perMinute(5)
+                ->by('ip:' . (string) $request->ip())
+                ->response(fn (Request $request, array $headers) => $this->rateLimited($headers));
+        });
+
         RateLimiter::for('app-assets-presign', function (Request $request) {
             return Limit::perMinute(30)
                 ->by('ip:' . (string) $request->ip())
