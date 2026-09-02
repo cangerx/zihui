@@ -380,17 +380,37 @@ return new class extends Migration
     {
         if (!Schema::hasTable($table)) return;
 
-        $exists = DB::table('information_schema.statistics')
-            ->whereRaw('table_schema = DATABASE()')
-            ->where('table_name', $table)
-            ->where('index_name', $index)
-            ->exists();
+        $connection = DB::connection();
+        $exists = match ($connection->getDriverName()) {
+            'sqlite' => $this->sqliteIndexExists($connection, $table, $index),
+            'pgsql' => !empty($connection->select(
+                'SELECT 1 FROM pg_indexes WHERE schemaname = current_schema() AND tablename = ? AND indexname = ? LIMIT 1',
+                [$table, $index]
+            )),
+            default => $connection->table('information_schema.statistics')
+                ->whereRaw('table_schema = DATABASE()')
+                ->where('table_name', $table)
+                ->where('index_name', $index)
+                ->exists(),
+        };
 
         if ($exists) return;
 
         Schema::table($table, function (Blueprint $table) use ($columns, $index) {
             $table->index($columns, $index);
         });
+    }
+
+    private function sqliteIndexExists($connection, string $table, string $index): bool
+    {
+        $quotedTable = $connection->getPdo()->quote($table);
+        foreach ($connection->select('PRAGMA index_list('.$quotedTable.')') as $row) {
+            if ((string) ($row->name ?? '') === $index) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function down(): void

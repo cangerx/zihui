@@ -95,6 +95,25 @@ return new class extends Migration
 
     private function indexExists(string $table, string $index): bool
     {
+        $connection = DB::connection();
+        if ($connection->getDriverName() === 'sqlite') {
+            $quotedTable = $connection->getPdo()->quote($table);
+            foreach ($connection->select('PRAGMA index_list('.$quotedTable.')') as $row) {
+                if ((string) ($row->name ?? '') === $index) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        if ($connection->getDriverName() === 'pgsql') {
+            return !empty($connection->select(
+                'SELECT 1 FROM pg_indexes WHERE schemaname = current_schema() AND tablename = ? AND indexname = ? LIMIT 1',
+                [$table, $index]
+            ));
+        }
+
         $database = DB::getDatabaseName();
         return !empty(DB::select(
             'select 1 from information_schema.statistics where table_schema = ? and table_name = ? and index_name = ? limit 1',

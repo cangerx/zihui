@@ -62,11 +62,28 @@ return new class extends Migration
      */
     private function indexNames(string $table): array
     {
-        $rows = \Illuminate\Support\Facades\DB::select(
-            'SELECT DISTINCT INDEX_NAME FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?',
-            [$table]
-        );
-        return array_map(fn($r) => $r->INDEX_NAME, $rows);
+        $connection = \Illuminate\Support\Facades\DB::connection();
+
+        return match ($connection->getDriverName()) {
+            'sqlite' => array_map(
+                static fn ($row) => (string) ($row->name ?? ''),
+                $connection->select('PRAGMA index_list('.$connection->getPdo()->quote($table).')')
+            ),
+            'pgsql' => array_map(
+                static fn ($row) => (string) ($row->indexname ?? ''),
+                $connection->select(
+                    'SELECT indexname FROM pg_indexes WHERE schemaname = current_schema() AND tablename = ?',
+                    [$table]
+                )
+            ),
+            default => array_map(
+                static fn ($row) => (string) ($row->INDEX_NAME ?? ''),
+                $connection->select(
+                    'SELECT DISTINCT INDEX_NAME FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?',
+                    [$table]
+                )
+            ),
+        };
     }
 
     public function down()

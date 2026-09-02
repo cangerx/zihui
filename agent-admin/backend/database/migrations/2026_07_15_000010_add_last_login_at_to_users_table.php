@@ -30,6 +30,25 @@ return new class extends Migration
 
     private function indexExists(string $table, string $name): bool
     {
+        $connection = \Illuminate\Support\Facades\DB::connection();
+        if ($connection->getDriverName() === 'sqlite') {
+            $quotedTable = $connection->getPdo()->quote($table);
+            foreach ($connection->select('PRAGMA index_list('.$quotedTable.')') as $row) {
+                if ((string) ($row->name ?? '') === $name) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        if ($connection->getDriverName() === 'pgsql') {
+            return !empty($connection->select(
+                'SELECT 1 FROM pg_indexes WHERE schemaname = current_schema() AND tablename = ? AND indexname = ? LIMIT 1',
+                [$table, $name]
+            ));
+        }
+
         $database = config('database.connections.' . config('database.default') . '.database');
         $count = \DB::selectOne(
             'SELECT COUNT(1) AS c FROM information_schema.statistics WHERE table_schema = ? AND table_name = ? AND index_name = ?',
