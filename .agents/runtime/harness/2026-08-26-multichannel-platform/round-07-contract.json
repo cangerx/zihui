@@ -9,7 +9,7 @@
   ],
   "deliverables": [
     "后端 Composer 目标切换到 PHP 8.2 与 Laravel 12 兼容线，完成必要框架适配，保留 App v1 API 行为，并更新独立 composer.lock。",
-    "DCloud/uni-app 及其直接构建依赖升级到可验证的安全版本；根 workspace lock 与 agent-mobile 构建矩阵保持一致，不扩大微信/支付/资产生产开关。",
+    "DCloud/uni-app 及其直接构建依赖升级到可验证的安全版本；若当前 Vue3 发行线没有兼容修复，必须提交可复现的上游版本调查、精确风险清单和自动化防漂移门禁，不得盲目切换 Vue2/legacy 或添加未经验证的 override；根 workspace lock 与 agent-mobile 构建矩阵保持一致。",
     "Electron 桌面文件解析链完成依赖和输入边界加固，覆盖 PSD/PDF/DOCX 等已支持格式的大小、路径、异常输入和资源释放回归。",
     "三条独立依赖线各自保留可审计的变更说明、测试命令和未解决风险，不以通配安全豁免替代修复。",
     "跨渠道既有 App v1、Web、H5、mp-weixin、桌面构建和安全门禁无回归。"
@@ -21,8 +21,8 @@
       "hardFail": true
     },
     {
-      "criterion": "DCloud/uni-app 安全依赖线可重复安装并通过多端构建",
-      "howToCheck": "执行 npm ci、root 与 mobile 安全审计政策、workspace type-check、H5 和 mp-weixin production build、mobile production entrypoint/asset checks；git diff 必须不产生 lock 漂移。",
+      "criterion": "DCloud/uni-app 安全依赖线可重复安装并通过多端构建，或有可复现的上游阻塞证据与防漂移门禁",
+      "howToCheck": "执行 npm ci、root 与 mobile 安全审计政策、workspace type-check、H5 和 mp-weixin production build、mobile production entrypoint/asset checks；若版本未变，必须同时验证 Vue3 最新兼容候选、audit 结果、精确例外期限和锁文件防漂移检查。",
       "hardFail": true
     },
     {
@@ -54,6 +54,8 @@
     "agent-admin/backend/tests/**/*.php",
     "agent-admin/backend/docs/**/*.md",
     "agent-mobile/package.json",
+    "docs/dcloud-dependency-baseline-2026-09-02.md",
+    "scripts/check-dcloud-dependency-baseline.mjs",
     "agent-mobile/src/**/*.ts",
     "agent-mobile/src/**/*.vue",
     "package.json",
